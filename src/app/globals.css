@@ -1,8 +1,43 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-mat-surface: var(--mat-surface-default);
+  --color-mat-brand: var(--mat-surface-brand);
+  --color-mat-ink: var(--mat-text-primary);
+  --color-mat-inverse: var(--mat-surface-inverse);
+  --color-mat-on-inverse: var(--mat-text-inverse);
+  --font-mat: var(--font-montserrat), Arial, Helvetica, sans-serif;
+  --radius-mat-sm: var(--mat-radius-sm);
+  --radius-mat-md: var(--mat-radius-md);
+  --radius-mat-lg: var(--mat-radius-lg);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --mat-brand-charcoal: #272727;
+  --mat-brand-beige: #e1d6c7;
+  --mat-brand-ivory: #f4f3eb;
+
+  --mat-surface-default: var(--mat-brand-ivory);
+  --mat-surface-brand: var(--mat-brand-beige);
+  --mat-surface-inverse: var(--mat-brand-charcoal);
+  --mat-text-primary: var(--mat-brand-charcoal);
+  --mat-text-inverse: var(--mat-brand-ivory);
+  --mat-action-primary: var(--mat-brand-charcoal);
+  --mat-action-on-primary: var(--mat-brand-ivory);
+
+  --mat-space-1: 0.25rem;
+  --mat-space-2: 0.5rem;
+  --mat-space-3: 0.75rem;
+  --mat-space-4: 1rem;
+  --mat-space-6: 1.5rem;
+  --mat-space-8: 2rem;
+  --mat-space-12: 3rem;
+  --mat-space-16: 4rem;
+
+  --mat-radius-sm: 0.5rem;
+  --mat-radius-md: 1rem;
+  --mat-radius-lg: 1.5rem;
+  --mat-radius-full: 9999px;
 }
 
 * {
@@ -10,12 +45,22 @@
 }
 
 html {
-  background: var(--background);
+  scroll-behavior: smooth;
+  background: var(--mat-surface-inverse);
 }
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--mat-surface-default);
+  color: var(--mat-text-primary);
+  font-family: var(--font-montserrat), Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--mat-brand-beige);
+  outline-offset: 4px;
 }
