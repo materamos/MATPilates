@@ -12,7 +12,7 @@ export function SiteFooter() {
                 alt="MAT Pilates"
                 fill
                 sizes="96px"
-                src="/brand/mat-wordmark-dark.png"
+                src="/brand/mat-wordmark-dark.svg"
                 style={{ objectFit: "contain" }}
               />
             </div>
