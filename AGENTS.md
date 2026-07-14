@@ -17,6 +17,18 @@ This file contains repository-specific guidance. Follow the global Codex guidanc
 - Keep `lib` independent from presentation concerns where practical.
 - Prefer small, explicit modules and preserve the responsibilities of the directories above.
 
+## Workflow and branches
+
+- Every code change must be linked to an open GitHub Issue.
+- Move the related Project item to `Doing` when implementation starts.
+- Create feature branches from an updated `dev` branch using `feature/<short-description>`.
+- Do not commit or push directly to `dev` or `main`.
+- Open Pull Requests from `feature/*` into `dev`.
+- Include `Closes #<issue-number>` in the Pull Request description when the change completes an Issue.
+- Before opening a Pull Request, run the documented validation commands relevant to the change.
+- After merging into `dev`, move the Project item to `Done` and delete the merged `feature/*` branch.
+- Promote changes from `dev` to `main` through a separate Pull Request only.
+
 ## Tooling and documentation
 
 - The Next.js and TypeScript setup is intentionally pending. Do not assume package scripts, test runners, environment variables, or generated configuration exist before they are introduced.
