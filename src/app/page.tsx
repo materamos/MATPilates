@@ -43,7 +43,7 @@ export default function HomePage() {
                 fill
                 priority
                 sizes="(min-width: 1024px) 40vw, 100vw"
-                src="/brand/mat-wordmark-dark-on-beige.png"
+                src="/brand/mat-wordmark-dark-on-beige.svg"
                 style={{ objectFit: "contain", padding: "20%" }}
               />
             </div>
@@ -110,7 +110,7 @@ export default function HomePage() {
                   alt="MAT Pilates"
                   fill
                   sizes="112px"
-                  src="/brand/mat-wordmark-light.png"
+                  src="/brand/mat-wordmark-light.svg"
                   style={{ objectFit: "contain" }}
                 />
               </div>

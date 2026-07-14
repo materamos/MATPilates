@@ -12,7 +12,7 @@ export function SiteHeader() {
             fill
             priority
             sizes="96px"
-            src="/brand/mat-wordmark-dark.png"
+            src="/brand/mat-wordmark-dark.svg"
             style={{ objectFit: "contain" }}
           />
         </a>
