@@ -31,6 +31,8 @@ This file contains repository-specific guidance. Follow the global Codex guidanc
 
 ## Tooling and documentation
 
-- The Next.js and TypeScript setup is intentionally pending. Do not assume package scripts, test runners, environment variables, or generated configuration exist before they are introduced.
+- The application uses Next.js with the App Router, TypeScript, Tailwind CSS, and ESLint.
+- Use the npm commands documented in `README.md` for installation, development, linting, and production builds.
+- Do not assume environment variables or generated configuration exist before they are introduced.
 - When adding application tooling, document its supported commands and any required local configuration in `README.md`.
 - Add durable architectural or product-adjacent decisions to `docs/` rather than embedding them in source files.

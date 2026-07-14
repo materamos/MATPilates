@@ -20,9 +20,33 @@ Stage 1 is the landing page described above. A later stage may expand the produc
 
 ## Technology status
 
-Next.js with TypeScript is the intended application stack. The application has not been initialized yet, so this repository intentionally has no package manifest, development commands, or automated checks at this time.
+The application uses Next.js with the App Router, TypeScript, Tailwind CSS, and ESLint. The first stage remains a public landing page; authentication, payments, booking, and administration are not part of the current implementation.
 
-When the application is introduced, this README will document the supported setup, development, and validation commands.
+## Commands
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the local development server:
+
+```bash
+npm run dev
+```
+
+Run lint checks:
+
+```bash
+npm run lint
+```
+
+Create a production build:
+
+```bash
+npm run build
+```
 
 ## Repository layout
 
@@ -36,6 +60,6 @@ When the application is introduced, this README will document the supported setu
 
 ## Next steps
 
-1. Initialize the Next.js and TypeScript application.
-2. Add the landing page implementation and its WhatsApp contact flow.
-3. Define the project's development and validation commands, then document them here.
+1. Add the landing page implementation and its WhatsApp contact flow.
+2. Replace provisional content with final material from the studio.
+3. Configure Vercel and production deployment.
