@@ -7,23 +7,41 @@
   --color-mat-inverse: var(--mat-surface-inverse);
   --color-mat-on-inverse: var(--mat-text-inverse);
   --font-mat: var(--font-montserrat), Arial, Helvetica, sans-serif;
+  --radius-mat-none: var(--mat-radius-none);
   --radius-mat-sm: var(--mat-radius-sm);
   --radius-mat-md: var(--mat-radius-md);
   --radius-mat-lg: var(--mat-radius-lg);
+  --radius-mat-full: var(--mat-radius-full);
 }
 
 :root {
-  --mat-brand-charcoal: #272727;
-  --mat-brand-beige: #e1d6c7;
-  --mat-brand-ivory: #f4f3eb;
+  --mat-color-charcoal: #272727;
+  --mat-color-beige: #e1d6c7;
+  --mat-color-ivory: #f4f3eb;
+  --mat-color-gray: #494745;
 
-  --mat-surface-default: var(--mat-brand-ivory);
-  --mat-surface-brand: var(--mat-brand-beige);
-  --mat-surface-inverse: var(--mat-brand-charcoal);
-  --mat-text-primary: var(--mat-brand-charcoal);
-  --mat-text-inverse: var(--mat-brand-ivory);
-  --mat-action-primary: var(--mat-brand-charcoal);
-  --mat-action-on-primary: var(--mat-brand-ivory);
+  --mat-color-surface-default: var(--mat-color-ivory);
+  --mat-color-surface-brand: var(--mat-color-beige);
+  --mat-color-surface-inverse: var(--mat-color-charcoal);
+  --mat-color-text-primary: var(--mat-color-gray);
+  --mat-color-text-inverse: var(--mat-color-ivory);
+  --mat-color-text-on-surface: var(--mat-color-gray);
+  --mat-color-action-primary: var(--mat-color-charcoal);
+  --mat-color-action-on-primary: var(--mat-color-beige);
+  --mat-color-border-default: var(--mat-color-charcoal);
+
+  --mat-brand-charcoal: var(--mat-color-charcoal);
+  --mat-brand-beige: var(--mat-color-beige);
+  --mat-brand-ivory: var(--mat-color-ivory);
+  --mat-brand-gray: var(--mat-color-gray);
+  --mat-surface-default: var(--mat-color-surface-default);
+  --mat-surface-brand: var(--mat-color-surface-brand);
+  --mat-surface-inverse: var(--mat-color-surface-inverse);
+  --mat-on-surface: var(--mat-color-text-on-surface);
+  --mat-text-primary: var(--mat-color-text-primary);
+  --mat-text-inverse: var(--mat-color-text-inverse);
+  --mat-action-primary: var(--mat-color-action-primary);
+  --mat-action-on-primary: var(--mat-color-action-on-primary);
 
   --mat-space-1: 0.25rem;
   --mat-space-2: 0.5rem;
@@ -34,6 +52,7 @@
   --mat-space-12: 3rem;
   --mat-space-16: 4rem;
 
+  --mat-radius-none: 0;
   --mat-radius-sm: 0.5rem;
   --mat-radius-md: 1rem;
   --mat-radius-lg: 1.5rem;

@@ -6,21 +6,26 @@ This document describes the target design system defined in [MAT — Foundations
 
 ### Brand primitives
 
-| Token | Value |
-| --- | --- |
-| `brand/charcoal` | `#272727` |
-| `brand/beige` | `#E1D6C7` |
-| `brand/ivory` | `#F4F3EB` |
-| `brand/pending` | TBD |
+| Token | Value | Canonical CSS variable |
+| --- | --- | --- |
+| `brand/charcoal` | `#272727` | `--mat-color-charcoal` |
+| `brand/beige` | `#E1D6C7` | `--mat-color-beige` |
+| `brand/ivory` | `#F4F3EB` | `--mat-color-ivory` |
+| `brand/gray` | `#494745` | `--mat-color-gray` |
 
 ### Semantic roles
 
-| Token | Current target |
-| --- | --- |
-| `primary` | `brand/charcoal` |
-| `on-primary` | `brand/beige` |
-| `surface` | `brand/ivory` |
-| `on-surface` | TBD |
+| Figma token | Current target | Canonical CSS variable |
+| --- | --- | --- |
+| `surface/default` | `brand/ivory` | `--mat-color-surface-default` |
+| `surface/brand` | `brand/beige` | `--mat-color-surface-brand` |
+| `surface/inverse` | `brand/charcoal` | `--mat-color-surface-inverse` |
+| `text/primary` | `brand/gray` | `--mat-color-text-primary` |
+| `text/inverse` | `brand/ivory` | `--mat-color-text-inverse` |
+| `text/on-surface` | `brand/gray` | `--mat-color-text-on-surface` |
+| `action/primary` | `brand/charcoal` | `--mat-color-action-primary` |
+| `action/on-primary` | `brand/beige` | `--mat-color-action-on-primary` |
+| `border/default` | `brand/charcoal` | `--mat-color-border-default` |
 
 ## Typography
 
