@@ -1,63 +1,63 @@
 # MAT Pilates
 
-Landing pública de MAT Pilates en Canning, con apertura prevista para el 25 de julio de 2026.
+Public landing page for MAT Pilates in Canning, scheduled to open on July 25, 2026.
 
-## Alcance actual
+## Current scope
 
-La aplicación presenta la identidad del estudio, su método, las clases, los horarios informativos y un bloque de contacto en una única landing responsive.
+The application presents the studio identity, method, classes, informational schedule, and contact section in a single responsive landing page.
 
-Incluye:
+It includes:
 
-- secciones de método, clases, estudio y contacto;
-- navegación interna e integración con Instagram;
-- sistema visual reutilizable con tokens, componentes y tipografía Montserrat;
-- recursos de marca SVG y favicon adaptativo para esquemas claro y oscuro.
+- method, classes, studio, and contact sections;
+- internal navigation and Instagram integration;
+- a reusable visual system with tokens, components, and Montserrat typography;
+- SVG brand assets and an adaptive favicon for light and dark schemes.
 
 ## Stack
 
-- Next.js 16 con App Router
-- React 19 y TypeScript
+- Next.js 16 with the App Router
+- React 19 and TypeScript
 - Tailwind CSS 4
 - ESLint
 
-## Requisitos
+## Requirements
 
-- Node.js 20.9 o superior
+- Node.js 20.9 or later
 - npm
 
-## Instalación
+## Installation
 
 ```bash
 npm install
 ```
 
-## Comandos
+## Commands
 
-| Comando | Descripción |
+| Command | Description |
 | --- | --- |
-| `npm run dev` | Inicia el servidor de desarrollo con Turbopack. |
-| `npm run lint` | Ejecuta las reglas de ESLint. |
-| `npm run build` | Genera el build de producción y valida TypeScript. |
-| `npm run start` | Inicia la aplicación compilada; requiere ejecutar `npm run build` antes. |
+| `npm run dev` | Starts the development server with Turbopack. |
+| `npm run lint` | Runs ESLint rules. |
+| `npm run build` | Creates the production build and validates TypeScript. |
+| `npm run start` | Starts the compiled application; requires `npm run build` first. |
 
-Para validar los cambios principales:
+To validate the main changes:
 
 ```bash
 npm run lint
 npm run build
 ```
 
-## Estructura del repositorio
+## Repository structure
 
-| Ruta | Responsabilidad |
+| Path | Responsibility |
 | --- | --- |
-| `src/app/` | Rutas, layout global, estilos y metadatos de la aplicación. |
-| `src/components/` | Componentes de interfaz reutilizables. |
-| `src/lib/` | Datos y utilidades compartidas, incluido el contenido estructurado de la landing. |
-| `public/` | Recursos estáticos públicos, como las variantes de marca. |
-| `docs/` | Decisiones y documentación técnica complementaria. |
+| `src/app/` | Application routes, global layout, styles, and metadata. |
+| `src/components/` | Reusable UI components. |
+| `src/lib/` | Shared data and utilities, including the landing page's structured content. |
+| `public/` | Public static assets, such as brand variants. |
+| `docs/` | Supporting technical documentation and decisions. |
 
-## Documentación adicional
+## Additional documentation
 
-- [Sistema de diseño](docs/design-system.md)
-- [Convenciones del repositorio](AGENTS.md)
+- [Design system](docs/design-system.md)
+- [Repository conventions](AGENTS.md)
