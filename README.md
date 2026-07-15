@@ -1,65 +1,63 @@
 # MAT Pilates
 
-## Overview
+Landing pública de MAT Pilates en Canning, con apertura prevista para el 25 de julio de 2026.
 
-MAT Pilates is the future digital presence for a Pilates studio. The project starts with an informative landing page that helps establish the studio's online identity before its opening and gives prospective clients a direct way to get in touch.
+## Alcance actual
 
-## Current scope
+La aplicación presenta la identidad del estudio, su método, las clases, los horarios informativos y un bloque de contacto en una única landing responsive.
 
-The current first stage is limited to a public landing page that:
+Incluye:
 
-- presents the studio and its offering;
-- communicates the opening and relevant updates; and
-- directs enquiries to WhatsApp.
+- secciones de método, clases, estudio y contacto;
+- navegación interna e integración con Instagram;
+- sistema visual reutilizable con tokens, componentes y tipografía Montserrat;
+- recursos de marca SVG y favicon adaptativo para esquemas claro y oscuro.
 
-Online booking, payments, member management, and other operational features are outside the scope of this stage.
+## Stack
 
-## Project stages
+- Next.js 16 con App Router
+- React 19 y TypeScript
+- Tailwind CSS 4
+- ESLint
 
-Stage 1 is the landing page described above. A later stage may expand the product once the studio is operating, but its functionality and schedule have not been defined yet.
+## Requisitos
 
-## Technology status
+- Node.js 20.9 o superior
+- npm
 
-The application uses Next.js with the App Router, TypeScript, Tailwind CSS, and ESLint. The first stage remains a public landing page; authentication, payments, booking, and administration are not part of the current implementation.
-
-## Commands
-
-Install dependencies:
+## Instalación
 
 ```bash
 npm install
 ```
 
-Run the local development server:
+## Comandos
 
-```bash
-npm run dev
-```
+| Comando | Descripción |
+| --- | --- |
+| `npm run dev` | Inicia el servidor de desarrollo con Turbopack. |
+| `npm run lint` | Ejecuta las reglas de ESLint. |
+| `npm run build` | Genera el build de producción y valida TypeScript. |
+| `npm run start` | Inicia la aplicación compilada; requiere ejecutar `npm run build` antes. |
 
-Run lint checks:
+Para validar los cambios principales:
 
 ```bash
 npm run lint
-```
-
-Create a production build:
-
-```bash
 npm run build
 ```
 
-## Repository layout
+## Estructura del repositorio
 
-| Path | Purpose |
+| Ruta | Responsabilidad |
 | --- | --- |
-| `src/app/` | Application routes and route-level UI. |
-| `src/components/` | Reusable UI components. |
-| `src/lib/` | Shared application logic and utilities. |
-| `public/` | Static assets served by the application. |
-| `docs/` | Project decisions and supporting documentation. |
+| `src/app/` | Rutas, layout global, estilos y metadatos de la aplicación. |
+| `src/components/` | Componentes de interfaz reutilizables. |
+| `src/lib/` | Datos y utilidades compartidas, incluido el contenido estructurado de la landing. |
+| `public/` | Recursos estáticos públicos, como las variantes de marca. |
+| `docs/` | Decisiones y documentación técnica complementaria. |
 
-## Next steps
+## Documentación adicional
 
-1. Add the landing page implementation and its WhatsApp contact flow.
-2. Replace provisional content with final material from the studio.
-3. Configure Vercel and production deployment.
+- [Sistema de diseño](docs/design-system.md)
+- [Convenciones del repositorio](AGENTS.md)
