@@ -5,6 +5,9 @@ node_modules/
 .next/
 out/
 
+# Next.js generated TypeScript environment
+next-env.d.ts
+
 # Environment files
 .env
 .env.*
