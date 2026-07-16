@@ -67,3 +67,14 @@ Montserrat is the temporary typeface for every role. The final typeface is TBD.
 | `radius/md` | 16 px |
 | `radius/lg` | 24 px |
 | `radius/full` | 9999 px |
+
+## Responsive implementation
+
+These are source-code layout rules, not design-system tokens from Figma.
+
+| Viewport range | Behavior |
+| --- | --- |
+| Below 1024 px | Mobile navigation and single-column section layouts. |
+| 1024–1279 px | Compact desktop layout with responsive grids and fluid gutters. |
+| 1280 px and above | Full desktop layout with the reference section composition. |
+| 1280 px and above, up to 820 px viewport height | Compact-height desktop mode: hero and landing sections adapt to the viewport height while preserving aligned section starts. |

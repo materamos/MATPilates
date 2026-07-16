@@ -454,7 +454,7 @@ a {
   }
 
   .landing-studio__card {
-    top: clamp(2.5rem, 6vh, 4rem);
+    top: clamp(5rem, 11vh, 7rem);
     height: clamp(26rem, 62vh, 28rem);
   }
 
