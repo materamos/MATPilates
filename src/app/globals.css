@@ -415,7 +415,9 @@ a {
   }
 
   .landing-classes__schedule {
-    top: clamp(2.5rem, 6vh, 4rem);
+    top: auto;
+    bottom: clamp(2rem, 5vh, 3.5rem);
+    translate: none;
     display: flex;
     height: auto;
     min-height: 0;
