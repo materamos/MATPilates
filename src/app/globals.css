@@ -68,6 +68,12 @@ html {
   background: var(--mat-surface-inverse);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
   background: var(--mat-surface-default);
@@ -77,6 +83,16 @@ body {
 
 a {
   color: inherit;
+}
+
+.landing-section {
+  scroll-margin-top: 5rem;
+}
+
+@media (min-width: 1024px) {
+  .landing-section {
+    scroll-margin-top: 7rem;
+  }
 }
 
 :focus-visible {
