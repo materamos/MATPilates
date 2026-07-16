@@ -8,8 +8,9 @@ import { methodPillars, schedule } from "@/lib/site-content";
 export default function HomePage() {
   return (
     <>
+      <div aria-hidden="true" id="inicio" />
       <SiteHeader />
-      <main id="inicio">
+      <main>
         <section className="bg-[var(--mat-surface-default)] lg:h-[698px]">
           <div className="mx-auto max-w-[1232px] px-6 pt-8 pb-12 lg:grid lg:h-full lg:grid-cols-[720px_500px] lg:gap-3 lg:px-0 lg:pt-[79px] lg:pb-[53px]">
             <div className="lg:pt-7">
