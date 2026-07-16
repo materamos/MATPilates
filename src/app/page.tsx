@@ -126,9 +126,16 @@ export default function HomePage() {
               Un espacio de práctica en Canning para entrenar con presencia, técnica y acompañamiento real.
             </p>
             <p className="landing-studio__note text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-[656px] xl:top-[492px] xl:w-[310px]">
-              Canning, Buenos Aires · Grupos reducidos · Todos los niveles
+              {siteContact.location.address}
             </p>
-            <p className="landing-studio__link hidden text-xs font-medium tracking-[0.0667em] uppercase lg:block xl:absolute xl:left-[656px] xl:top-[617px]">Conocé el estudio →</p>
+            <a
+              className="landing-studio__link hidden text-xs font-medium tracking-[0.0667em] uppercase transition-opacity hover:opacity-60 lg:block xl:absolute xl:left-[656px] xl:top-[617px]"
+              href={siteContact.location.mapsUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Conocé el estudio →
+            </a>
           </div>
         </section>
 
