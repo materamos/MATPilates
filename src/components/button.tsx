@@ -4,6 +4,7 @@ interface ButtonProps {
   children: ReactNode;
   href: string;
   className?: string;
+  onClick?: () => void;
   variant?: "primary" | "light";
 }
 
@@ -11,6 +12,7 @@ export function Button({
   children,
   href,
   className = "",
+  onClick,
   variant = "primary",
 }: ButtonProps) {
   const colorStyle: CSSProperties =
@@ -26,8 +28,9 @@ export function Button({
 
   return (
     <a
-      className={`inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-xs font-semibold tracking-[0.08em] uppercase transition-opacity hover:opacity-80 ${className}`}
+      className={`inline-flex min-h-[52px] items-center justify-center rounded-full px-6 py-4 text-sm font-semibold leading-5 tracking-[0.0143em] uppercase transition-opacity hover:opacity-80 ${className}`}
       href={href}
+      onClick={onClick}
       style={colorStyle}
     >
       {children}

@@ -2,7 +2,7 @@ export function WhatsAppButton() {
   return (
     <a
       aria-label="Ir a contacto por WhatsApp"
-      className="fixed right-5 bottom-5 z-20 grid size-14 place-items-center rounded-full shadow-lg transition-transform hover:scale-105"
+      className="fixed right-6 bottom-6 z-20 grid size-[54px] place-items-center rounded-full transition-transform hover:scale-105 lg:right-8"
       href="#contacto"
       style={{
         backgroundColor: "var(--mat-action-primary)",
