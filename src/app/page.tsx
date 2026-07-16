@@ -8,10 +8,9 @@ import { methodPillars, schedule, siteContact } from "@/lib/site-content";
 export default function HomePage() {
   return (
     <>
-      <div aria-hidden="true" id="inicio" />
       <SiteHeader />
       <main>
-        <section className="landing-hero bg-[var(--mat-surface-default)] xl:h-[698px]">
+        <section id="inicio" className="landing-hero scroll-mt-20 bg-[var(--mat-surface-default)] xl:h-[698px] xl:scroll-mt-28">
           <div className="landing-hero__inner mx-auto max-w-[1232px] px-6 pt-6 pb-8 xl:grid xl:h-full xl:grid-cols-[720px_500px] xl:gap-3 xl:px-0 xl:pt-[79px] xl:pb-[53px]">
             <div className="landing-hero__copy xl:pt-7">
               <p className="text-xs font-medium tracking-[0.12em] uppercase">
@@ -55,7 +54,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="metodo" className="landing-section landing-section--method bg-[var(--mat-surface-default)] px-6 py-12 xl:h-[810px] xl:px-0 xl:py-0">
+        <section id="metodo" className="landing-section landing-section--method scroll-mt-20 bg-[var(--mat-surface-default)] px-6 py-12 xl:h-[810px] xl:scroll-mt-28 xl:px-0 xl:py-0">
           <div className="landing-section__content landing-section__content--method mx-auto flex max-w-[1232px] flex-col gap-6 xl:relative xl:block xl:h-full">
             <p className="landing-method__eyebrow text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[100px]">El método MAT</p>
             <h2 className="landing-method__title text-[2rem] font-medium leading-[38px] tracking-[-0.4px] xl:absolute xl:left-0 xl:top-[150px] xl:w-[630px] xl:text-[2.5rem] xl:font-semibold xl:leading-[46px] xl:tracking-[-0.8px]">
@@ -76,16 +75,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="clases" className="landing-section landing-section--classes bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[810px] xl:px-0 xl:py-0">
+        <section id="clases" className="landing-section landing-section--classes scroll-mt-20 bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[650px] xl:scroll-mt-28 xl:px-0 xl:py-0">
           <div className="landing-section__content landing-section__content--classes mx-auto flex max-w-[1232px] flex-col gap-6 xl:relative xl:block xl:h-full">
-            <p className="landing-classes__eyebrow text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[108px]">Clases en el estudio</p>
-            <h2 className="landing-classes__title text-[2rem] font-medium leading-[38px] tracking-[-0.4px] xl:absolute xl:left-0 xl:top-[158px] xl:w-[570px] xl:text-[2.5rem] xl:font-semibold xl:leading-[46px] xl:tracking-[-0.8px]">
+            <p className="landing-classes__eyebrow text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[108px] xl:translate-y-8">Clases en el estudio</p>
+            <h2 className="landing-classes__title text-[2rem] font-medium leading-[38px] tracking-[-0.4px] xl:absolute xl:left-0 xl:top-[158px] xl:w-[570px] xl:translate-y-8 xl:text-[2.5rem] xl:font-semibold xl:leading-[46px] xl:tracking-[-0.8px]">
               Tu práctica empieza <br className="hidden lg:block" />donde estás.
             </h2>
-            <p className="landing-classes__description text-base leading-[26px] xl:absolute xl:left-0 xl:top-[345px] xl:w-[440px]">
+            <p className="landing-classes__description text-base leading-[26px] xl:absolute xl:left-0 xl:top-[345px] xl:translate-y-8 xl:w-[440px]">
               No necesitás experiencia previa. Elegimos el ritmo, la intensidad y el acompañamiento que tu momento necesita.
             </p>
-            <article className="landing-classes__schedule relative h-[393px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-default)] xl:absolute xl:left-[662px] xl:top-24 xl:h-[530px] xl:w-[570px]">
+            <article className="landing-classes__schedule relative h-[393px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-default)] xl:absolute xl:left-[662px] xl:top-24 xl:translate-y-8 xl:h-[530px] xl:w-[570px]">
               <h3 className="absolute left-6 top-6 text-2xl font-medium leading-[31px] xl:left-11 xl:top-10">Encontrá tu horario</h3>
               <p className="absolute left-6 top-[71px] w-[294px] text-sm leading-[22px] xl:left-11 xl:top-[93px] xl:w-[400px]">
                 Elegí la clase que mejor acompaña tu semana.
@@ -108,9 +107,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="estudio" className="landing-section landing-section--studio bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[810px] xl:px-0 xl:py-0">
+        <section id="estudio" className="landing-section landing-section--studio scroll-mt-20 bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[810px] xl:scroll-mt-28 xl:px-0 xl:py-0">
           <div className="landing-section__content landing-section__content--studio mx-auto flex max-w-[1232px] flex-col gap-6 xl:relative xl:block xl:h-full">
-            <article className="landing-studio__card relative h-[280px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-inverse)] p-6 text-[var(--mat-text-inverse)] xl:absolute xl:left-0 xl:top-[92px] xl:h-[570px] xl:w-[516px] xl:p-0">
+            <article className="landing-studio__card relative h-[280px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-inverse)] p-6 text-[var(--mat-text-inverse)] xl:absolute xl:left-0 xl:top-[133px] xl:h-[570px] xl:w-[516px] xl:p-0">
               <div className="relative h-[42px] w-28 xl:absolute xl:left-[250px] xl:top-[46px] xl:h-[132px] xl:w-[222px]">
                 <Image alt="MAT Pilates" fill sizes="(min-width: 1024px) 222px, 112px" src="/brand/mat-wordmark-light.svg" style={{ objectFit: "cover" }} />
               </div>
@@ -127,13 +126,20 @@ export default function HomePage() {
               Un espacio de práctica en Canning para entrenar con presencia, técnica y acompañamiento real.
             </p>
             <p className="landing-studio__note text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-[656px] xl:top-[492px] xl:w-[310px]">
-              Canning, Buenos Aires · Grupos reducidos · Todos los niveles
+              {siteContact.location.address}
             </p>
-            <p className="landing-studio__link hidden text-xs font-medium tracking-[0.0667em] uppercase lg:block xl:absolute xl:left-[656px] xl:top-[617px]">Conocé el estudio →</p>
+            <a
+              className="landing-studio__link hidden text-xs font-medium tracking-[0.0667em] uppercase transition-opacity hover:opacity-60 lg:block xl:absolute xl:left-[656px] xl:top-[617px]"
+              href={siteContact.location.mapsUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Conocé el estudio →
+            </a>
           </div>
         </section>
 
-        <section id="contacto" className="landing-section landing-section--contact relative overflow-hidden bg-[var(--mat-surface-inverse)] px-6 py-12 text-[var(--mat-text-inverse)] xl:h-[810px] xl:px-0 xl:py-0">
+        <section id="contacto" className="landing-section landing-section--contact relative scroll-mt-20 overflow-hidden bg-[var(--mat-surface-inverse)] px-6 py-12 text-[var(--mat-text-inverse)] xl:h-[810px] xl:scroll-mt-28 xl:px-0 xl:py-0">
           <div className="landing-section__content landing-section__content--contact mx-auto flex max-w-[1232px] flex-col gap-6 xl:relative xl:block xl:h-full">
             <div className="landing-contact__shape pointer-events-none absolute hidden rounded-full bg-[var(--mat-color-gray)] lg:block xl:size-[500px] xl:-right-[184px] xl:top-[122px]" />
             <p className="landing-contact__eyebrow text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[144px]">Tu momento empieza acá</p>

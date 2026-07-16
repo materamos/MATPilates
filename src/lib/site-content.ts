@@ -13,8 +13,7 @@ export const siteContact = {
     venue: "Canning Center",
     address: "Mariano Castex 1560, Canning",
     label: "Pilates MAT · Canning, Buenos Aires",
-    mapsUrl:
-      "https://www.google.com/maps/search/?api=1&query=Canning+Center%2C+Mariano+Castex+1560%2C+Canning%2C+Buenos+Aires",
+    mapsUrl: "https://maps.app.goo.gl/FVzpJd571G4QpZPF7",
   },
 } as const;
 

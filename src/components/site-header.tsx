@@ -91,7 +91,7 @@ export function SiteHeader() {
           </button>
         </div>
         <div className="flex h-[calc(100%-5rem)] flex-col px-6 pt-[3.625rem] pb-9">
-          <p className="text-xs font-medium tracking-[0.0667em] uppercase">Navegación</p>
+          <p className="text-xs font-medium tracking-[0.0667em] uppercase">MENÚ</p>
           <nav aria-label="Navegación móvil" className="mt-2">
             <ul>
               {navigationItems.map((item, index) => (
@@ -107,7 +107,7 @@ export function SiteHeader() {
               ))}
             </ul>
           </nav>
-          <Button className="mt-[145px] min-h-[52px] w-full" href="#contacto" onClick={closeMenu} variant="light">
+          <Button className="mt-auto min-h-[52px] w-full" href="#contacto" onClick={closeMenu} variant="light">
             Reservar
           </Button>
           <p className="mt-8 text-xs font-medium tracking-[0.0667em] uppercase">Pilates MAT · Canning, Buenos Aires</p>
