@@ -109,7 +109,7 @@ export default function HomePage() {
 
         <section id="estudio" className="landing-section landing-section--studio scroll-mt-20 bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[810px] xl:scroll-mt-28 xl:px-0 xl:py-0">
           <div className="landing-section__content landing-section__content--studio mx-auto flex max-w-[1232px] flex-col gap-6 xl:relative xl:block xl:h-full">
-            <article className="landing-studio__card relative h-[280px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-inverse)] p-6 text-[var(--mat-text-inverse)] xl:absolute xl:left-0 xl:top-[92px] xl:h-[570px] xl:w-[516px] xl:p-0">
+            <article className="landing-studio__card relative h-[280px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-inverse)] p-6 text-[var(--mat-text-inverse)] xl:absolute xl:left-0 xl:top-[133px] xl:h-[570px] xl:w-[516px] xl:p-0">
               <div className="relative h-[42px] w-28 xl:absolute xl:left-[250px] xl:top-[46px] xl:h-[132px] xl:w-[222px]">
                 <Image alt="MAT Pilates" fill sizes="(min-width: 1024px) 222px, 112px" src="/brand/mat-wordmark-light.svg" style={{ objectFit: "cover" }} />
               </div>
