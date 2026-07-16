@@ -75,7 +75,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="clases" className="landing-section landing-section--classes scroll-mt-20 bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[810px] xl:scroll-mt-28 xl:px-0 xl:py-0">
+        <section id="clases" className="landing-section landing-section--classes scroll-mt-20 bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[650px] xl:scroll-mt-28 xl:px-0 xl:py-0">
           <div className="landing-section__content landing-section__content--classes mx-auto flex max-w-[1232px] flex-col gap-6 xl:relative xl:block xl:h-full">
             <p className="landing-classes__eyebrow text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[108px]">Clases en el estudio</p>
             <h2 className="landing-classes__title text-[2rem] font-medium leading-[38px] tracking-[-0.4px] xl:absolute xl:left-0 xl:top-[158px] xl:w-[570px] xl:text-[2.5rem] xl:font-semibold xl:leading-[46px] xl:tracking-[-0.8px]">
