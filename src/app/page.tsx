@@ -77,14 +77,14 @@ export default function HomePage() {
 
         <section id="clases" className="landing-section landing-section--classes scroll-mt-20 bg-[var(--mat-surface-brand)] px-6 py-12 xl:h-[650px] xl:scroll-mt-28 xl:px-0 xl:py-0">
           <div className="landing-section__content landing-section__content--classes mx-auto flex max-w-[1232px] flex-col gap-6 xl:relative xl:block xl:h-full">
-            <p className="landing-classes__eyebrow text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[108px]">Clases en el estudio</p>
-            <h2 className="landing-classes__title text-[2rem] font-medium leading-[38px] tracking-[-0.4px] xl:absolute xl:left-0 xl:top-[158px] xl:w-[570px] xl:text-[2.5rem] xl:font-semibold xl:leading-[46px] xl:tracking-[-0.8px]">
+            <p className="landing-classes__eyebrow text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[108px] xl:translate-y-8">Clases en el estudio</p>
+            <h2 className="landing-classes__title text-[2rem] font-medium leading-[38px] tracking-[-0.4px] xl:absolute xl:left-0 xl:top-[158px] xl:w-[570px] xl:translate-y-8 xl:text-[2.5rem] xl:font-semibold xl:leading-[46px] xl:tracking-[-0.8px]">
               Tu práctica empieza <br className="hidden lg:block" />donde estás.
             </h2>
-            <p className="landing-classes__description text-base leading-[26px] xl:absolute xl:left-0 xl:top-[345px] xl:w-[440px]">
+            <p className="landing-classes__description text-base leading-[26px] xl:absolute xl:left-0 xl:top-[345px] xl:translate-y-8 xl:w-[440px]">
               No necesitás experiencia previa. Elegimos el ritmo, la intensidad y el acompañamiento que tu momento necesita.
             </p>
-            <article className="landing-classes__schedule relative h-[393px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-default)] xl:absolute xl:left-[662px] xl:top-24 xl:h-[530px] xl:w-[570px]">
+            <article className="landing-classes__schedule relative h-[393px] rounded-[var(--mat-radius-lg)] bg-[var(--mat-surface-default)] xl:absolute xl:left-[662px] xl:top-24 xl:translate-y-8 xl:h-[530px] xl:w-[570px]">
               <h3 className="absolute left-6 top-6 text-2xl font-medium leading-[31px] xl:left-11 xl:top-10">Encontrá tu horario</h3>
               <p className="absolute left-6 top-[71px] w-[294px] text-sm leading-[22px] xl:left-11 xl:top-[93px] xl:w-[400px]">
                 Elegí la clase que mejor acompaña tu semana.
