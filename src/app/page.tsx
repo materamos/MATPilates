@@ -3,7 +3,7 @@ import { Button } from "@/components/button";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { methodPillars, schedule } from "@/lib/site-content";
+import { methodPillars, schedule, siteContact } from "@/lib/site-content";
 
 export default function HomePage() {
   return (
@@ -143,7 +143,7 @@ export default function HomePage() {
             <p className="landing-contact__description text-base leading-[26px] xl:absolute xl:left-0 xl:top-[390px] xl:w-[450px]">
               Coordinamos tu primera clase y encontramos el horario ideal para tu rutina.
             </p>
-            <Button className="landing-contact__action xl:absolute xl:left-0 xl:top-[505px]" href="#contacto" variant="light">Reservá tu clase</Button>
+            <Button className="landing-contact__action xl:absolute xl:left-0 xl:top-[505px]" href={siteContact.whatsapp.url} variant="light">Reservá tu clase</Button>
             <p className="landing-contact__note text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:absolute xl:left-0 xl:top-[588px]">Te respondemos para coordinar tu lugar</p>
             <p className="landing-contact__index hidden text-xs font-medium tracking-[0.0667em] uppercase lg:block xl:absolute xl:right-11 xl:top-[610px]">01 / MAT Pilates</p>
           </div>

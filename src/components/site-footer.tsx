@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { instagramUrl, navigationItems } from "@/lib/site-content";
+import { navigationItems, siteContact } from "@/lib/site-content";
 
 export function SiteFooter() {
   return (
@@ -10,7 +10,7 @@ export function SiteFooter() {
           <Image alt="MAT Pilates" fill sizes="(min-width: 1024px) 154px, 100px" src="/brand/mat-wordmark-dark.svg" style={{ objectFit: "cover" }} />
         </div>
         <p className="site-footer__location absolute left-0 top-[117px] text-xs font-medium leading-4 tracking-[0.0667em] uppercase xl:top-[168px]">
-          Pilates MAT · Canning, Buenos Aires
+          {siteContact.location.label}
         </p>
         <nav aria-label="Enlaces del pie de página" className="site-footer__navigation absolute left-0 top-[149px] xl:left-[602px] xl:top-[118px]">
           <ul className="flex flex-wrap gap-x-5 text-xs font-medium leading-4 tracking-[0.0667em] uppercase">
@@ -22,7 +22,7 @@ export function SiteFooter() {
               </li>
             ))}
             <li>
-              <a className="transition-opacity hover:opacity-60" href={instagramUrl} rel="noreferrer" target="_blank">Instagram</a>
+              <a className="transition-opacity hover:opacity-60" href={siteContact.instagram.url} rel="noreferrer" target="_blank">Instagram</a>
             </li>
           </ul>
         </nav>

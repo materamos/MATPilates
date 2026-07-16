@@ -1,4 +1,22 @@
-export const instagramUrl = "https://www.instagram.com/matpilatescn/";
+const whatsappDisplayNumber = "11-2222-3333";
+const whatsappUrl = `https://wa.me/54${whatsappDisplayNumber.replace(/\D/g, "")}`;
+
+export const siteContact = {
+  instagram: {
+    url: "https://www.instagram.com/matpilatescn/",
+  },
+  whatsapp: {
+    displayNumber: whatsappDisplayNumber,
+    url: whatsappUrl,
+  },
+  location: {
+    venue: "Canning Center",
+    address: "Mariano Castex 1560, Canning",
+    label: "Pilates MAT · Canning, Buenos Aires",
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Canning+Center%2C+Mariano+Castex+1560%2C+Canning%2C+Buenos+Aires",
+  },
+} as const;
 
 export const navigationItems = [
   { label: "Método", href: "#metodo" },
