@@ -20,7 +20,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-30 bg-[var(--mat-surface-default)]">
-      <div className="mx-auto flex h-20 max-w-[1232px] items-center justify-between px-6 lg:h-28 lg:px-0">
+      <div className="mx-auto flex h-20 max-w-[1232px] items-center justify-between px-6 lg:h-28 lg:px-[var(--mat-layout-compact-gutter)] xl:px-0">
         <a aria-label="MAT Pilates, inicio" className="relative h-9 w-[100px] lg:h-[60px] lg:w-[164px]" href="#inicio">
           <Image
             alt="MAT Pilates"
@@ -32,7 +32,7 @@ export function SiteHeader() {
           />
         </a>
         <nav aria-label="Navegación principal" className="hidden lg:block">
-          <ul className="flex items-center gap-9 text-xs font-medium tracking-[0.0667em] uppercase">
+          <ul className="flex items-center gap-6 text-xs font-medium tracking-[0.0667em] uppercase xl:gap-9">
             {navigationItems.map((item) => (
               <li key={item.href}>
                 <a className="transition-opacity hover:opacity-60" href={item.href}>
