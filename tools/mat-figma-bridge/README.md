@@ -58,10 +58,13 @@ STDIO server in Codex settings, or copy the values from
 enabled = true
 required = false
 command = "node"
-args = ["C:\\Dev\\repos\\active\\MAT Pilates\\tools\\mat-figma-bridge\\dist\\server\\index.js"]
+args = ["C:\\path\\to\\MAT Pilates\\tools\\mat-figma-bridge\\dist\\server\\index.js"]
 startup_timeout_sec = 10.0
 tool_timeout_sec = 65.0
 ```
+
+Replace `C:\\path\\to\\MAT Pilates` with the absolute path to your local
+repository clone.
 
 Restart Codex after changing MCP configuration.
 

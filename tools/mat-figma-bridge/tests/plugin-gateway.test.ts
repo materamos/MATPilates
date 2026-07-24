@@ -29,7 +29,7 @@ let activeBridgeUrl = BRIDGE_URL;
 
 function selectionResult() {
   return {
-    fileKey: "IcAaBXTryXYQLsFBIp5YgY",
+    fileKey: "test-file-key",
     page: { id: "0:1", name: "Foundations" },
     selectedNodeIds: ["375:12"],
     nodes: [

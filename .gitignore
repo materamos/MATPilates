@@ -26,6 +26,7 @@ Thumbs.db
 
 # Local Figma bridge build output
 /tools/mat-figma-bridge/dist/
+/tools/mat-figma-bridge/credentials.json
 
 # Agent scratch space
 /.agent-tmp/
