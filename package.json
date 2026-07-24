@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "figma:bridge:build": "npm --prefix tools/mat-figma-bridge run build",
+    "figma:bridge:check": "npm --prefix tools/mat-figma-bridge run check",
+    "figma:bridge:start": "npm --prefix tools/mat-figma-bridge run start"
   },
   "dependencies": {
     "next": "16.2.10",

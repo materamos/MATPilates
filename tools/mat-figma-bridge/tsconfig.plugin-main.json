@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": ["@figma/plugin-typings"]
+  },
+  "include": [
+    "plugin/src/contracts.ts",
+    "plugin/src/fingerprints.ts",
+    "plugin/src/font-policy.ts",
+    "plugin/src/inspection.ts",
+    "plugin/src/main.ts",
+    "plugin/src/patch-engine.ts",
+    "shared/**/*.ts"
+  ]
+}

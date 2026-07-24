@@ -24,6 +24,9 @@ Thumbs.db
 # TypeScript build info
 *.tsbuildinfo
 
+# Local Figma bridge build output
+/tools/mat-figma-bridge/dist/
+
 # Agent scratch space
 /.agent-tmp/
 

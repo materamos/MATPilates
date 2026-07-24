@@ -1,0 +1,21 @@
+{
+  "name": "MAT — Codex Bridge",
+  "id": "1594137110068176378",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "documentAccess": "dynamic-page",
+  "enablePrivatePluginApi": true,
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ],
+    "devAllowedDomains": [
+      "ws://127.0.0.1:3847"
+    ],
+    "reasoning": "The development plugin connects only to the MAT local bridge on this computer."
+  }
+}
