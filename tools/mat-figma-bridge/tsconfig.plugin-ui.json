@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
+    "types": ["@figma/plugin-typings"]
+  },
+  "include": [
+    "plugin/src/contracts.ts",
+    "plugin/src/ui.ts",
+    "shared/**/*.ts"
+  ]
+}

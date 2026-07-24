@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAT — Codex Bridge</title>
+    <style>
+      /*__STYLES__*/
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">M</span>
+          <div>
+            <h1>MAT — Codex Bridge</h1>
+            <div class="connection-line">
+              <span id="connection-dot" class="connection-dot" data-state="starting"></span>
+              <span id="connection-label">Conectando</span>
+            </div>
+          </div>
+        </div>
+        <button id="hide-button" class="icon-button" type="button" title="Ocultar plugin" aria-label="Ocultar plugin">
+          —
+        </button>
+      </header>
+
+      <section class="document-strip" aria-label="Documento abierto">
+        <strong id="file-label">Archivo sin identificar</strong>
+        <span aria-hidden="true">·</span>
+        <span id="page-label">Página sin identificar</span>
+      </section>
+
+      <div id="error-banner" class="error-banner" role="alert" hidden>
+        <span id="error-text"></span>
+        <button id="dismiss-error" type="button" aria-label="Cerrar aviso">×</button>
+      </div>
+
+      <section id="pairing-panel" class="panel pairing-panel" hidden>
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Primer acceso</span>
+            <h2>Emparejar con Codex</h2>
+          </div>
+        </div>
+        <p>Pedile a Codex el código temporal e ingresalo acá. Vence a los cinco minutos.</p>
+        <form id="pairing-form" class="pairing-form">
+          <label for="pairing-code">Código de seis dígitos</label>
+          <div class="pairing-row">
+            <input
+              id="pairing-code"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]{6}"
+              maxlength="6"
+              placeholder="000000"
+              aria-describedby="pairing-hint"
+            />
+            <button id="pairing-button" class="button button-primary" type="submit">Emparejar</button>
+          </div>
+          <small id="pairing-hint">El código nunca se guarda.</small>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Disponibilidad local</span>
+            <h2>Fuentes</h2>
+          </div>
+          <span class="family-label">Neue Montreal</span>
+        </div>
+        <div class="font-grid">
+          <div id="font-regular" class="font-chip" data-available="false">
+            <span data-icon>!</span>
+            <span>Regular</span>
+          </div>
+          <div id="font-medium" class="font-chip" data-available="false">
+            <span data-icon>!</span>
+            <span>Medium</span>
+          </div>
+          <div id="font-bold" class="font-chip" data-available="false">
+            <span data-icon>!</span>
+            <span>Bold</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel scope-panel">
+        <div>
+          <span class="eyebrow">Alcance</span>
+          <h2>Selección actual</h2>
+        </div>
+        <span id="selection-label" class="scope-value">Sin datos de selección</span>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Revisión obligatoria</span>
+            <h2>Lote pendiente</h2>
+          </div>
+        </div>
+        <div id="pending-empty" class="empty-state">No hay cambios esperando aprobación.</div>
+        <article id="pending-card" class="patch-card" hidden>
+          <h3 id="pending-title"></h3>
+          <p id="pending-detail"></p>
+          <ol id="pending-operations" class="operation-list" aria-label="Operaciones exactas del lote"></ol>
+          <details id="pending-affected" class="affected-disclosure" hidden>
+            <summary>Ver afectados</summary>
+            <p id="pending-affected-summary" class="affected-summary"></p>
+            <ol
+              id="pending-affected-list"
+              class="affected-list"
+              aria-label="Capas afectadas si se aplica el lote"
+            ></ol>
+          </details>
+          <dl class="patch-metrics">
+            <div>
+              <dt>Operaciones</dt>
+              <dd id="pending-counts"></dd>
+            </div>
+            <div>
+              <dt>Impacto</dt>
+              <dd id="pending-impact"></dd>
+            </div>
+          </dl>
+          <p id="pending-preview" class="preview-target"></p>
+          <p id="pending-warnings" class="warning-text" hidden></p>
+          <div class="patch-footer">
+            <span id="pending-expiry" class="expiry-label"></span>
+            <div class="button-row">
+              <button id="reject-button" class="button button-secondary" type="button">Rechazar</button>
+              <button id="apply-button" class="button button-primary" type="button">Aplicar</button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel latest-panel">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Historial de esta sesión</span>
+            <h2>Último lote</h2>
+          </div>
+        </div>
+        <div id="latest-empty" class="empty-state">Todavía no se procesó ningún lote.</div>
+        <article id="latest-card" class="latest-card" hidden>
+          <div class="latest-summary">
+            <div>
+              <strong id="latest-status"></strong>
+              <p id="latest-detail"></p>
+            </div>
+          </div>
+          <section
+            id="latest-warnings"
+            class="latest-warnings"
+            aria-labelledby="latest-warnings-title"
+            hidden
+          >
+            <h3 id="latest-warnings-title">Avisos del lote</h3>
+            <ul id="latest-warning-list" class="warning-list"></ul>
+          </section>
+          <details id="latest-affected" class="affected-disclosure" hidden>
+            <summary>Ver afectados</summary>
+            <p id="latest-affected-summary" class="affected-summary"></p>
+            <ol
+              id="latest-affected-list"
+              class="affected-list"
+              aria-label="Capas afectadas por el último lote"
+            ></ol>
+          </details>
+          <div id="latest-undo" class="latest-undo" hidden>
+            <p id="latest-undo-detail" aria-live="polite"></p>
+            <button
+              id="undo-button"
+              class="button button-danger"
+              type="button"
+              aria-describedby="latest-undo-detail"
+            >
+              Deshacer lote
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <footer class="privacy-note">
+        <p>
+          <span aria-hidden="true">◉</span>
+          Conexión limitada al loopback local. Cada lote requiere tu aprobación.
+        </p>
+        <p>
+          El puente puede enviar a Codex texto, propiedades tipográficas y vistas previas solicitadas.
+          No persiste ese contenido ni lo incluye en logs.
+        </p>
+        <button id="forget-button" class="link-button" type="button">Olvidar vínculo</button>
+      </footer>
+    </main>
+    <script>
+      /*__SCRIPT__*/
+    </script>
+  </body>
+</html>

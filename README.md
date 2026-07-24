@@ -39,6 +39,9 @@ npm install
 | `npm run lint` | Runs ESLint rules. |
 | `npm run build` | Creates the production build and validates TypeScript. |
 | `npm run start` | Starts the compiled application; requires `npm run build` first. |
+| `npm run figma:bridge:build` | Builds the local Codex–Figma typography bridge. |
+| `npm run figma:bridge:check` | Type-checks, tests, and builds the local bridge. |
+| `npm run figma:bridge:start` | Starts the built bridge over MCP STDIO. |
 
 To validate the main changes:
 
@@ -56,8 +59,10 @@ npm run build
 | `src/lib/` | Shared data and utilities, including the landing page's structured content. |
 | `public/` | Public static assets, such as brand variants. |
 | `docs/` | Supporting technical documentation and decisions. |
+| `tools/mat-figma-bridge/` | Local MCP server and Figma Desktop plugin for font-safe typography operations. |
 
 ## Additional documentation
 
 - [Design system](docs/design-system.md)
+- [Local Codex–Figma bridge](docs/figma-local-bridge.md)
 - [Repository conventions](AGENTS.md)

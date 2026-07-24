@@ -1,0 +1,7 @@
+[mcp_servers.mat_figma_bridge]
+enabled = true
+required = false
+command = "node"
+args = ["C:\\path\\to\\MAT Pilates\\tools\\mat-figma-bridge\\dist\\server\\index.js"]
+startup_timeout_sec = 10.0
+tool_timeout_sec = 65.0
