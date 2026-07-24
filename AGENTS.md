@@ -26,6 +26,14 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 - Treat values marked `TBD` as unresolved. Do not infer, substitute, or implement them until they are confirmed.
 - Do not treat the target design-system documentation as evidence that its tokens are already implemented in source code.
 
+### Figma typography routing
+
+- Use the local `mat_figma_bridge` documented in `docs/figma-local-bridge.md` whenever Figma work creates, edits, measures, or binds text or text styles that depend on the locally installed Neue Montreal family.
+- Before proposing a typography write, check bridge status and exact font availability, audit the exact scope, and use current node IDs and fresh fingerprints. A proposal never authorizes a write; the user must review it and press `Aplicar` in Figma Desktop.
+- Use the official Figma connector for layout, components, colors, variables, prototyping, and other non-typographic work. Split mixed tasks into non-typographic structure first, local typography second, and a final local preview and re-audit.
+- If the bridge is disconnected or an exact Neue Montreal Regular, Medium, or Bold pair is unavailable, stop. Never substitute Montserrat, Inter, an approximate weight, or another font.
+- Do not write to the original MAT Foundations file without explicit authorization. After an approved typography write, inspect the returned preview and re-audit the exact affected scope.
+
 ## Workflow and branches
 
 - Every versioned change, including code, documentation, and configuration, must be linked to an open GitHub Issue.
