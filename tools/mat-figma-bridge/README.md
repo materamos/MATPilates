@@ -41,6 +41,10 @@ production smoke test exercises that exact dependency combination.
 
 The plugin must stay open while Codex uses the bridge.
 
+Figma's development manifest accepts the local client endpoint as
+`localhost:3847`. The Node server still binds only to IPv4
+`127.0.0.1:3847`; it is never exposed on the LAN.
+
 ## Connect Codex
 
 The Codex desktop app, CLI, and IDE extension share MCP configuration. Add this

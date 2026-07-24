@@ -1,9 +1,11 @@
 export const PROTOCOL_VERSION = 1 as const;
 export const BRIDGE_HOST = "127.0.0.1";
+export const BRIDGE_CLIENT_HOST = "localhost";
 export const BRIDGE_PORT = 3847;
 export const BRIDGE_PATH = "/mat-figma-bridge";
 export const BRIDGE_SUBPROTOCOL = "mat-figma-bridge.v1";
-export const BRIDGE_URL = `ws://${BRIDGE_HOST}:${BRIDGE_PORT}${BRIDGE_PATH}`;
+export const BRIDGE_URL =
+  `ws://${BRIDGE_CLIENT_HOST}:${BRIDGE_PORT}${BRIDGE_PATH}`;
 
 export const PAIRING_CODE_TTL_MS = 5 * 60 * 1_000;
 export const PAIRING_LOCK_MS = 30 * 1_000;

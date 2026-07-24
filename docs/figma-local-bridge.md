@@ -17,7 +17,7 @@ Codex Desktop
   │ MCP over STDIO
   ▼
 Local Node.js server
-  │ authenticated WebSocket on 127.0.0.1:3847
+  │ authenticated WebSocket via localhost:3847
   ▼
 Figma plugin UI
   │ validated postMessage
@@ -26,9 +26,12 @@ Figma plugin main sandbox
   └─ local fonts, document reads, preview, manual patch approval
 ```
 
-The server and Figma plugin share protocol version `1`. The WebSocket endpoint
-is fixed at `ws://127.0.0.1:3847/mat-figma-bridge` with subprotocol
-`mat-figma-bridge.v1`. It never falls back to another interface or port.
+The server and Figma plugin share protocol version `1`. Figma connects to the
+fixed endpoint `ws://localhost:3847/mat-figma-bridge` with subprotocol
+`mat-figma-bridge.v1`, while the server binds only to IPv4
+`127.0.0.1:3847`. The `localhost` spelling is required by Figma's development
+manifest validation; it never causes the server to bind another interface or
+select another port.
 
 ## Responsibilities
 

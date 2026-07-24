@@ -240,7 +240,7 @@ describe.sequential("PluginGateway WebSocket boundary", () => {
 
   it("binds the fixed loopback endpoint and enforces path, subprotocol, and origin", async () => {
     expect(gateway.status()).toMatchObject({
-      endpoint: `ws://127.0.0.1:${BRIDGE_PORT}${BRIDGE_PATH}`,
+      endpoint: BRIDGE_URL,
       listening: true,
       connected: false,
     });
