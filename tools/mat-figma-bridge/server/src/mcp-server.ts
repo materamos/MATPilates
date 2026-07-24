@@ -6,6 +6,7 @@ import * as z from "zod/v4";
 
 import {
   buildPatchProposal,
+  PatchStatusForBridgeSchema,
   PreviewResultSchema,
   ToolDataSchemas,
   ToolInputs,
@@ -67,6 +68,38 @@ function patchIsTerminal(value: unknown): boolean {
   }
   return !["pending_approval", "applying"].includes(
     String((value as { status: unknown }).status),
+  );
+}
+
+function patchStatusToolResult(value: unknown): CallToolResult {
+  const { postApplyPreviewData, ...statusWithMetadata } =
+    PatchStatusForBridgeSchema.parse(value);
+  const status = ToolDataSchemas.getPatchStatus.parse(statusWithMetadata);
+
+  if (status.status !== "applied") {
+    if (postApplyPreviewData !== undefined) {
+      throw new BridgeError(
+        "INVALID_PLUGIN_RESPONSE",
+        "Figma returned post-apply preview data for a patch that was not applied.",
+      );
+    }
+    return toolResult({ ok: true, data: status });
+  }
+
+  if (postApplyPreviewData === undefined || status.result === undefined) {
+    throw new BridgeError(
+      "INVALID_PLUGIN_RESPONSE",
+      "Figma returned an applied patch without its post-apply preview.",
+    );
+  }
+
+  const preview = PreviewResponseSchema.parse({
+    ...status.result.postApplyPreview,
+    data: postApplyPreviewData,
+  });
+  return toolResult(
+    { ok: true, data: status },
+    [{ type: "image", data: preview.data, mimeType: preview.mimeType }],
   );
 }
 
@@ -252,7 +285,7 @@ export function createMcpServer(gateway: PluginGateway): McpServer {
     {
       title: "Export a local Figma preview",
       description:
-        "Export one exact Figma node as a bounded PNG from Figma Desktop. The image is returned to Codex and is not persisted by the bridge.",
+        "Export one exact Figma node, or the current single-node selection when nodeId is omitted, as a bounded PNG. The image is returned to Codex and is not persisted by the bridge.",
       inputSchema: ToolInputs.exportPreview,
       outputSchema: ToolOutputSchemas.exportPreview,
       annotations: readOnlyAnnotations,
@@ -299,7 +332,7 @@ export function createMcpServer(gateway: PluginGateway): McpServer {
     {
       title: "Propose an approved typography patch",
       description:
-        "Send an exact, fingerprint-protected typography batch to the local Figma plugin. This only opens a Spanish review prompt; Figma changes occur only after the user presses Aplicar.",
+        "Send an exact, fingerprint-protected typography batch and its required post-apply preview target to the local Figma plugin. This only opens a Spanish review prompt; Figma changes occur only after the user presses Aplicar.",
       inputSchema: ToolInputs.proposePatch,
       outputSchema: ToolOutputSchemas.proposePatch,
       annotations: internalWriteAnnotations,
@@ -324,29 +357,51 @@ export function createMcpServer(gateway: PluginGateway): McpServer {
     {
       title: "Get typography patch status",
       description:
-        "Poll or briefly wait for the user's manual decision and the resulting apply/rollback status.",
+        "Poll or briefly wait for the user's manual decision and the resulting apply/rollback status. An applied result includes the post-apply PNG as MCP image content.",
       inputSchema: ToolInputs.getPatchStatus,
       outputSchema: ToolOutputSchemas.getPatchStatus,
       annotations: readOnlyAnnotations,
     },
-    async (input, extra) =>
-      runTool(ToolDataSchemas.getPatchStatus, async () => {
+    async (input, extra) => {
+      try {
         const deadline = Date.now() + input.waitMs;
         let status = await gateway.request(
           "get_patch_status",
           { patchId: input.patchId, waitMs: 0 },
-          { signal: extra.signal, timeoutMs: 5_000 },
+          { signal: extra.signal },
         );
         while (!patchIsTerminal(status) && Date.now() < deadline) {
           await wait(Math.min(250, deadline - Date.now()), extra.signal);
           status = await gateway.request(
             "get_patch_status",
             { patchId: input.patchId, waitMs: 0 },
-            { signal: extra.signal, timeoutMs: 5_000 },
+            { signal: extra.signal },
           );
         }
-        return status;
-      }),
+        return patchStatusToolResult(status);
+      } catch (error) {
+        const bridgeError = toBridgeError(
+          error instanceof z.ZodError
+            ? new BridgeError(
+                "INVALID_PLUGIN_RESPONSE",
+                "Figma returned an invalid patch status or post-apply preview.",
+                { cause: error },
+              )
+            : error,
+        );
+        return toolResult({
+          ok: false,
+          error: {
+            code: bridgeError.code,
+            message: bridgeError.message,
+            retryable: bridgeError.retryable,
+            ...(bridgeError.correlationId
+              ? { correlationId: bridgeError.correlationId }
+              : {}),
+          },
+        });
+      }
+    },
   );
 
   server.registerTool(

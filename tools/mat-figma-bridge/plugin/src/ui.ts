@@ -53,6 +53,13 @@ interface PluginStatusView {
   latestPatch?: PatchStatusSnapshot | null;
 }
 
+type PatchResultView = NonNullable<PatchStatusSnapshot["result"]>;
+type AffectedNodeView = PatchResultView["affectedNodes"][number];
+type UndoView = PatchResultView["undo"];
+type UndoUnavailableReason = NonNullable<UndoView["reason"]>;
+
+const MAX_AFFECTED_NODES_IN_UI = 500;
+
 const state: UiState = {
   connection: "starting",
   token: null,
@@ -69,6 +76,7 @@ let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let reconnectAttempts = 0;
 let intentionallyClosed = false;
 let pendingPairingCode: string | null = null;
+let undoRequestPatchId: string | null = null;
 
 const elements = {
   connectionDot: requiredElement("connection-dot"),
@@ -89,8 +97,12 @@ const elements = {
   pendingTitle: requiredElement("pending-title"),
   pendingDetail: requiredElement("pending-detail"),
   pendingOperations: requiredElement("pending-operations"),
+  pendingAffected: requiredDetails("pending-affected"),
+  pendingAffectedSummary: requiredElement("pending-affected-summary"),
+  pendingAffectedList: requiredElement("pending-affected-list"),
   pendingCounts: requiredElement("pending-counts"),
   pendingImpact: requiredElement("pending-impact"),
+  pendingPreview: requiredElement("pending-preview"),
   pendingWarnings: requiredElement("pending-warnings"),
   pendingExpiry: requiredElement("pending-expiry"),
   rejectButton: requiredButton("reject-button"),
@@ -99,6 +111,14 @@ const elements = {
   latestCard: requiredElement("latest-card"),
   latestStatus: requiredElement("latest-status"),
   latestDetail: requiredElement("latest-detail"),
+  latestWarnings: requiredElement("latest-warnings"),
+  latestWarningList: requiredElement("latest-warning-list"),
+  latestAffected: requiredDetails("latest-affected"),
+  latestAffectedSummary: requiredElement("latest-affected-summary"),
+  latestAffectedList: requiredElement("latest-affected-list"),
+  latestUndo: requiredElement("latest-undo"),
+  latestUndoDetail: requiredElement("latest-undo-detail"),
+  undoButton: requiredButton("undo-button"),
   forgetButton: requiredButton("forget-button"),
   errorBanner: requiredElement("error-banner"),
   errorText: requiredElement("error-text"),
@@ -106,12 +126,21 @@ const elements = {
 };
 
 window.addEventListener("message", (event: MessageEvent<{ pluginMessage?: unknown }>) => {
-  if (event.source !== parent) {
-    return;
-  }
   const message = event.data?.pluginMessage;
   if (isMainToUiMessage(message)) {
     handleMainMessage(message);
+  }
+});
+
+window.addEventListener("blur", () => {
+  const patch = state.latestPatch;
+  const undo = patch === null ? undefined : asPatchResult(patch)?.undo;
+  if (
+    patch?.status === "applying" ||
+    undo?.state === "settling" ||
+    undo?.state === "available"
+  ) {
+    postToMain({ type: "invalidate_undo", reason: "focus_left" });
   }
 });
 
@@ -172,6 +201,26 @@ elements.applyButton.addEventListener("click", () => {
   }
 });
 
+elements.undoButton.addEventListener("click", () => {
+  const patch = state.latestPatch;
+  const undo = patch === null ? undefined : asPatchResult(patch)?.undo;
+  if (
+    patch === null ||
+    patch.status !== "applied" ||
+    undo?.state !== "available" ||
+    undoRequestPatchId === patch.patchId
+  ) {
+    return;
+  }
+
+  undoRequestPatchId = patch.patchId;
+  render();
+  postToMain({
+    type: "undo_patch",
+    patchId: patch.patchId,
+  });
+});
+
 elements.dismissError.addEventListener("click", () => {
   state.error = null;
   render();
@@ -225,6 +274,7 @@ function handleMainMessage(message: MainToUiMessage): void {
       break;
 
     case "ui_error":
+      undoRequestPatchId = null;
       setError(message.error.message);
       break;
   }
@@ -566,6 +616,11 @@ function renderPendingPatch(): void {
       return item;
     }),
   );
+  renderAffectedNodes(patch.summary.affectedNodes, {
+    disclosure: elements.pendingAffected,
+    summary: elements.pendingAffectedSummary,
+    list: elements.pendingAffectedList,
+  });
   elements.pendingCounts.textContent =
     `${formatCount(patch.summary.styleChanges, "estilo", "estilos")} · ` +
     formatCount(
@@ -580,6 +635,9 @@ function renderPendingPatch(): void {
       "estilo global",
       "estilos globales",
     )} · 0 pesos desconocidos`;
+  elements.pendingPreview.textContent =
+    `Captura posterior: ${patch.summary.previewTarget.name} ` +
+    `(${patch.summary.previewTarget.nodeId}, máx. ${patch.summary.previewTarget.maxDimension}px).`;
   elements.pendingWarnings.textContent = patch.summary.warnings.join(" ");
   elements.pendingWarnings.hidden = patch.summary.warnings.length === 0;
   elements.pendingExpiry.textContent =
@@ -601,21 +659,166 @@ function renderLatestPatch(): void {
   elements.latestEmpty.hidden = hasLatest;
   elements.latestCard.hidden = !hasLatest;
   if (!hasLatest || patch === null) {
+    undoRequestPatchId = null;
+    elements.latestWarnings.hidden = true;
+    elements.latestAffected.hidden = true;
+    elements.latestUndo.hidden = true;
     return;
+  }
+
+  if (
+    undoRequestPatchId !== null &&
+    undoRequestPatchId !== patch.patchId
+  ) {
+    undoRequestPatchId = null;
   }
 
   elements.latestStatus.textContent = patchStatusLabel(patch.status);
   elements.latestStatus.dataset.status = patch.status;
-  if (patch.result !== undefined) {
+  const result = asPatchResult(patch);
+  if (result !== undefined) {
     elements.latestDetail.textContent =
-      `${patch.result.operationCount} operaciones · ` +
-      `${patch.result.dimensionChanges.length} cambios de dimensión`;
+      `${result.operationCount} operaciones · ` +
+      `${result.dimensionChanges.length} cambios de dimensión`;
   } else if (patch.error !== undefined) {
     elements.latestDetail.textContent = patch.error.message;
   } else {
     elements.latestDetail.textContent = `${patch.summary.operationCount} operaciones`;
   }
 
+  renderLatestWarnings(result?.warnings ?? []);
+  renderAffectedNodes(result?.affectedNodes ?? [], {
+    disclosure: elements.latestAffected,
+    summary: elements.latestAffectedSummary,
+    list: elements.latestAffectedList,
+  });
+  renderUndo(patch.patchId, result?.undo);
+}
+
+function renderLatestWarnings(warnings: string[]): void {
+  elements.latestWarnings.hidden = warnings.length === 0;
+  elements.latestWarningList.replaceChildren(
+    ...warnings.map((warning) => {
+      const item = document.createElement("li");
+      item.textContent = warning;
+      return item;
+    }),
+  );
+}
+
+function renderAffectedNodes(
+  affectedNodes: AffectedNodeView[],
+  target: {
+    disclosure: HTMLDetailsElement;
+    summary: HTMLElement;
+    list: HTMLElement;
+  },
+): void {
+  const visibleNodes = affectedNodes.slice(0, MAX_AFFECTED_NODES_IN_UI);
+  target.disclosure.hidden = visibleNodes.length === 0;
+  target.summary.textContent =
+    affectedNodes.length > visibleNodes.length
+      ? `Mostrando ${visibleNodes.length} de ${affectedNodes.length} capas.`
+      : visibleNodes.length === 1
+        ? "1 capa afectada."
+        : `${visibleNodes.length} capas afectadas.`;
+  target.list.replaceChildren(
+    ...visibleNodes.map((node) => affectedNodeItem(node)),
+  );
+}
+
+function affectedNodeItem(node: AffectedNodeView): HTMLLIElement {
+  const item = document.createElement("li");
+  item.className = "affected-node";
+
+  const main = document.createElement("div");
+  main.className = "affected-node-main";
+  const name = document.createElement("strong");
+  name.className = "affected-node-name";
+  name.textContent =
+    node.nameTruncated &&
+    !node.name.endsWith("…") &&
+    !node.name.endsWith("...")
+      ? `${node.name}…`
+      : node.name;
+  if (node.nameTruncated) {
+    name.title = "Nombre truncado en el reporte.";
+  }
+  const type = document.createElement("span");
+  type.className = "affected-node-type";
+  type.textContent = `Tipo: ${node.type}`;
+  main.append(name, type);
+
+  const meta = document.createElement("div");
+  meta.className = "affected-node-meta";
+  const page = document.createElement("span");
+  page.className = "affected-node-page";
+  page.textContent = `Página: ${node.pageName}`;
+  page.title = `ID de página: ${node.pageId}`;
+  const id = document.createElement("code");
+  id.className = "affected-node-id";
+  id.textContent = `ID: ${node.id}`;
+  meta.append(page, id);
+
+  item.append(main, meta);
+  return item;
+}
+
+function renderUndo(patchId: string, undo: UndoView | undefined): void {
+  elements.latestUndo.hidden = undo === undefined;
+  if (undo === undefined) {
+    return;
+  }
+
+  const requestPending =
+    undoRequestPatchId === patchId && undo.state === "available";
+  if (undoRequestPatchId === patchId && undo.state !== "available") {
+    undoRequestPatchId = null;
+  }
+  elements.undoButton.disabled =
+    undo.state !== "available" || requestPending;
+  elements.undoButton.dataset.state = undo.state;
+  elements.latestUndoDetail.textContent = undoDetail(undo, requestPending);
+}
+
+function undoDetail(undo: UndoView, requestPending: boolean): string {
+  if (requestPending) {
+    return "Solicitando deshacer el lote…";
+  }
+
+  switch (undo.state) {
+    case "settling":
+      return "Verificando que el lote pueda deshacerse…";
+    case "available":
+      return undo.expiresAt === undefined
+        ? "Disponible mientras el documento no cambie."
+        : `Disponible ${relativeExpiry(undo.expiresAt)}.`;
+    case "completed":
+      return "El lote se deshizo correctamente.";
+    case "unavailable":
+      return undoUnavailableDetail(undo.reason);
+  }
+}
+
+function undoUnavailableDetail(reason?: UndoUnavailableReason): string {
+  switch (reason) {
+    case "document_changed":
+      return "No se puede deshacer porque el documento cambió.";
+    case "focus_left":
+      return "No se puede deshacer después de salir de Figma.";
+    case "page_changed":
+      return "No se puede deshacer porque cambiaste de página.";
+    case "ui_hidden":
+      return "No se puede deshacer después de ocultar el plugin.";
+    case "superseded":
+      return "No se puede deshacer porque otro lote lo reemplazó.";
+    case "expired":
+      return "La ventana para deshacer venció.";
+    case "verification_failed":
+      return "No se puede deshacer porque falló la verificación posterior.";
+    default:
+      return "Este lote ya no se puede deshacer.";
+  }
 }
 
 function connectionView(connection: ConnectionState): {
@@ -649,6 +852,8 @@ function patchStatusLabel(status: PatchStatusSnapshot["status"]): string {
   switch (status) {
     case "applied":
       return "Aplicado";
+    case "undone":
+      return "Deshecho";
     case "rejected":
       return "Rechazado sin cambios";
     case "cancelled":
@@ -704,6 +909,12 @@ function asPluginStatus(value: unknown): PluginStatusView | null {
     : null;
 }
 
+function asPatchResult(
+  patch: PatchStatusSnapshot,
+): PatchResultView | undefined {
+  return patch.result as PatchResultView | undefined;
+}
+
 function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
@@ -717,12 +928,43 @@ function formatCount(
 }
 
 function isMainToUiMessage(value: unknown): value is MainToUiMessage {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "type" in value &&
-    typeof value.type === "string"
-  );
+  if (!isRecord(value) || typeof value.type !== "string") {
+    return false;
+  }
+  switch (value.type) {
+    case "bootstrap":
+      return (
+        (value.token === null || typeof value.token === "string") &&
+        typeof value.pluginInstallationId === "string" &&
+        "status" in value &&
+        "pendingPatch" in value
+      );
+    case "bridge_response":
+      return isRecord(value.response);
+    case "plugin_status":
+      return "status" in value;
+    case "patch_status":
+      return (
+        isRecord(value.patch) &&
+        typeof value.patch.patchId === "string" &&
+        typeof value.patch.status === "string"
+      );
+    case "token_stored":
+    case "token_cleared":
+      return true;
+    case "ui_error":
+      return (
+        isRecord(value.error) &&
+        typeof value.error.code === "string" &&
+        typeof value.error.message === "string"
+      );
+    default:
+      return false;
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }
 
 function requiredElement(id: string): HTMLElement {
@@ -737,6 +979,14 @@ function requiredButton(id: string): HTMLButtonElement {
   const element = requiredElement(id);
   if (!(element instanceof HTMLButtonElement)) {
     throw new Error(`UI element is not a button: ${id}`);
+  }
+  return element;
+}
+
+function requiredDetails(id: string): HTMLDetailsElement {
+  const element = requiredElement(id);
+  if (!(element instanceof HTMLDetailsElement)) {
+    throw new Error(`UI element is not a details element: ${id}`);
   }
   return element;
 }

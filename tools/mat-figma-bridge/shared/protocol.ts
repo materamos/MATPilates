@@ -119,9 +119,15 @@ const SetTextRangeOperationSchema = z
   .refine((operation) => operation.end > operation.start, {
     message: "Range end must be greater than start.",
   })
-  .refine((operation) => operation.style || operation.typography, {
-    message: "A range operation needs a style or typography properties.",
-  });
+  .refine(
+    (operation) =>
+      operation.style !== undefined ||
+      (operation.typography !== undefined &&
+        Object.keys(operation.typography).length > 0),
+    {
+      message: "A range operation needs a style or typography properties.",
+    },
+  );
 
 const SetCharactersOperationSchema = z
   .object({
@@ -159,6 +165,18 @@ export const PatchOperationSchema = z.discriminatedUnion("op", [
 
 export type PatchOperation = z.infer<typeof PatchOperationSchema>;
 
+export const PatchPreviewTargetInputSchema = z
+  .object({
+    nodeId: IdSchema,
+    maxDimension: z
+      .number()
+      .int()
+      .min(64)
+      .max(MAX_PREVIEW_DIMENSION)
+      .default(MAX_PREVIEW_DIMENSION),
+  })
+  .strict();
+
 export const PatchProposalInputSchema = z
   .object({
     title: z.string().min(1).max(120),
@@ -166,6 +184,7 @@ export const PatchProposalInputSchema = z
     fileKey: IdSchema,
     pageId: IdSchema,
     selectionIds: z.array(IdSchema).max(MAX_PATCH_NODES).default([]),
+    preview: PatchPreviewTargetInputSchema,
     operations: z.array(PatchOperationSchema).min(1).max(MAX_PATCH_OPERATIONS),
   })
   .strict()
@@ -246,6 +265,7 @@ export const PatchStatusSchema = z.enum([
   "failed_rolled_back",
   "failed_rollback",
   "indeterminate",
+  "undone",
 ]);
 export type PatchStatus = z.infer<typeof PatchStatusSchema>;
 
@@ -443,7 +463,7 @@ export const ToolInputs = {
     }),
   exportPreview: z
     .object({
-      nodeId: IdSchema,
+      nodeId: IdSchema.optional(),
       maxDimension: z.number().int().min(64).max(MAX_PREVIEW_DIMENSION).default(1_280),
     })
     .strict(),
@@ -462,6 +482,44 @@ const DimensionSchema = FiniteNumberSchema.nonnegative().max(1_000_000_000);
 const NodeTypeSchema = z.string().min(1).max(64);
 const NodeNameSchema = z.string().max(10_000);
 const CanonicalValueSchema = z.json();
+const PreviewMetadataShapeSchema = z
+  .object({
+    mimeType: z.literal("image/png"),
+    width: z.number().int().positive().max(MAX_PREVIEW_DIMENSION),
+    height: z.number().int().positive().max(MAX_PREVIEW_DIMENSION),
+    byteLength: z.number().int().nonnegative().max(MAX_PREVIEW_BYTES),
+    nodeId: IdSchema,
+    fingerprint: FingerprintSchema,
+  })
+  .strict();
+
+export const AffectedNodeDescriptorSchema = z
+  .object({
+    id: IdSchema,
+    name: z.string().max(160),
+    nameTruncated: z.boolean(),
+    type: NodeTypeSchema,
+    pageId: IdSchema,
+    pageName: z.string().max(160),
+  })
+  .strict();
+
+export const UndoStateSchema = z.enum([
+  "settling",
+  "available",
+  "unavailable",
+  "completed",
+]);
+
+export const UndoReasonSchema = z.enum([
+  "document_changed",
+  "focus_left",
+  "page_changed",
+  "ui_hidden",
+  "superseded",
+  "expired",
+  "verification_failed",
+]);
 
 export const FontAvailabilitySchema = z
   .object({
@@ -498,6 +556,20 @@ export const PatchStatusSnapshotSchema = z
           .array(z.string().min(1).max(2_000))
           .min(1)
           .max(MAX_PATCH_OPERATIONS),
+        affectedNodes: z
+          .array(AffectedNodeDescriptorSchema)
+          .max(MAX_PATCH_NODES),
+        previewTarget: z
+          .object({
+            nodeId: IdSchema,
+            name: z.string().max(160),
+            maxDimension: z
+              .number()
+              .int()
+              .min(64)
+              .max(MAX_PREVIEW_DIMENSION),
+          })
+          .strict(),
       })
       .strict(),
     result: z
@@ -528,6 +600,17 @@ export const PatchStatusSnapshotSchema = z
         createdStyleIds: z.array(IdSchema).max(MAX_PATCH_OPERATIONS),
         createdNodeIds: z.array(IdSchema).max(MAX_PATCH_OPERATIONS),
         warnings: z.array(z.string().max(500)).max(20),
+        affectedNodes: z
+          .array(AffectedNodeDescriptorSchema)
+          .max(MAX_PATCH_NODES),
+        postApplyPreview: PreviewMetadataShapeSchema,
+        undo: z
+          .object({
+            state: UndoStateSchema,
+            reason: UndoReasonSchema.optional(),
+            expiresAt: TimestampMsSchema.optional(),
+          })
+          .strict(),
       })
       .strict()
       .optional(),
@@ -569,18 +652,35 @@ export const PatchStatusSnapshotSchema = z
         message: "Patch summary counts are inconsistent.",
       });
     }
-    if (snapshot.status === "applied" && snapshot.result === undefined) {
+    if (
+      (snapshot.status === "applied" || snapshot.status === "undone") &&
+      snapshot.result === undefined
+    ) {
       context.addIssue({
         code: "custom",
         path: ["result"],
-        message: "An applied patch requires a result.",
+        message: "An applied or undone patch requires a result.",
       });
     }
-    if (snapshot.status !== "applied" && snapshot.result !== undefined) {
+    if (
+      !["applied", "undone", "indeterminate"].includes(snapshot.status) &&
+      snapshot.result !== undefined
+    ) {
       context.addIssue({
         code: "custom",
         path: ["result"],
-        message: "Only an applied patch may include a result.",
+        message:
+          "Only an applied, undone, or indeterminate patch may include a result.",
+      });
+    }
+    if (
+      snapshot.status === "undone" &&
+      snapshot.result?.undo.state !== "completed"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["result", "undo", "state"],
+        message: "An undone patch must report completed undo.",
       });
     }
     if (
@@ -640,6 +740,15 @@ const PluginStatusResultSchema = z
   })
   .strict();
 
+export const PatchStatusForBridgeSchema = PatchStatusSnapshotSchema.extend({
+  postApplyPreviewData: z
+    .string()
+    .max(Math.ceil(MAX_PREVIEW_BYTES / 3) * 4)
+    .regex(/^[A-Za-z0-9+/]*={0,2}$/)
+    .optional(),
+}).strict();
+export type PatchStatusForBridge = z.infer<typeof PatchStatusForBridgeSchema>;
+
 const TextSegmentSnapshotSchema = z
   .object({
     start: z.number().int().nonnegative(),
@@ -685,6 +794,7 @@ const TextNodeSnapshotSchema = z
     locked: z.boolean(),
     characters: z.string().max(MAX_JSON_MESSAGE_BYTES).optional(),
     characterCount: z.number().int().nonnegative(),
+    autoRename: z.boolean(),
     characterPreview: z.string().max(120).optional(),
     truncatedPreview: z.boolean().optional(),
     textStyleId: CanonicalValueSchema,
@@ -711,6 +821,7 @@ const SelectionNodeSnapshotSchema = z
     locked: z.boolean(),
     width: DimensionSchema,
     height: DimensionSchema,
+    fingerprint: FingerprintSchema.optional(),
   })
   .strict();
 
@@ -724,6 +835,7 @@ const BaseNodeSnapshotSchema = z
     parentId: IdSchema.nullable(),
     type: NodeTypeSchema,
     name: NodeNameSchema,
+    fingerprint: FingerprintSchema.optional(),
   })
   .strict();
 
@@ -862,16 +974,7 @@ export const TypographyAuditResultSchema = z
   })
   .strict();
 
-export const PreviewMetadataSchema = z
-  .object({
-    mimeType: z.literal("image/png"),
-    width: z.number().int().positive().max(MAX_PREVIEW_DIMENSION),
-    height: z.number().int().positive().max(MAX_PREVIEW_DIMENSION),
-    byteLength: z.number().int().nonnegative().max(MAX_PREVIEW_BYTES),
-    nodeId: IdSchema,
-    fingerprint: FingerprintSchema,
-  })
-  .strict();
+export const PreviewMetadataSchema = PreviewMetadataShapeSchema;
 
 export const PreviewResultSchema = PreviewMetadataSchema.extend({
   data: z
@@ -908,7 +1011,7 @@ export const PluginResultSchemas = {
   audit_typography: TypographyAuditResultSchema,
   export_preview: PreviewResultSchema,
   propose_patch: PatchStatusSnapshotSchema,
-  get_patch_status: PatchStatusSnapshotSchema,
+  get_patch_status: PatchStatusForBridgeSchema,
   cancel_patch: PatchStatusSnapshotSchema,
 } as const satisfies Record<PluginMethod, z.ZodType>;
 

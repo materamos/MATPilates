@@ -66,12 +66,68 @@ export function fingerprintTextStyle(style: TextStyle): string {
 }
 
 export function fingerprintParent(node: BaseNode & ChildrenMixin): string {
+  return fingerprintLayoutNode(node);
+}
+
+export function fingerprintLayoutNode(node: BaseNode): string {
   return hashCanonical({
     id: node.id,
     parentId: node.parent?.id ?? null,
     name: node.name,
     type: node.type,
-    childIds: node.children.map((child) => child.id),
+    visible: nodeProperty(node, "visible"),
+    locked: nodeProperty(node, "locked"),
+    x: nodeProperty(node, "x"),
+    y: nodeProperty(node, "y"),
+    width: roundedNodeProperty(node, "width"),
+    height: roundedNodeProperty(node, "height"),
+    minWidth: roundedNodeProperty(node, "minWidth"),
+    maxWidth: roundedNodeProperty(node, "maxWidth"),
+    minHeight: roundedNodeProperty(node, "minHeight"),
+    maxHeight: roundedNodeProperty(node, "maxHeight"),
+    relativeTransform: nodeProperty(node, "relativeTransform"),
+    layoutMode: nodeProperty(node, "layoutMode"),
+    layoutWrap: nodeProperty(node, "layoutWrap"),
+    layoutPositioning: nodeProperty(node, "layoutPositioning"),
+    layoutSizingHorizontal: nodeProperty(node, "layoutSizingHorizontal"),
+    layoutSizingVertical: nodeProperty(node, "layoutSizingVertical"),
+    layoutAlign: nodeProperty(node, "layoutAlign"),
+    layoutGrow: nodeProperty(node, "layoutGrow"),
+    primaryAxisSizingMode: nodeProperty(node, "primaryAxisSizingMode"),
+    counterAxisSizingMode: nodeProperty(node, "counterAxisSizingMode"),
+    primaryAxisAlignItems: nodeProperty(node, "primaryAxisAlignItems"),
+    counterAxisAlignItems: nodeProperty(node, "counterAxisAlignItems"),
+    counterAxisAlignContent: nodeProperty(node, "counterAxisAlignContent"),
+    paddingTop: nodeProperty(node, "paddingTop"),
+    paddingRight: nodeProperty(node, "paddingRight"),
+    paddingBottom: nodeProperty(node, "paddingBottom"),
+    paddingLeft: nodeProperty(node, "paddingLeft"),
+    itemSpacing: nodeProperty(node, "itemSpacing"),
+    counterAxisSpacing: nodeProperty(node, "counterAxisSpacing"),
+    gridRowCount: nodeProperty(node, "gridRowCount"),
+    gridColumnCount: nodeProperty(node, "gridColumnCount"),
+    gridRowGap: nodeProperty(node, "gridRowGap"),
+    gridColumnGap: nodeProperty(node, "gridColumnGap"),
+    gridRowSizes: nodeProperty(node, "gridRowSizes"),
+    gridColumnSizes: nodeProperty(node, "gridColumnSizes"),
+    gridAutoTracks: nodeProperty(node, "gridAutoTracks"),
+    gridItemsPositioning: nodeProperty(node, "gridItemsPositioning"),
+    gridRowAnchorIndex: nodeProperty(node, "gridRowAnchorIndex"),
+    gridColumnAnchorIndex: nodeProperty(node, "gridColumnAnchorIndex"),
+    gridRowSpan: nodeProperty(node, "gridRowSpan"),
+    gridColumnSpan: nodeProperty(node, "gridColumnSpan"),
+    gridChildHorizontalAlign: nodeProperty(
+      node,
+      "gridChildHorizontalAlign",
+    ),
+    gridChildVerticalAlign: nodeProperty(node, "gridChildVerticalAlign"),
+    strokesIncludedInLayout: nodeProperty(node, "strokesIncludedInLayout"),
+    itemReverseZIndex: nodeProperty(node, "itemReverseZIndex"),
+    clipsContent: nodeProperty(node, "clipsContent"),
+    childIds:
+      "children" in node
+        ? node.children.map((child) => child.id)
+        : null,
   });
 }
 
@@ -79,6 +135,8 @@ export function textNodeFingerprintInput(node: TextNode): CanonicalValue {
   return {
     id: node.id,
     parentId: node.parent?.id ?? null,
+    name: node.name,
+    autoRename: node.autoRename,
     characters: node.characters,
     textStyleId: serializeMixed(node.textStyleId),
     segments: serializeValue(getTextSegmentsForFingerprint(node)),
@@ -86,9 +144,21 @@ export function textNodeFingerprintInput(node: TextNode): CanonicalValue {
     fontSize: serializeMixed(node.fontSize),
     lineHeight: serializeMixed(node.lineHeight),
     letterSpacing: serializeMixed(node.letterSpacing),
+    textCase: serializeMixed(node.textCase),
+    textDecoration: serializeMixed(node.textDecoration),
+    leadingTrim: serializeMixed(node.leadingTrim),
+    paragraphIndent: serializeMixed(node.paragraphIndent),
+    paragraphSpacing: serializeMixed(node.paragraphSpacing),
+    listSpacing: serializeMixed(node.listSpacing),
+    hangingPunctuation: serializeValue(node.hangingPunctuation),
+    hangingList: serializeValue(node.hangingList),
+    x: roundDimension(node.x),
+    y: roundDimension(node.y),
+    relativeTransform: serializeValue(node.relativeTransform),
     width: roundDimension(node.width),
     height: roundDimension(node.height),
     textAutoResize: node.textAutoResize,
+    boundVariables: serializeValue(node.boundVariables),
   };
 }
 
@@ -201,4 +271,19 @@ function toCanonicalValue(value: unknown): CanonicalValue {
 
 function roundDimension(value: number): number {
   return Math.round(value * 1_000) / 1_000;
+}
+
+function nodeProperty(node: BaseNode, property: string): CanonicalValue {
+  const value = (node as unknown as Record<string, unknown>)[property];
+  return serializeValue(value);
+}
+
+function roundedNodeProperty(
+  node: BaseNode,
+  property: string,
+): CanonicalValue {
+  const value = (node as unknown as Record<string, unknown>)[property];
+  return typeof value === "number"
+    ? roundDimension(value)
+    : serializeValue(value);
 }

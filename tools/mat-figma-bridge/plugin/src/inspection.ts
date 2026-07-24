@@ -6,6 +6,7 @@ import {
   type PreviewResult,
 } from "./contracts";
 import {
+  fingerprintParent,
   fingerprintTextNode,
   fingerprintTextStyle,
   getTextSegmentsForFingerprint,
@@ -123,10 +124,17 @@ export async function getNodeSnapshot(
       parentId: node.parent?.id ?? null,
       type: node.type,
       name: node.name,
+      ...parentFingerprint(node),
     };
   }
 
   const descendants = collectTextNodes([node], MAX_AUDIT_TEXT_NODES);
+  if (descendants.length > MAX_AUDIT_TEXT_NODES) {
+    throw bridgeError(
+      "NODE_SCOPE_TOO_LARGE",
+      `El nodo ${node.id} contiene más de ${MAX_AUDIT_TEXT_NODES} capas de texto; acotá la inspección.`,
+    );
+  }
   return sceneNodeSnapshot(node, new Set(descendants.map((child) => child.id)));
 }
 
@@ -316,45 +324,53 @@ export async function findTextStyleUsages(styleId: string): Promise<TextNode[]> 
 }
 
 export async function exportPreview(
-  nodeId: string,
+  nodeId: string | undefined,
   maxDimension: number,
 ): Promise<PreviewResult> {
-  const node = await getNodeById(nodeId);
+  const node =
+    nodeId === undefined
+      ? selectedPreviewNode()
+      : await getNodeById(nodeId);
   if (node === null || !isSceneNode(node)) {
     throw bridgeError(
       "PREVIEW_NODE_UNAVAILABLE",
-      `El nodo ${nodeId} no puede exportarse.`,
+      nodeId === undefined
+        ? "La selección actual no puede exportarse como una única vista previa."
+        : `El nodo ${nodeId} no puede exportarse.`,
     );
   }
 
-  const constraint = previewConstraint(node, maxDimension);
-  const bytes = await node.exportAsync({
-    format: "PNG",
-    constraint,
-    contentsOnly: true,
-    useAbsoluteBounds: true,
-  });
   const maximumWireSafeBytes = Math.floor(
     (MAX_WS_PAYLOAD_BYTES - 32 * 1_024) * 0.75,
   );
-  if (
-    bytes.byteLength > MAX_PREVIEW_BYTES ||
-    bytes.byteLength > maximumWireSafeBytes
-  ) {
-    throw bridgeError(
-      "PREVIEW_TOO_LARGE",
-      "La vista previa supera el límite seguro del puente local.",
-    );
-  }
-  const dimensions = readPngDimensions(bytes);
-  if (
-    dimensions.width > maxDimension ||
-    dimensions.height > maxDimension
-  ) {
-    throw bridgeError(
-      "PREVIEW_TOO_LARGE",
-      "Los límites visuales exportados superan la dimensión solicitada.",
-    );
+  let requestedDimension = maxDimension;
+  let bytes: Uint8Array;
+  let dimensions: { width: number; height: number };
+
+  while (true) {
+    bytes = await node.exportAsync({
+      format: "PNG",
+      constraint: previewConstraint(node, requestedDimension),
+      contentsOnly: true,
+      useAbsoluteBounds: true,
+    });
+    dimensions = readPngDimensions(bytes);
+    const withinByteLimit =
+      bytes.byteLength <= MAX_PREVIEW_BYTES &&
+      bytes.byteLength <= maximumWireSafeBytes;
+    const withinDimensionLimit =
+      dimensions.width <= requestedDimension &&
+      dimensions.height <= requestedDimension;
+    if (withinByteLimit && withinDimensionLimit) {
+      break;
+    }
+    if (requestedDimension === 64) {
+      throw bridgeError(
+        "PREVIEW_TOO_LARGE",
+        "La vista previa supera el límite seguro del puente local incluso a 64 px.",
+      );
+    }
+    requestedDimension = Math.max(64, Math.floor(requestedDimension / 2));
   }
 
   return {
@@ -376,6 +392,14 @@ export async function exportPreview(
             height: node.height,
           }),
   };
+}
+
+function selectedPreviewNode(): SceneNode | null {
+  const selection = figma.currentPage.selection;
+  if (selection.length !== 1 || !isSceneNode(selection[0])) {
+    return null;
+  }
+  return selection[0];
 }
 
 function readPngDimensions(bytes: Uint8Array): {
@@ -495,6 +519,7 @@ function textNodeSnapshot(node: TextNode, includeCharacters: boolean): unknown {
     locked: node.locked,
     characters: includeCharacters ? node.characters : undefined,
     characterCount: node.characters.length,
+    autoRename: node.autoRename,
     characterPreview: includeCharacters
       ? node.characters.slice(0, 120)
       : undefined,
@@ -553,6 +578,7 @@ function sceneNodeSnapshot(
     width: node.width,
     height: node.height,
     descendantTextNodeIds: Array.from(descendantTextNodeIds),
+    ...parentFingerprint(node),
   };
 }
 
@@ -566,7 +592,14 @@ function selectionNodeSnapshot(node: SceneNode): unknown {
     locked: node.locked,
     width: node.width,
     height: node.height,
+    ...parentFingerprint(node),
   };
+}
+
+function parentFingerprint(node: BaseNode): { fingerprint?: string } {
+  return "children" in node
+    ? { fingerprint: fingerprintParent(node as BaseNode & ChildrenMixin) }
+    : {};
 }
 
 async function resolveAuditTextNodes(input: AuditInput): Promise<TextNode[]> {
@@ -589,9 +622,26 @@ async function resolveAuditTextNodes(input: AuditInput): Promise<TextNode[]> {
           `No se encontró el nodo ${input.nodeId}.`,
         );
       }
+      if (pageForNode(node)?.id !== figma.currentPage.id) {
+        throw bridgeError(
+          "NODE_OUTSIDE_SCOPE",
+          `El nodo ${input.nodeId} pertenece a otra página.`,
+        );
+      }
       return collectTextNodes([node], MAX_AUDIT_TEXT_NODES);
     }
   }
+}
+
+function pageForNode(node: BaseNode): PageNode | null {
+  let current: BaseNode | null = node;
+  while (current !== null) {
+    if (current.type === "PAGE") {
+      return current;
+    }
+    current = current.parent;
+  }
+  return null;
 }
 
 async function getNodeById(nodeId: string): Promise<BaseNode | null> {

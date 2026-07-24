@@ -15,8 +15,67 @@ const ROLE_BY_KEY = new Map(
 
 const FORBIDDEN_STYLE_PATTERN = /(^|\s)(600|semi[\s-]?bold)(\s|$)/i;
 
+type MatStylePlatform = "mobile" | "desktop";
+type MatSemanticStyle =
+  | "h1"
+  | "h2"
+  | "h3"
+  | "body"
+  | "body s"
+  | "button"
+  | "label";
+
+const FONT_ROLE_BY_SEMANTIC_STYLE: Readonly<
+  Record<Exclude<MatSemanticStyle, "label">, FontRole>
+> = Object.freeze({
+  h1: "bold",
+  h2: "medium",
+  h3: "medium",
+  body: "regular",
+  "body s": "regular",
+  button: "medium",
+});
+
 export function fontNameForRole(role: FontRole): FontName {
   return FONT_POLICY[role];
+}
+
+export function fontRoleForMatTextStyleName(
+  styleName: string,
+): FontRole | null {
+  const normalizedName = styleName
+    .normalize("NFKC")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/\s*\/\s*/g, "/");
+  const match =
+    /^(?:mat (mobile|desktop)\/)?(h1|h2|h3|body s|body|button|label)(?: (mobile|desktop))?$/.exec(
+      normalizedName,
+    );
+  if (match === null) {
+    return null;
+  }
+
+  const namespacedPlatform = match[1] as MatStylePlatform | undefined;
+  const semanticStyle = match[2] as MatSemanticStyle;
+  const explicitPlatform = match[3] as MatStylePlatform | undefined;
+  if (
+    namespacedPlatform !== undefined &&
+    explicitPlatform !== undefined &&
+    explicitPlatform !== namespacedPlatform
+  ) {
+    return null;
+  }
+
+  if (semanticStyle === "label") {
+    const platform = namespacedPlatform ?? explicitPlatform;
+    if (platform === undefined) {
+      return null;
+    }
+    return platform === "mobile" ? "regular" : "medium";
+  }
+  return FONT_ROLE_BY_SEMANTIC_STYLE[semanticStyle];
 }
 
 export function roleForFontName(fontName: FontName): FontRole | null {

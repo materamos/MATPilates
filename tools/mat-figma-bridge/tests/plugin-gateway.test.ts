@@ -25,6 +25,8 @@ interface JsonRecord {
   [key: string]: unknown;
 }
 
+let activeBridgeUrl = BRIDGE_URL;
+
 function selectionResult() {
   return {
     fileKey: "IcAaBXTryXYQLsFBIp5YgY",
@@ -96,7 +98,7 @@ function openClient(
   } = {},
 ): Promise<WebSocket> {
   const protocols = options.protocol ?? BRIDGE_SUBPROTOCOL;
-  const client = new WebSocket(options.url ?? BRIDGE_URL, protocols, {
+  const client = new WebSocket(options.url ?? activeBridgeUrl, protocols, {
     ...(options.origin ? { origin: options.origin } : {}),
   });
 
@@ -127,7 +129,7 @@ function rejectedUpgrade(
   } = {},
 ): Promise<number> {
   const client = new WebSocket(
-    options.url ?? BRIDGE_URL,
+    options.url ?? activeBridgeUrl,
     options.protocol ?? BRIDGE_SUBPROTOCOL,
     {
       ...(options.origin ? { origin: options.origin } : {}),
@@ -227,9 +229,11 @@ describe.sequential("PluginGateway WebSocket boundary", () => {
     );
     gateway = new PluginGateway(
       new PairingStore(join(temporaryDirectory, "credentials.json")),
+      { port: 0 },
     );
     clients = [];
     await gateway.start();
+    activeBridgeUrl = gateway.status().endpoint;
   });
 
   afterEach(async () => {
@@ -239,15 +243,28 @@ describe.sequential("PluginGateway WebSocket boundary", () => {
   });
 
   it("binds the fixed loopback endpoint and enforces path, subprotocol, and origin", async () => {
+    const testPort = Number(new URL(activeBridgeUrl).port);
     expect(gateway.status()).toMatchObject({
-      endpoint: BRIDGE_URL,
+      endpoint: activeBridgeUrl,
       listening: true,
       connected: false,
     });
 
+    const ipv4Client = await openClient({
+      url: `ws://127.0.0.1:${testPort}${BRIDGE_PATH}`,
+      origin: "https://www.figma.com",
+    });
+    const ipv6Client = await openClient({
+      url: `ws://[::1]:${testPort}${BRIDGE_PATH}`,
+      origin: "https://www.figma.com",
+    });
+    clients.push(ipv4Client, ipv6Client);
+    expect(ipv4Client.protocol).toBe(BRIDGE_SUBPROTOCOL);
+    expect(ipv6Client.protocol).toBe(BRIDGE_SUBPROTOCOL);
+
     await expect(
       rejectedUpgrade({
-        url: `ws://127.0.0.1:${BRIDGE_PORT}/another-path`,
+        url: `ws://127.0.0.1:${testPort}/another-path`,
       }),
     ).resolves.toBe(403);
     await expect(
@@ -468,16 +485,30 @@ describe.sequential("PluginGateway WebSocket boundary", () => {
     expect(gateway.status().connected).toBe(false);
   });
 
-  it("fails explicitly instead of selecting another port when 3847 is occupied", async () => {
+  it("fails explicitly instead of selecting another port when the configured port is occupied", async () => {
+    const occupiedPort = Number(new URL(activeBridgeUrl).port);
     const secondGateway = new PluginGateway(
       new PairingStore(join(temporaryDirectory, "second-credentials.json")),
+      { port: occupiedPort },
     );
 
     await expect(secondGateway.start()).rejects.toMatchObject({
       name: "BridgeError",
       code: "PLUGIN_BUSY",
-      message: expect.stringContaining(String(BRIDGE_PORT)),
+      message: expect.stringContaining(String(occupiedPort)),
     });
     await secondGateway.close();
+  });
+
+  it("keeps the production endpoint fixed when no test override is supplied", () => {
+    const defaultGateway = new PluginGateway(
+      new PairingStore(join(temporaryDirectory, "default-credentials.json")),
+    );
+
+    expect(defaultGateway.status()).toMatchObject({
+      endpoint: BRIDGE_URL,
+      listening: false,
+    });
+    expect(BRIDGE_PORT).toBe(3_847);
   });
 });

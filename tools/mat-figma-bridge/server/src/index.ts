@@ -8,7 +8,9 @@ async function resetPairing(): Promise<void> {
   const store = new PairingStore();
   await store.initialize();
   await store.reset();
-  process.stderr.write("MAT Figma bridge pairing was reset.\n");
+  process.stderr.write(
+    "MAT Figma bridge credentials were removed from disk. Restart the running bridge/Codex process and choose Olvidar vínculo in Figma to complete revocation.\n",
+  );
 }
 
 async function main(): Promise<void> {

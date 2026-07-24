@@ -1,5 +1,6 @@
 export const PROTOCOL_VERSION = 1 as const;
 export const BRIDGE_HOST = "127.0.0.1";
+export const BRIDGE_HOSTS = [BRIDGE_HOST, "::1"] as const;
 export const BRIDGE_CLIENT_HOST = "localhost";
 export const BRIDGE_PORT = 3847;
 export const BRIDGE_PATH = "/mat-figma-bridge";

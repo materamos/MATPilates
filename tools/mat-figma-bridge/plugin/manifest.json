@@ -17,6 +17,6 @@
       "http://localhost:3847",
       "ws://localhost:3847"
     ],
-    "reasoning": "The development plugin connects through localhost to the MAT bridge, which listens only on IPv4 loopback."
+    "reasoning": "The development plugin connects through localhost to the MAT bridge, which listens only on IPv4 and IPv6 loopback."
   }
 }

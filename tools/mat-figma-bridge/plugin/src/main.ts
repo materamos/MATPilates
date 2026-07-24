@@ -29,6 +29,7 @@ const INSTALLATION_ID_KEY = "mat-figma-bridge.installation-id.v1";
 const UI_WIDTH = 390;
 const UI_HEIGHT = 620;
 let uiMessageQueue: Promise<void> = Promise.resolve();
+let documentChangeMonitoringReady = false;
 
 const patchEngine = new PatchEngine((patch) => {
   if (patch.status === "pending_approval") {
@@ -45,19 +46,62 @@ figma.showUI(__html__, {
 });
 
 figma.ui.onmessage = (rawMessage: unknown) => {
+  if (shouldHandleImmediately(rawMessage)) {
+    void handleUiMessage(rawMessage);
+    return;
+  }
   uiMessageQueue = uiMessageQueue.then(
     () => handleUiMessage(rawMessage),
     () => handleUiMessage(rawMessage),
   );
 };
 
-figma.on("selectionchange", () => {
-  void publishPluginStatus();
-});
+function shouldHandleImmediately(
+  rawMessage: unknown,
+): rawMessage is UiToMainMessage {
+  if (!isUiMessage(rawMessage)) {
+    return false;
+  }
+  return (
+    rawMessage.type === "invalidate_undo" ||
+    rawMessage.type === "hide_ui" ||
+    (rawMessage.type === "bridge_request" &&
+      rawMessage.request.method === "get_patch_status")
+  );
+}
 
-figma.on("currentpagechange", () => {
-  void publishPluginStatus();
-});
+registerDocumentEvent("selectionchange");
+registerDocumentEvent("currentpagechange");
+
+function registerDocumentEvent(
+  event: "selectionchange" | "currentpagechange",
+): void {
+  try {
+    figma.on(event, () => {
+      if (event === "currentpagechange") {
+        patchEngine.invalidateUndo("page_changed");
+      }
+      void publishPluginStatus();
+    });
+  } catch (error) {
+    reportStartupError(error, "EVENT_REGISTRATION_FAILED");
+  }
+}
+
+function reportStartupError(error: unknown, fallbackCode: string): void {
+  const technicalError = toBridgeError(error, fallbackCode);
+  postToUi({
+    type: "ui_error",
+    error: technicalError,
+  });
+  figma.notify(
+    `MAT — Codex Bridge [${technicalError.code}]: ${technicalError.message}`,
+    {
+      error: true,
+      timeout: 8_000,
+    },
+  );
+}
 
 async function handleUiMessage(rawMessage: unknown): Promise<void> {
   if (!isUiMessage(rawMessage)) {
@@ -101,10 +145,15 @@ async function handleUiMessage(rawMessage: unknown): Promise<void> {
         return;
 
       case "approve_patch":
+        await ensureDocumentChangeMonitoring();
         await patchEngine.approve(
           rawMessage.patchId,
           rawMessage.approvalDigest,
         );
+        return;
+
+      case "undo_patch":
+        await patchEngine.undoLatest(rawMessage.patchId);
         return;
 
       case "reject_patch":
@@ -112,7 +161,12 @@ async function handleUiMessage(rawMessage: unknown): Promise<void> {
         return;
 
       case "hide_ui":
+        patchEngine.invalidateUndo("ui_hidden");
         figma.ui.hide();
+        return;
+
+      case "invalidate_undo":
+        patchEngine.invalidateUndo(rawMessage.reason);
         return;
 
       case "refresh_status":
@@ -230,7 +284,7 @@ async function dispatchBridgeRequest(request: BridgeRequest): Promise<unknown> {
 
     case "get_patch_status": {
       const input = ToolInputs.getPatchStatus.parse(request.payload);
-      const status = patchEngine.getStatus(input.patchId);
+      const status = patchEngine.getStatusForBridge(input.patchId);
       if (status === null) {
         throw pluginError(
           "PATCH_STATUS_NOT_FOUND",
@@ -247,19 +301,30 @@ async function dispatchBridgeRequest(request: BridgeRequest): Promise<unknown> {
   }
 }
 
+async function ensureDocumentChangeMonitoring(): Promise<void> {
+  if (documentChangeMonitoringReady) {
+    return;
+  }
+  await figma.loadAllPagesAsync();
+  figma.on("documentchange", (event) => {
+    patchEngine.handleDocumentChanges(event.documentChanges);
+  });
+  documentChangeMonitoringReady = true;
+}
+
 async function sendBootstrap(): Promise<void> {
-  const [token, installationId, status] = await Promise.all([
+  const [token, installationId] = await Promise.all([
     getStoredToken(),
     getOrCreateInstallationId(),
-    statusWithPatch(),
   ]);
   postToUi({
     type: "bootstrap",
     token,
     pluginInstallationId: installationId,
-    status,
+    status: null,
     pendingPatch: patchEngine.getPendingStatus(),
   });
+  void publishPluginStatus();
 }
 
 async function publishPluginStatus(): Promise<void> {
@@ -369,6 +434,10 @@ function isUiMessage(value: unknown): value is UiToMainMessage {
         typeof value.approvalDigest === "string" &&
         /^[a-f0-9]{64}$/.test(value.approvalDigest)
       );
+    case "undo_patch":
+      return "patchId" in value && typeof value.patchId === "string";
+    case "invalidate_undo":
+      return "reason" in value && value.reason === "focus_left";
     default:
       return false;
   }

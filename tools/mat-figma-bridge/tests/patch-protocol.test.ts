@@ -11,6 +11,7 @@ import {
   buildPatchProposal,
   PatchProposalInputSchema,
   ResponseMessageSchema,
+  ToolInputs,
   ToolOutputSchemas,
 } from "../shared/protocol.js";
 
@@ -37,12 +38,29 @@ function patchInput(
     fileKey: "MAT-file-key",
     pageId: "66:11",
     selectionIds: [],
+    preview: {
+      nodeId: "66:11",
+      maxDimension: 1_280,
+    },
     operations: [createTextStyleOperation()],
     ...overrides,
   };
 }
 
 describe("typography patch protocol", () => {
+  it("requires a post-apply preview target in every proposal", () => {
+    const { preview: _preview, ...withoutPreview } = patchInput();
+    expect(PatchProposalInputSchema.safeParse(withoutPreview).success).toBe(
+      false,
+    );
+  });
+
+  it("allows export_preview to use the current single-node selection", () => {
+    expect(ToolInputs.exportPreview.parse({})).toEqual({
+      maxDimension: 1_280,
+    });
+  });
+
   it("requires mutually exclusive success and error response fields", () => {
     expect(
       ResponseMessageSchema.safeParse({
@@ -230,6 +248,23 @@ describe("typography patch protocol", () => {
           typography: {
             fontRole: "medium",
           },
+        },
+      ],
+    });
+
+    expect(PatchProposalInputSchema.safeParse(proposal).success).toBe(false);
+  });
+
+  it("rejects a text range with an empty typography object", () => {
+    const proposal = patchInput({
+      operations: [
+        {
+          op: "set_text_range",
+          nodeId: "375:12",
+          expectedFingerprint: FINGERPRINT,
+          start: 0,
+          end: 4,
+          typography: {},
         },
       ],
     });

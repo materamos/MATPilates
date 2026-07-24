@@ -5,11 +5,11 @@ import WebSocket, { WebSocketServer, type RawData } from "ws";
 
 import {
   AUTH_TIMEOUT_MS,
-  BRIDGE_HOST,
+  BRIDGE_CLIENT_HOST,
+  BRIDGE_HOSTS,
   BRIDGE_PATH,
   BRIDGE_PORT,
   BRIDGE_SUBPROTOCOL,
-  BRIDGE_URL,
   HEARTBEAT_INTERVAL_MS,
   MAX_WS_PAYLOAD_BYTES,
   MAX_JSON_MESSAGE_BYTES,
@@ -35,6 +35,12 @@ interface PendingRequest {
   timer: NodeJS.Timeout;
   signal?: AbortSignal;
   abortListener?: () => void;
+}
+
+interface PluginGatewayNetworkOptions {
+  hosts?: readonly string[];
+  port?: number;
+  clientHost?: string;
 }
 
 type LiveSocket = WebSocket & { isAlive?: boolean };
@@ -64,7 +70,7 @@ function isLoopback(address: string | undefined): boolean {
 
 export class PluginGateway {
   private readonly pairingStore: PairingStore;
-  private httpServer: Server | null = null;
+  private httpServers: Server[] = [];
   private websocketServer: WebSocketServer | null = null;
   private pluginSocket: LiveSocket | null = null;
   private pluginInstallationId: string | null = null;
@@ -72,62 +78,74 @@ export class PluginGateway {
   private heartbeat: NodeJS.Timeout | null = null;
   private readonly pendingRequests = new Map<string, PendingRequest>();
   private requestQueue: Promise<void> = Promise.resolve();
+  private readonly hosts: readonly string[];
+  private readonly requestedPort: number;
+  private readonly clientHost: string;
+  private listeningPort: number;
 
-  constructor(pairingStore = new PairingStore()) {
+  constructor(
+    pairingStore = new PairingStore(),
+    network: PluginGatewayNetworkOptions = {},
+  ) {
     this.pairingStore = pairingStore;
+    this.hosts = network.hosts ?? BRIDGE_HOSTS;
+    this.requestedPort = network.port ?? BRIDGE_PORT;
+    this.clientHost = network.clientHost ?? BRIDGE_CLIENT_HOST;
+    this.listeningPort = this.requestedPort;
   }
 
   async start(): Promise<void> {
     await this.pairingStore.initialize();
-    if (this.httpServer) return;
+    if (this.httpServers.length > 0) return;
 
     const websocketServer = new WebSocketServer({
       noServer: true,
       perMessageDeflate: false,
       maxPayload: MAX_WS_PAYLOAD_BYTES,
     });
-    const httpServer = createServer((_request, response) => {
-      response.writeHead(404).end();
-    });
-
-    httpServer.on("upgrade", (request, socket, head) => {
-      if (!this.isAllowedUpgrade(request)) {
-        socket.write("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
-        socket.destroy();
-        return;
-      }
-
-      websocketServer.handleUpgrade(request, socket, head, (websocket) => {
-        websocketServer.emit("connection", websocket, request);
+    const httpServers = this.hosts.map(() => {
+      const server = createServer((_request, response) => {
+        response.writeHead(404).end();
       });
+      server.on("upgrade", (request, socket, head) => {
+        if (!this.isAllowedUpgrade(request)) {
+          socket.write("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
+          socket.destroy();
+          return;
+        }
+
+        websocketServer.handleUpgrade(request, socket, head, (websocket) => {
+          websocketServer.emit("connection", websocket, request);
+        });
+      });
+      return server;
     });
 
     websocketServer.on("connection", (socket) => this.handleConnection(socket));
 
-    await new Promise<void>((resolve, reject) => {
-      const onError = (error: NodeJS.ErrnoException) => {
-        httpServer.off("listening", onListening);
-        if (error.code === "EADDRINUSE") {
-          reject(
-            new BridgeError(
-              "PLUGIN_BUSY",
-              `Port ${BRIDGE_PORT} is already in use; the bridge will not select another port.`,
-            ),
-          );
-          return;
+    try {
+      let port = this.requestedPort;
+      for (const [index, server] of httpServers.entries()) {
+        await listenOnLoopback(server, this.hosts[index], port);
+        if (port === 0) {
+          const address = server.address();
+          if (address === null || typeof address === "string") {
+            throw new BridgeError(
+              "INTERNAL_ERROR",
+              "The bridge could not determine its ephemeral test port.",
+            );
+          }
+          port = address.port;
         }
-        reject(error);
-      };
-      const onListening = () => {
-        httpServer.off("error", onError);
-        resolve();
-      };
-      httpServer.once("error", onError);
-      httpServer.once("listening", onListening);
-      httpServer.listen(BRIDGE_PORT, BRIDGE_HOST);
-    });
+      }
+      this.listeningPort = port;
+    } catch (error) {
+      await Promise.all(httpServers.map(closeHttpServer));
+      websocketServer.close();
+      throw error;
+    }
 
-    this.httpServer = httpServer;
+    this.httpServers = httpServers;
     this.websocketServer = websocketServer;
     this.heartbeat = setInterval(() => this.runHeartbeat(), HEARTBEAT_INTERVAL_MS);
     this.heartbeat.unref();
@@ -147,14 +165,11 @@ export class PluginGateway {
         if (!this.websocketServer) return resolve();
         this.websocketServer.close(() => resolve());
       }),
-      new Promise<void>((resolve) => {
-        if (!this.httpServer) return resolve();
-        this.httpServer.close(() => resolve());
-      }),
+      ...this.httpServers.map(closeHttpServer),
     ]);
 
     this.websocketServer = null;
-    this.httpServer = null;
+    this.httpServers = [];
   }
 
   getPairingCode(): { code: string; expiresAt: string } {
@@ -169,8 +184,10 @@ export class PluginGateway {
   status() {
     return {
       protocolVersion: PROTOCOL_VERSION,
-      endpoint: BRIDGE_URL,
-      listening: this.httpServer?.listening ?? false,
+      endpoint: bridgeUrl(this.clientHost, this.listeningPort),
+      listening:
+        this.httpServers.length === this.hosts.length &&
+        this.httpServers.every((server) => server.listening),
       paired: this.pairingStore.isPaired,
       connected: this.pluginSocket?.readyState === WebSocket.OPEN,
       pluginInstallationId: this.pluginInstallationId,
@@ -279,7 +296,10 @@ export class PluginGateway {
   }
 
   private isAllowedUpgrade(request: IncomingMessage): boolean {
-    const url = new URL(request.url ?? "/", `http://${BRIDGE_HOST}`);
+    const url = new URL(
+      request.url ?? "/",
+      `http://${this.clientHost}`,
+    );
     const origin = request.headers.origin;
     const protocols = (request.headers["sec-websocket-protocol"] ?? "")
       .split(",")
@@ -438,6 +458,7 @@ export class PluginGateway {
       if (!pending || pending.socket !== socket) return;
       if (
         pending.method !== "export_preview" &&
+        pending.method !== "get_patch_status" &&
         Buffer.byteLength(rawText, "utf8") > MAX_JSON_MESSAGE_BYTES
       ) {
         this.removePending(response.data.id);
@@ -511,4 +532,47 @@ export class PluginGateway {
       pending.reject(error);
     }
   }
+}
+
+function bridgeUrl(clientHost: string, port: number): string {
+  return `ws://${clientHost}:${port}${BRIDGE_PATH}`;
+}
+
+function listenOnLoopback(
+  server: Server,
+  host: string,
+  port: number,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const onError = (error: NodeJS.ErrnoException) => {
+      server.off("listening", onListening);
+      if (error.code === "EADDRINUSE") {
+        reject(
+          new BridgeError(
+            "PLUGIN_BUSY",
+            `Port ${port} is already in use on ${host}; the bridge will not select another port.`,
+          ),
+        );
+        return;
+      }
+      reject(error);
+    };
+    const onListening = () => {
+      server.off("error", onError);
+      resolve();
+    };
+    server.once("error", onError);
+    server.once("listening", onListening);
+    server.listen(port, host);
+  });
+}
+
+function closeHttpServer(server: Server): Promise<void> {
+  return new Promise((resolve) => {
+    if (!server.listening) {
+      resolve();
+      return;
+    }
+    server.close(() => resolve());
+  });
 }

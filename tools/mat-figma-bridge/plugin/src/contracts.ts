@@ -30,6 +30,7 @@ export {
   type FontRole,
   type PatchOperation,
   type PatchProposal as TypographyPatch,
+  type PatchStatusForBridge,
   type PublicErrorCode,
   type RequestMessage as BridgeRequest,
   type ResponseMessage as BridgeResponse,
@@ -93,6 +94,19 @@ export interface UiPatchSummary {
   expiresAt: number;
   warnings: string[];
   operationDetails: string[];
+  affectedNodes: Array<{
+    id: string;
+    name: string;
+    nameTruncated: boolean;
+    type: string;
+    pageId: string;
+    pageName: string;
+  }>;
+  previewTarget: {
+    nodeId: string;
+    name: string;
+    maxDimension: number;
+  };
 }
 
 export interface PatchStatusSnapshot {
@@ -112,6 +126,34 @@ export interface PatchStatusSnapshot {
     createdStyleIds: string[];
     createdNodeIds: string[];
     warnings: string[];
+    affectedNodes: Array<{
+      id: string;
+      name: string;
+      nameTruncated: boolean;
+      type: string;
+      pageId: string;
+      pageName: string;
+    }>;
+    postApplyPreview: {
+      mimeType: "image/png";
+      width: number;
+      height: number;
+      byteLength: number;
+      nodeId: string;
+      fingerprint: string;
+    };
+    undo: {
+      state: "settling" | "available" | "unavailable" | "completed";
+      reason?:
+        | "document_changed"
+        | "focus_left"
+        | "page_changed"
+        | "ui_hidden"
+        | "superseded"
+        | "expired"
+        | "verification_failed";
+      expiresAt?: number;
+    };
   };
   error?: BridgeTechnicalError;
 }
@@ -148,6 +190,8 @@ export type UiToMainMessage =
   | { type: "clear_token" }
   | { type: "reject_patch"; patchId: string }
   | { type: "approve_patch"; patchId: string; approvalDigest: string }
+  | { type: "undo_patch"; patchId: string }
+  | { type: "invalidate_undo"; reason: "focus_left" }
   | { type: "hide_ui" }
   | { type: "refresh_status" };
 
@@ -169,9 +213,12 @@ export function publicErrorCodeForInternalCode(
       return "PATCH_STALE";
     case "FONT_UNAVAILABLE":
       return "FONT_UNAVAILABLE";
+    case "PREVIEW_TOO_LARGE":
+      return "PREVIEW_TOO_LARGE";
     case "FONT_WEIGHT_REJECTED":
     case "FONT_NOT_ALLOWED":
     case "UNSUPPORTED_FONT_STYLE":
+    case "SEMANTIC_FONT_ROLE_MISMATCH":
       return "UNSUPPORTED_FONT_STYLE";
     case "ROLLBACK_NOT_CONFIRMED":
       return "ROLLBACK_FAILED";
