@@ -18,7 +18,7 @@ export const siteContact = {
 } as const;
 
 export const navigationItems = [
-  { label: "Método", href: "#metodo" },
+  { label: "Hot Mat", href: "#metodo" },
   { label: "Clases", href: "#clases" },
   { label: "Estudio", href: "#estudio" },
 ] as const;

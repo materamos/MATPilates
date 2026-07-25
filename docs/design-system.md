@@ -1,80 +1,88 @@
 # MAT Design System
 
-This document describes the target design system defined in [MAT — Foundations](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=66-10). It records confirmed values only.
+This document mirrors the confirmed system in [MAT - Foundations](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=66-10) and the current Desktop and Mobile compositions. Figma is the visual source of truth; the brandbook is supporting material when Foundations does not resolve a value.
 
 ## Color
 
 ### Brand primitives
 
-| Token | Value | Canonical CSS variable |
-| --- | --- | --- |
-| `brand/charcoal` | `#272727` | `--mat-color-charcoal` |
-| `brand/beige` | `#E1D6C7` | `--mat-color-beige` |
-| `brand/ivory` | `#F4F3EB` | `--mat-color-ivory` |
-| `brand/gray` | `#494745` | `--mat-color-gray` |
+`MAT Color` contains one `Value` mode and these six primitives. Semantic aliases in source code are implementation conveniences, not additional Figma variables.
 
-### Semantic roles
-
-| Figma token | Current target | Canonical CSS variable |
+| Figma token | Value | Canonical CSS variable |
 | --- | --- | --- |
-| `surface/default` | `brand/ivory` | `--mat-color-surface-default` |
-| `surface/brand` | `brand/beige` | `--mat-color-surface-brand` |
-| `surface/inverse` | `brand/charcoal` | `--mat-color-surface-inverse` |
-| `text/primary` | `brand/gray` | `--mat-color-text-primary` |
-| `text/inverse` | `brand/ivory` | `--mat-color-text-inverse` |
-| `text/on-surface` | `brand/gray` | `--mat-color-text-on-surface` |
-| `action/primary` | `brand/charcoal` | `--mat-color-action-primary` |
-| `action/on-primary` | `brand/beige` | `--mat-color-action-on-primary` |
-| `border/default` | `brand/charcoal` | `--mat-color-border-default` |
+| `brand/charcoal` | `#2B2B2B` | `--mat-color-charcoal` |
+| `brand/desaturated-beige` | `#E2D9CD` | `--mat-color-desaturated-beige` |
+| `brand/pearl-neutral` | `#F1EDE6` | `--mat-color-pearl-neutral` |
+| `brand/deep-burgundy` | `#5F1B22` | `--mat-color-deep-burgundy` |
+| `brand/pale-pink` | `#FADADD` | `--mat-color-pale-pink` |
+| `brand/blue-grey` | `#8FA0C2` | `--mat-color-blue-grey` |
+
+### Interface roles
+
+| Role | Primitive |
+| --- | --- |
+| Default surface | `brand/pearl-neutral` |
+| Brand or muted surface | `brand/desaturated-beige` |
+| Accent surface and primary action | `brand/deep-burgundy` |
+| Inverse surface and primary text | `brand/charcoal` |
+| Highlight text or surface | `brand/pale-pink` |
+| Cool supporting surface | `brand/blue-grey` |
+| Inverse text and icons | `brand/pearl-neutral` |
+| Subtle inverse border | `brand/desaturated-beige` |
 
 ## Typography
 
-Montserrat is the temporary typeface for every role. The final typeface is TBD.
+The confirmed family is Neue Montreal. The brandbook specifies Thin for auxiliary text, Bold for H1, Medium for H2, and Regular for body and the base CTA role. Current Foundations limits the web system to Regular, Medium, and Bold and shows auxiliary text as Regular; the responsive product designs further resolve interface labels and buttons as Medium. The code follows those newer Figma decisions and does not substitute Light for Thin.
 
-| Style | Weight | Size | Line height | Letter spacing |
-| --- | --- | ---: | ---: | ---: |
-| `MAT/Display` | SemiBold | 56 px | 60 px | -1.4 px |
-| `MAT/Heading 1` | SemiBold | 40 px | 46 px | -0.8 px |
-| `MAT/Heading 2` | Medium | 32 px | 38 px | -0.4 px |
-| `MAT/Heading 3` | Medium | 24 px | 31 px | 0 px |
-| `MAT/Body large` | Regular | 20 px | 30 px | 0 px |
-| `MAT/Body` | Regular | 16 px | 26 px | 0 px |
-| `MAT/Body small` | Regular | 14 px | 22 px | 0 px |
-| `MAT/Label` | Medium | 12 px | 16 px | 0.8 px |
-| `MAT/Button` | SemiBold | 14 px | 20 px | 0.2 px |
+Only Regular, Medium, and Bold are implemented. Desktop Compact typography remains pending.
+
+### Mobile
+
+| Style | Weight | Size | Line height | Letter spacing | Case |
+| --- | --- | ---: | ---: | ---: | --- |
+| `MAT mobile/H1 Mobile` | Bold | 56 px | 49 px | -1.4 px | Uppercase |
+| `MAT mobile/H2 Mobile` | Medium | 32 px | 28 px | -0.4 px | Uppercase |
+| `MAT mobile/H3 Mobile` | Medium | 24 px | 31 px | 0 px | Uppercase |
+| `MAT mobile/Body Mobile` | Regular | 16 px | 26 px | 0 px | Sentence |
+| `MAT mobile/Body S Mobile` | Regular | 14 px | 22 px | 0 px | Sentence |
+| `MAT mobile/Label Mobile` | Regular | 12 px | 16 px | 0.8 px | Uppercase |
+| `MAT mobile/Button Mobile` | Medium | 14 px | 20 px | 0.2 px | Uppercase |
+
+### Desktop
+
+| Style | Weight | Size | Line height | Letter spacing | Case |
+| --- | --- | ---: | ---: | ---: | --- |
+| `MAT desktop/H1 Desktop` | Bold | 100 px | 76.75 px | 0 px | Uppercase |
+| `MAT desktop/H2 desktop` | Medium | 64 px | 58 px | -0.4 px | Uppercase |
+| `MAT desktop/H3 Desktop` | Medium | 40 px | 43 px | 0 px | Uppercase |
+| `MAT desktop/Body Desktop` | Regular | 30 px | 38 px | 0 px | Sentence |
+| `MAT desktop/Body S Desktop` | Regular | 24 px | 30 px | 0 px | Sentence |
+| `MAT desktop/Label Desktop` | Medium | 18 px | 16 px | 0.8 px | Uppercase |
+| `MAT desktop/Button Desktop` | Medium | 22 px | 20 px | 0.2 px | Uppercase |
 
 ## Layout
 
-### Spacing
+### Reusable scale
 
-| Token | Value |
-| --- | ---: |
-| `space/1` | 4 px |
-| `space/2` | 8 px |
-| `space/3` | 12 px |
-| `space/4` | 16 px |
-| `space/6` | 24 px |
-| `space/8` | 32 px |
-| `space/12` | 48 px |
-| `space/16` | 64 px |
-
-### Radius
-
-| Token | Value |
-| --- | ---: |
-| `radius/none` | 0 px |
-| `radius/sm` | 8 px |
-| `radius/md` | 16 px |
-| `radius/lg` | 24 px |
-| `radius/full` | 9999 px |
-
-## Responsive implementation
-
-These are source-code layout rules, not design-system tokens from Figma.
-
-| Viewport range | Behavior |
+| Category | Values |
 | --- | --- |
-| Below 1024 px | Mobile navigation and single-column section layouts. |
-| 1024–1279 px | Compact desktop layout with responsive grids and fluid gutters. |
-| 1280 px and above | Full desktop layout with the reference section composition. |
-| 1280 px and above, up to 820 px viewport height | Compact-height desktop mode: hero and landing sections adapt to the viewport height while preserving aligned section starts. |
+| Spacing | 8 / 12 / 16 / 24 / 32 px |
+| Radius | 8 / 16 / 24 px / full |
+
+### Breakpoint composition
+
+| Reference | Confirmed composition |
+| --- | --- |
+| Desktop, 1440 px | Detail and header 20 px; cards 36 px; section and gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
+| Mobile, 390 px | Controls 8 px; groups 12 px; content 16 px; gutter 24 px; sections 32 px; radius 8 / 24 / full |
+| Desktop Compact | Pending. Narrow and Short values must not be promoted to shared tokens until both designs are approved. |
+
+Until Desktop Compact is resolved, the menu uses the confirmed Mobile composition below 1440 px and switches to the confirmed Desktop composition at 1440 px. This is an explicit fallback, not the final Narrow or Short design.
+
+## Menu references
+
+- Desktop: [node `497:305`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=497-305)
+- Mobile landing and closed navigation: [node `492:194`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=492-194)
+- Mobile open menu: node `497:534` inside the Mobile page.
+
+The implementation uses the exact responsive wordmark and close-icon exports from Figma under `public/brand/` and `public/icons/`, plus the supplied Regular, Medium, and Bold font files under `public/fonts/`.

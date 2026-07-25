@@ -1,12 +1,36 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Neue Montreal";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/neue-montreal-regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Neue Montreal";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/neue-montreal-medium.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Neue Montreal";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/neue-montreal-bold.otf") format("opentype");
+}
+
 @theme inline {
   --color-mat-surface: var(--mat-surface-default);
   --color-mat-brand: var(--mat-surface-brand);
   --color-mat-ink: var(--mat-text-primary);
   --color-mat-inverse: var(--mat-surface-inverse);
   --color-mat-on-inverse: var(--mat-text-inverse);
-  --font-mat: var(--font-montserrat), Arial, Helvetica, sans-serif;
+  --font-mat: var(--mat-font-sans);
   --radius-mat-none: var(--mat-radius-none);
   --radius-mat-sm: var(--mat-radius-sm);
   --radius-mat-md: var(--mat-radius-md);
@@ -15,42 +39,71 @@
 }
 
 :root {
-  --mat-color-charcoal: #272727;
-  --mat-color-beige: #e1d6c7;
-  --mat-color-ivory: #f4f3eb;
-  --mat-color-gray: #494745;
+  --mat-color-charcoal: #2b2b2b;
+  --mat-color-desaturated-beige: #e2d9cd;
+  --mat-color-pearl-neutral: #f1ede6;
+  --mat-color-deep-burgundy: #5f1b22;
+  --mat-color-pale-pink: #fadadd;
+  --mat-color-blue-grey: #8fa0c2;
 
-  --mat-color-surface-default: var(--mat-color-ivory);
-  --mat-color-surface-brand: var(--mat-color-beige);
+  --mat-color-surface-default: var(--mat-color-pearl-neutral);
+  --mat-color-surface-brand: var(--mat-color-desaturated-beige);
+  --mat-color-surface-accent: var(--mat-color-deep-burgundy);
   --mat-color-surface-inverse: var(--mat-color-charcoal);
-  --mat-color-text-primary: var(--mat-color-gray);
-  --mat-color-text-inverse: var(--mat-color-ivory);
-  --mat-color-text-on-surface: var(--mat-color-gray);
-  --mat-color-action-primary: var(--mat-color-charcoal);
-  --mat-color-action-on-primary: var(--mat-color-beige);
+  --mat-color-surface-highlight: var(--mat-color-pale-pink);
+  --mat-color-surface-cool: var(--mat-color-blue-grey);
+  --mat-color-text-primary: var(--mat-color-charcoal);
+  --mat-color-text-inverse: var(--mat-color-pearl-neutral);
+  --mat-color-text-on-surface: var(--mat-color-charcoal);
+  --mat-color-text-accent: var(--mat-color-deep-burgundy);
+  --mat-color-text-highlight: var(--mat-color-pale-pink);
+  --mat-color-icon-inverse: var(--mat-color-pearl-neutral);
+  --mat-color-action-primary: var(--mat-color-deep-burgundy);
+  --mat-color-action-on-primary: var(--mat-color-pearl-neutral);
   --mat-color-border-default: var(--mat-color-charcoal);
+  --mat-color-border-subtle: var(--mat-color-desaturated-beige);
 
   --mat-brand-charcoal: var(--mat-color-charcoal);
-  --mat-brand-beige: var(--mat-color-beige);
-  --mat-brand-ivory: var(--mat-color-ivory);
-  --mat-brand-gray: var(--mat-color-gray);
+  --mat-brand-beige: var(--mat-color-desaturated-beige);
+  --mat-brand-ivory: var(--mat-color-pearl-neutral);
+  --mat-brand-gray: var(--mat-color-blue-grey);
+  --mat-color-beige: var(--mat-color-desaturated-beige);
+  --mat-color-ivory: var(--mat-color-pearl-neutral);
+  --mat-color-gray: var(--mat-color-blue-grey);
   --mat-surface-default: var(--mat-color-surface-default);
   --mat-surface-brand: var(--mat-color-surface-brand);
+  --mat-surface-accent: var(--mat-color-surface-accent);
   --mat-surface-inverse: var(--mat-color-surface-inverse);
   --mat-on-surface: var(--mat-color-text-on-surface);
   --mat-text-primary: var(--mat-color-text-primary);
   --mat-text-inverse: var(--mat-color-text-inverse);
+  --mat-text-accent: var(--mat-color-text-accent);
+  --mat-text-highlight: var(--mat-color-text-highlight);
   --mat-action-primary: var(--mat-color-action-primary);
   --mat-action-on-primary: var(--mat-color-action-on-primary);
 
-  --mat-space-1: 0.25rem;
+  --mat-font-sans: "Neue Montreal", Arial, Helvetica, sans-serif;
+  --mat-font-weight-regular: 400;
+  --mat-font-weight-medium: 500;
+  --mat-font-weight-bold: 700;
+  --mat-font-size-12: 12px;
+  --mat-font-size-14: 14px;
+  --mat-font-size-16: 16px;
+  --mat-font-size-18: 18px;
+  --mat-font-size-22: 22px;
+  --mat-font-size-24: 24px;
+  --mat-font-size-30: 30px;
+  --mat-font-size-32: 32px;
+  --mat-font-size-40: 40px;
+  --mat-font-size-56: 56px;
+  --mat-font-size-64: 64px;
+  --mat-font-size-100: 100px;
+
   --mat-space-2: 0.5rem;
   --mat-space-3: 0.75rem;
   --mat-space-4: 1rem;
   --mat-space-6: 1.5rem;
   --mat-space-8: 2rem;
-  --mat-space-12: 3rem;
-  --mat-space-16: 4rem;
 
   --mat-radius-none: 0;
   --mat-radius-sm: 0.5rem;
@@ -86,11 +139,228 @@ body {
   margin: 0;
   background: var(--mat-surface-default);
   color: var(--mat-text-primary);
-  font-family: var(--font-montserrat), Arial, Helvetica, sans-serif;
+  font-family: var(--mat-font-sans);
 }
 
 a {
   color: inherit;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--mat-surface-inverse);
+  color: var(--mat-text-inverse);
+}
+
+.site-header__bar {
+  display: flex;
+  height: 80px;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--mat-space-6);
+  background: var(--mat-surface-inverse);
+  box-shadow: 0 4px 4px rgb(0 0 0 / 18%);
+}
+
+.site-header__logo {
+  position: relative;
+  width: 115px;
+  height: 37px;
+  flex: none;
+}
+
+.site-header__logo-desktop {
+  display: none;
+}
+
+.site-header__desktop-nav,
+.site-header__desktop-cta {
+  display: none;
+}
+
+.site-header__menu-toggle,
+.site-menu__close {
+  position: relative;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  cursor: pointer;
+  place-items: center;
+  border: 0;
+  border-radius: var(--mat-radius-full);
+  background: transparent;
+  color: inherit;
+}
+
+.site-header__menu-toggle-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mat-space-2);
+}
+
+.site-header__menu-toggle-line {
+  width: 18px;
+  height: 2px;
+  background: var(--mat-color-icon-inverse);
+}
+
+.site-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  gap: 46px;
+  overflow-y: auto;
+  padding: var(--mat-space-6);
+  background: var(--mat-surface-inverse);
+  color: var(--mat-text-inverse);
+}
+
+.site-menu__header {
+  display: flex;
+  height: 48px;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-menu__close-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.site-menu__links {
+  flex: none;
+}
+
+.site-menu__link {
+  display: flex;
+  height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--mat-color-border-subtle);
+  font-size: var(--mat-font-size-24);
+  font-weight: var(--mat-font-weight-medium);
+  line-height: 31px;
+  text-transform: uppercase;
+}
+
+.site-menu__arrow {
+  color: var(--mat-text-highlight);
+}
+
+.site-menu__spacer {
+  min-height: 1px;
+  flex: 1 0 0;
+}
+
+.site-menu__cta {
+  width: 100%;
+  min-height: 52px;
+  flex: none;
+  padding: 16px 24px;
+  box-shadow: 0 4px 2px rgb(0 0 0 / 17%);
+  font-size: var(--mat-font-size-14);
+  font-weight: var(--mat-font-weight-medium);
+  line-height: 20px;
+  letter-spacing: 0.2px;
+}
+
+.site-menu__location {
+  display: flex;
+  height: 52px;
+  flex: none;
+  flex-direction: column;
+  gap: var(--mat-space-2);
+}
+
+.site-menu__venue {
+  font-size: var(--mat-font-size-12);
+  font-weight: var(--mat-font-weight-regular);
+  line-height: 16px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.site-menu__address {
+  font-size: var(--mat-font-size-14);
+  font-weight: var(--mat-font-weight-regular);
+  line-height: 22px;
+}
+
+@media (min-width: 1440px) {
+  .site-header__bar {
+    height: 108px;
+    justify-content: center;
+    gap: 148px;
+    padding: 20px 60px;
+    box-shadow: none;
+  }
+
+  .site-header__logo {
+    width: 173px;
+    height: 56px;
+  }
+
+  .site-header__logo-mobile {
+    display: none;
+  }
+
+  .site-header__logo-desktop {
+    display: block;
+  }
+
+  .site-header__menu-toggle {
+    display: none;
+  }
+
+  .site-header__desktop-nav {
+    display: block;
+  }
+
+  .site-header__desktop-group {
+    display: flex;
+    align-items: center;
+    gap: 55px;
+    overflow: hidden;
+    padding-inline: 11px;
+  }
+
+  .site-header__desktop-links {
+    display: contents;
+  }
+
+  .site-header__desktop-link {
+    font-size: var(--mat-font-size-18);
+    font-weight: var(--mat-font-weight-medium);
+    line-height: 16px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .site-header__desktop-spacer {
+    width: 149px;
+    height: 47px;
+    flex: none;
+  }
+
+  .site-header__desktop-cta {
+    display: inline-flex;
+    width: 317px;
+    min-height: 68px;
+    flex: none;
+    padding: 24px;
+    font-size: var(--mat-font-size-22);
+    font-weight: var(--mat-font-weight-medium);
+    line-height: 20px;
+    letter-spacing: 0.2px;
+  }
 }
 
 .landing-section {
