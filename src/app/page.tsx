@@ -12,7 +12,7 @@ export default function HomePage() {
     <>
       <SiteHeader />
       <main>
-        <section className="mat-hero" id="inicio">
+        <section className="mat-hero mat-scroll-target" id="inicio">
           <div className="mat-hero__copy">
             <p className="mat-label">{hero.eyebrow}</p>
             <h1 className="mat-hero__title">{hero.title}</h1>

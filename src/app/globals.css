@@ -844,7 +844,8 @@ a {
   .mat-studio,
   .mat-reservation,
   .site-footer {
-    padding: 60px;
+    padding-block: 60px;
+    padding-inline: max(60px, calc((100% - 1320px) / 2));
   }
 
   .mat-hero {
