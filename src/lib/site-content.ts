@@ -35,8 +35,6 @@ export const landingContent = {
     title: "Volvé a habitar tu cuerpo.",
     description:
       "Una práctica consciente para ganar fuerza, movilidad y conexión en tu día a día.",
-    details: "Grupos reducidos · Todos los niveles · 50 min",
-    mobileDetails: "Todos los niveles · 50 min",
   },
   manifesto: {
     eyebrow: "Movimiento · Presencia · Bienestar",
@@ -82,6 +80,7 @@ export const landingContent = {
     panelDescription:
       "Tres propuestas para empezar, sostener o intensificar tu práctica.",
     details: "Grupos reducidos · Todos los niveles · 50 min",
+    mobileDetails: "Todos los niveles · 50 min",
   },
   studio: {
     eyebrow: "El estudio",

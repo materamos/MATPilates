@@ -27,12 +27,6 @@ export default function HomePage() {
               </a>
             </div>
             <span aria-hidden="true" className="mat-hero__spacer" />
-            <p className="mat-label mat-hero__details mat-hero__details--wide">
-              {hero.details}
-            </p>
-            <p className="mat-body-small mat-hero__details mat-hero__details--mobile">
-              {hero.mobileDetails}
-            </p>
           </div>
           <div className="mat-hero__image">
             <Image
@@ -141,7 +135,12 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <p className="mat-label mat-schedule__details">{classes.details}</p>
+              <p className="mat-label mat-schedule__details mat-schedule__details--wide">
+                {classes.details}
+              </p>
+              <p className="mat-label mat-schedule__details mat-schedule__details--mobile">
+                {classes.mobileDetails}
+              </p>
             </div>
           </article>
         </section>
