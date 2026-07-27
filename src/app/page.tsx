@@ -27,13 +27,19 @@ export default function HomePage() {
               </a>
             </div>
             <span aria-hidden="true" className="mat-hero__spacer" />
-            <p className="mat-label mat-hero__details">{hero.details}</p>
+            <p className="mat-label mat-hero__details mat-hero__details--wide">
+              {hero.details}
+            </p>
+            <p className="mat-body-small mat-hero__details mat-hero__details--mobile">
+              {hero.mobileDetails}
+            </p>
           </div>
           <div className="mat-hero__image">
             <Image
               alt="Sala de MAT Pilates"
               className="mat-cropped-image mat-hero__photo"
               height={1448}
+              loading="eager"
               priority
               sizes="(min-width: 1440px) 609px, calc(100vw - 48px)"
               src="/hero/mat-studio-hero.png"
@@ -45,7 +51,7 @@ export default function HomePage() {
                 alt="MAT Pilates"
                 fill
                 sizes="(min-width: 1440px) 375px, 58vw"
-                src="/brand/mat-wordmark-light.svg"
+                src="/brand/mat-hero-mark.svg"
                 style={{ objectFit: "contain" }}
               />
             </div>
@@ -83,11 +89,15 @@ export default function HomePage() {
           <div className="mat-hot-mat__cards">
             {hotMat.pillars.map((pillar) => (
               <article className="mat-hot-mat__card" key={pillar.number}>
-                <div className="mat-hot-mat__card-heading">
+                <div className="mat-hot-mat__card-heading mat-hot-mat__card-heading--wide">
                   <p className="mat-label">
                     {pillar.number} / {pillar.label}
                   </p>
                   <h3 className="mat-h3">{pillar.title}</h3>
+                </div>
+                <div className="mat-hot-mat__card-heading mat-hot-mat__card-heading--mobile">
+                  <p className="mat-label">{pillar.number}</p>
+                  <h3 className="mat-h3">{pillar.label}</h3>
                 </div>
                 <p className="mat-body-small">{pillar.description}</p>
               </article>
@@ -122,7 +132,12 @@ export default function HomePage() {
                 {schedule.map((item) => (
                   <li className="mat-schedule__row" key={item.name}>
                     <span className="mat-text-button">{item.name}</span>
-                    <span className="mat-body-small">{item.time}</span>
+                    <span className="mat-body-small mat-schedule__time mat-schedule__time--wide">
+                      {item.time}
+                    </span>
+                    <span className="mat-body-small mat-schedule__time mat-schedule__time--mobile">
+                      {item.mobileTime}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -132,19 +147,21 @@ export default function HomePage() {
         </section>
 
         <section className="mat-studio mat-scroll-target" id="estudio">
-          <div className="mat-studio__image">
-            <Image
-              alt="Interior del estudio MAT Pilates"
-              className="mat-cropped-image mat-studio__photo"
-              height={1448}
-              sizes="(min-width: 1440px) 622px, calc(100vw - 48px)"
-              src="/hero/mat-studio-hero.png"
-              unoptimized
-              width={1086}
-            />
+          <div className="mat-studio__visual">
             <div className="mat-studio__manifesto">
               <p className="mat-h3">{studio.manifesto}</p>
               <p className="mat-label">{studio.manifestoLabel}</p>
+            </div>
+            <div className="mat-studio__image">
+              <Image
+                alt="Interior del estudio MAT Pilates"
+                className="mat-cropped-image mat-studio__photo"
+                height={1448}
+                sizes="(min-width: 1280px) 622px, (min-width: 1024px) 432px, calc(100vw - 48px)"
+                src="/hero/mat-studio-hero.png"
+                unoptimized
+                width={1086}
+              />
             </div>
           </div>
           <div className="mat-studio__copy">

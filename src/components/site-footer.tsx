@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { navigationItems, siteContact } from "@/lib/site-content";
+import { footerNavigationItems, siteContact } from "@/lib/site-content";
 
 export function SiteFooter() {
   return (
@@ -16,7 +16,7 @@ export function SiteFooter() {
         <span aria-hidden="true" className="site-footer__spacer" />
         <nav aria-label="Enlaces del pie de página">
           <ul className="site-footer__navigation">
-            {navigationItems.map((item) => (
+            {footerNavigationItems.map((item) => (
               <li key={item.href}>
                 <a href={item.href}>{item.label}</a>
               </li>

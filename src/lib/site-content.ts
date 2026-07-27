@@ -18,9 +18,15 @@ export const siteContact = {
 } as const;
 
 export const navigationItems = [
-  { label: "Hot Mat", href: "#metodo" },
-  { label: "Clases", href: "#clases" },
-  { label: "Estudio", href: "#estudio" },
+  { label: "Hot Mat", desktopLabel: "Hot Mat", href: "#metodo" },
+  { label: "Clases", desktopLabel: "Clases", href: "#clases" },
+  { label: "Estudio", desktopLabel: "El estudio", href: "#estudio" },
+] as const;
+
+export const footerNavigationItems = [
+  navigationItems[0],
+  navigationItems[2],
+  navigationItems[1],
 ] as const;
 
 export const landingContent = {
@@ -30,6 +36,7 @@ export const landingContent = {
     description:
       "Una práctica consciente para ganar fuerza, movilidad y conexión en tu día a día.",
     details: "Grupos reducidos · Todos los niveles · 50 min",
+    mobileDetails: "Todos los niveles · 50 min",
   },
   manifesto: {
     eyebrow: "Movimiento · Presencia · Bienestar",
@@ -96,7 +103,15 @@ export const landingContent = {
 } as const;
 
 export const schedule = [
-  { name: "MAT INICIAL", time: "LUNES · MIÉRCOLES · 09:00" },
-  { name: "MAT FLOW", time: "MARTES · JUEVES · 18:30" },
-  { name: "MAT FUERZA", time: "SÁBADO · 10:00" },
+  {
+    name: "MAT INICIAL",
+    time: "LUNES · MIÉRCOLES · 09:00",
+    mobileTime: "LUN · MIE · 09:00",
+  },
+  {
+    name: "MAT FLOW",
+    time: "MARTES · JUEVES · 18:30",
+    mobileTime: "MAR · JUE · 18:30",
+  },
+  { name: "MAT FUERZA", time: "SÁBADO · 10:00", mobileTime: "SÁB · 10:00" },
 ] as const;

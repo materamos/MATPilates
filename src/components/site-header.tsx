@@ -44,7 +44,7 @@ export function SiteHeader() {
   }, [isMenuOpen]);
 
   useEffect(() => {
-    const desktopQuery = window.matchMedia("(min-width: 1440px)");
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
     const closeAtDesktop = (event: MediaQueryListEvent) => {
       if (event.matches) {
         setIsMenuOpen(false);
@@ -90,7 +90,7 @@ export function SiteHeader() {
                     className="site-header__desktop-link transition-opacity hover:opacity-60"
                     href={item.href}
                   >
-                    {item.label}
+                    {item.desktopLabel}
                   </a>
                 </li>
               ))}
