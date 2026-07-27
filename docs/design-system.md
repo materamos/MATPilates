@@ -1,6 +1,6 @@
 # MAT Design System
 
-This document mirrors the confirmed system in [MAT - Foundations](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=66-10) and the current Desktop and Mobile compositions. Figma is the visual source of truth; the brandbook is supporting material when Foundations does not resolve a value.
+This document mirrors the confirmed system in [MAT - Foundations](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=66-10) and the current Desktop, Desktop Compact, and Mobile compositions. Figma is the visual source of truth; the brandbook is supporting material when Foundations does not resolve a value.
 
 ## Color
 
@@ -27,6 +27,7 @@ This document mirrors the confirmed system in [MAT - Foundations](https://www.fi
 | Inverse surface and primary text | `brand/charcoal` |
 | Highlight text or surface | `brand/pale-pink` |
 | Cool supporting surface | `brand/blue-grey` |
+| Schedule text on `brand/blue-grey` | `brand/charcoal` (5.38:1) |
 | Inverse text and icons | `brand/pearl-neutral` |
 | Subtle inverse border | `brand/desaturated-beige` |
 
@@ -81,19 +82,39 @@ Regular, Medium, and Bold are implemented across Mobile, Desktop, and Desktop Co
 | Spacing | 8 / 12 / 16 / 24 / 32 / 48 px |
 | Radius | 0 / 8 / 16 / 24 px / full |
 
-### Breakpoint composition
+### Responsive contract
+
+| Mode | Condition | Typography | Navigation | Container |
+| --- | --- | --- | --- | --- |
+| Mobile / Tablet | 0-1023 px | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
+| Compact Narrow | 1024-1279 px | Compact | Horizontal | 60 px gutter; 1160 px maximum |
+| Compact Short | 1280 px or wider and 820 px tall or shorter | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
+| Desktop | 1280 px or wider and 821 px tall or taller | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
+
+Width takes precedence over height. Therefore, 1024 x 768 is Narrow, 1280 x 820 is Short, and 1280 x 821 is Desktop.
+
+Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights.
+
+### Composition values
 
 | Reference | Confirmed composition |
 | --- | --- |
-| Desktop, 1440 px | Detail and header 20 px; cards 36 px; section and gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
-| Mobile, 390 px | Controls 8 px; groups 12 px; content 16 px; gutter 24 px; sections 32 px; radius 8 / 24 / full |
-| Desktop Compact, Narrow and Short | Detail and header 20 px; controls 24 px; cards 36 px; panel 48 px; gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
+| Desktop | Detail and header 20 px; cards 36 px; section and gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
+| Mobile / Tablet | Controls 8 px; groups 12 px; content 16 px; gutter 24 px; sections 32 px; radius 8 / 24 / full |
+| Compact Narrow and Short | Detail and header 20 px; controls 24 px; cards 36 px; panel 48 px; gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
 
 Distances produced by `Space Between` are local mathematical results and are not reusable tokens. This includes values such as 25, 35, 79, 81, and 128 px that preserve the approved outer geometry.
 
+## Effects
+
+| Style | Value | Usage |
+| --- | --- | --- |
+| `MAT/Shadow/Mobile` | 0 4px 4px rgb(0 0 0 / 18%) | Mobile navigation, buttons, pillars, and schedules |
+
 ## Menu references
 
-- Desktop: [node `497:305`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=497-305)
+- Desktop: [node `492:193`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=492-193)
+- Desktop Compact, Narrow and Short: [node `264:4`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=264-4)
 - Mobile landing and closed navigation: [node `492:194`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=492-194)
 - Mobile open menu: node `497:534` inside the Mobile page.
 
