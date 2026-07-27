@@ -15,7 +15,7 @@ const ROLE_BY_KEY = new Map(
 
 const FORBIDDEN_STYLE_PATTERN = /(^|\s)(600|semi[\s-]?bold)(\s|$)/i;
 
-type MatStylePlatform = "mobile" | "desktop";
+type MatStylePlatform = "mobile" | "desktop" | "compact";
 type MatSemanticStyle =
   | "h1"
   | "h2"
@@ -33,7 +33,7 @@ const FONT_ROLE_BY_SEMANTIC_STYLE: Readonly<
   h3: "medium",
   body: "regular",
   "body s": "regular",
-  button: "medium",
+  button: "regular",
 });
 
 export function fontNameForRole(role: FontRole): FontName {
@@ -50,7 +50,7 @@ export function fontRoleForMatTextStyleName(
     .replace(/\s+/g, " ")
     .replace(/\s*\/\s*/g, "/");
   const match =
-    /^(?:mat (mobile|desktop)\/)?(h1|h2|h3|body s|body|button|label)(?: (mobile|desktop))?$/.exec(
+    /^(?:mat (mobile|desktop|compact)\/)?(h1|h2|h3|body s|body|button|label)(?: (mobile|desktop|compact))?$/.exec(
       normalizedName,
     );
   if (match === null) {

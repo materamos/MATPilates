@@ -940,14 +940,6 @@ export class PatchEngine {
       const protectedVariableFields = new Set(
         variableFieldsForTypography(operation.typography),
       );
-      if (
-        fontRoleForMatTextStyleName(resultingName) !== null &&
-        explicitRole === undefined
-      ) {
-        protectedVariableFields.add("fontFamily");
-        protectedVariableFields.add("fontStyle");
-        protectedVariableFields.add("fontWeight");
-      }
       assertNoBoundStyleVariables(
         style,
         Array.from(protectedVariableFields),
@@ -1026,7 +1018,7 @@ export class PatchEngine {
         case "bind_text_style": {
           const node = await getTextNodeById(operation.nodeId);
           this.assertNodeInScope(node, patch);
-          prepareWritableTextNode(node, currentFonts);
+          prepareWritableTextNode(node, currentFonts, true);
           if (
             fullNodeStyleOperations.has(node.id) ||
             contentReplacementNodes.has(node.id) ||
@@ -1198,11 +1190,6 @@ export class PatchEngine {
           const node = await getTextNodeById(operation.nodeId);
           this.assertNodeInScope(node, patch);
           prepareWritableTextNode(node, currentFonts);
-          assertNoBoundTextVariables(
-            node,
-            ALL_VARIABLE_BINDABLE_TEXT_FIELDS,
-            "reemplazar el contenido",
-          );
           assertNoHyperlinksInRange(
             node,
             0,
@@ -1399,11 +1386,6 @@ export class PatchEngine {
 
     const style = await getTextStyleById(styleRef.styleId);
     assertLocalTextStyle(style);
-    assertNoBoundStyleVariables(
-      style,
-      ALL_VARIABLE_BINDABLE_TEXT_FIELDS,
-      "aplicar",
-    );
     assertFingerprint(
       styleKey(style.id),
       styleRef.expectedFingerprint,
@@ -3305,7 +3287,7 @@ async function currentFingerprintForKey(key: string): Promise<string> {
   if (node === null) {
     throw bridgeError("NODE_NOT_FOUND", `No se encontró el nodo ${nodeId}.`);
   }
-  assertWritableNode(node);
+  assertWritableNode(node, true, true);
   if (node.type === "TEXT") {
     if (node.hasMissingFont) {
       throw bridgeError(
@@ -3560,8 +3542,13 @@ function pageForNode(node: BaseNode): PageNode {
 function prepareWritableTextNode(
   node: TextNode,
   currentFonts: Map<string, FontName>,
+  allowStyleBindingContext = false,
 ): void {
-  assertWritableNode(node);
+  assertWritableNode(
+    node,
+    allowStyleBindingContext,
+    allowStyleBindingContext,
+  );
   if (node.hasMissingFont) {
     throw bridgeError(
       "FONT_UNAVAILABLE",
@@ -3716,7 +3703,11 @@ function assertWritableContainer(node: BaseNode & ChildrenMixin): void {
   assertWritableNode(node);
 }
 
-function assertWritableNode(node: BaseNode): void {
+function assertWritableNode(
+  node: BaseNode,
+  allowMainComponent = false,
+  allowInstance = false,
+): void {
   let current: BaseNode | null = node;
   while (current !== null) {
     if ("locked" in current && current.locked) {
@@ -3725,13 +3716,16 @@ function assertWritableNode(node: BaseNode): void {
         `El nodo ${node.id} o uno de sus ancestros está bloqueado.`,
       );
     }
-    if (current.type === "INSTANCE") {
+    if (!allowInstance && current.type === "INSTANCE") {
       throw bridgeError(
         "INSTANCE_WRITE_REJECTED",
         `El nodo ${node.id} está dentro de una instancia y no se modificará.`,
       );
     }
-    if (current.type === "COMPONENT" || current.type === "COMPONENT_SET") {
+    if (
+      !allowMainComponent &&
+      (current.type === "COMPONENT" || current.type === "COMPONENT_SET")
+    ) {
       throw bridgeError(
         "COMPONENT_WRITE_REJECTED",
         `El nodo ${node.id} está dentro de un componente principal y no se modificará en esta versión.`,

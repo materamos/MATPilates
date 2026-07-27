@@ -172,15 +172,26 @@ Recognized MAT semantic text-style names must use these Neue Montreal roles:
 | Semantic style | Required role |
 | --- | --- |
 | `H1` | `Bold` |
-| `H2`, `H3`, `Button` | `Medium` |
+| `H2`, `H3` | `Medium` |
 | `Body`, `Body S` | `Regular` |
+| `Button` | `Regular` |
 | mobile `Label` | `Regular` |
-| desktop `Label` | `Medium` |
+| desktop and compact `Label` | `Medium` |
 
-The policy accepts the supported mobile/desktop namespace or matching suffix
+The policy accepts the supported mobile/desktop/compact namespace or matching suffix
 forms. Creating, updating, renaming, or binding a recognized semantic style is
 rejected when its resulting font role does not match this table. Semibold/600
 remains unsupported.
+
+Existing local styles may be bound when their typography is variable-backed,
+after the bridge resolves and validates the exact Neue Montreal role. A
+`bind_text_style` operation is also supported on text layers inside main
+components and instances; other text mutations in those contexts remain
+blocked.
+
+Full content replacement preserves existing typography-variable bindings by
+using Figma's style-preserving insertion and deletion APIs. Writes that would
+change a bound typography field remain rejected.
 
 `get_node` and `get_selection` expose a container fingerprint when that node can
 be the explicit parent of a new text layer. A single `get_node` scope above
