@@ -164,6 +164,8 @@ a {
 }
 
 .site-header__bar {
+  position: relative;
+  z-index: 50;
   display: flex;
   height: 80px;
   align-items: center;
@@ -171,6 +173,10 @@ a {
   padding-inline: max(24px, calc((100% - 720px) / 2));
   background: var(--mat-color-charcoal);
   box-shadow: var(--mat-shadow-mobile);
+}
+
+.site-header__bar--menu-open {
+  box-shadow: none;
 }
 
 .site-header__logo {
@@ -186,8 +192,7 @@ a {
   display: none;
 }
 
-.site-header__menu-toggle,
-.site-menu__close {
+.site-header__menu-toggle {
   display: grid;
   width: 48px;
   height: 48px;
@@ -201,15 +206,37 @@ a {
 }
 
 .site-header__menu-toggle-lines {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .site-header__menu-toggle-line {
+  position: absolute;
+  top: 11px;
+  left: 3px;
   width: 18px;
   height: 2px;
+  border-radius: var(--mat-radius-full);
   background: var(--mat-color-pearl-neutral);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-header__menu-toggle-line:first-child {
+  transform: translateY(-5px);
+}
+
+.site-header__menu-toggle-line:last-child {
+  transform: translateY(5px);
+}
+
+.site-header__menu-toggle--open .site-header__menu-toggle-line:first-child {
+  transform: rotate(45deg);
+}
+
+.site-header__menu-toggle--open .site-header__menu-toggle-line:last-child {
+  transform: rotate(-45deg);
 }
 
 .site-menu {
@@ -220,27 +247,13 @@ a {
   min-height: 100dvh;
   flex-direction: column;
   overflow-y: auto;
-  padding: 24px max(24px, calc((100% - 720px) / 2));
+  padding: calc(var(--mat-header-height) + 32px) max(24px, calc((100% - 720px) / 2)) 24px;
   background: var(--mat-color-charcoal);
   color: var(--mat-color-pearl-neutral);
 }
 
-.site-menu__header {
-  display: flex;
-  height: 48px;
-  flex: none;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.site-menu__close-icon {
-  width: 24px;
-  height: 24px;
-}
-
 .site-menu__links {
   flex: none;
-  margin-top: 40px;
 }
 
 .site-menu__link {
@@ -1917,7 +1930,7 @@ a {
 
 /* Keep the primary landing screens inside the live viewport, including the sticky header. */
 :root {
-  --mat-header-height: 72px;
+  --mat-header-height: 80px;
 }
 
 .site-header__bar {
@@ -2886,12 +2899,15 @@ a {
   }
 
   .mat-hero__image {
-    height: clamp(240px, 64vw, 300px);
+    height: auto;
+    aspect-ratio: 342 / 300;
   }
 
   .mat-hot-mat {
     grid-template-rows: auto auto auto;
     align-content: start;
+    gap: 16px;
+    padding-block: 32px;
   }
 
   .mat-hot-mat__cards {
@@ -2906,7 +2922,8 @@ a {
 
   .mat-hot-mat__card,
   .mat-hot-mat__card:nth-child(-n + 2) {
-    padding: 24px;
+    gap: 8px;
+    padding: 24px 32px;
   }
 
   .mat-classes {
@@ -2975,8 +2992,8 @@ a {
   .mat-studio {
     grid-template-rows: auto auto;
     align-content: start;
-    gap: 12px;
-    padding-block: 20px;
+    gap: 16px;
+    padding-block: 32px;
   }
 
   .mat-studio__visual {
@@ -2984,11 +3001,12 @@ a {
     display: grid;
     height: auto;
     grid-template-rows: auto auto;
-    gap: 12px;
+    gap: 16px;
   }
 
   .mat-studio__image {
-    height: clamp(250px, 72vw, 320px);
+    height: auto;
+    aspect-ratio: 342 / 280;
   }
 
   .mat-studio__manifesto {
@@ -3004,7 +3022,7 @@ a {
   }
 
   .mat-studio__copy {
-    gap: 10px;
+    gap: 16px;
   }
 
   .mat-studio__details {
@@ -3021,8 +3039,8 @@ a {
 
   .mat-reservation {
     grid-template-rows: repeat(6, auto);
-    align-content: space-between;
-    gap: 0;
+    align-content: start;
+    gap: 16px;
     padding-block: 32px;
   }
 
@@ -3038,7 +3056,8 @@ a {
   }
 
   .mat-reservation__image {
-    height: clamp(220px, 64vw, 436px);
+    height: auto;
+    aspect-ratio: 342 / 250;
   }
 
   .mat-reservation__button {
@@ -3255,5 +3274,313 @@ a {
 
   .mat-reservation__image {
     height: 620px;
+  }
+}
+
+/* Type roles stay exact even when the surrounding composition is height-constrained. */
+@media (max-width: 1023px) {
+  .mat-hero__title {
+    font-size: var(--mat-font-size-56);
+    line-height: 49px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .mat-hero__title {
+    font-size: var(--mat-font-size-80);
+    line-height: 73.68px;
+  }
+
+  .mat-hot-mat__heading .mat-h2,
+  .mat-classes__heading .mat-h2,
+  .mat-studio__copy .mat-h2,
+  .mat-reservation__copy > .mat-h2 {
+    font-size: var(--mat-font-size-48);
+    line-height: 58px;
+  }
+
+  .mat-hero__description,
+  .mat-hot-mat__heading .mat-section-heading__description,
+  .mat-classes__heading .mat-section-heading__description,
+  .mat-studio__description,
+  .mat-reservation__copy .mat-body {
+    font-size: var(--mat-font-size-24);
+    line-height: 30px;
+  }
+
+  .mat-hot-mat__card .mat-h3,
+  .mat-schedule__intro .mat-h3,
+  .mat-studio__manifesto .mat-h3 {
+    font-size: var(--mat-font-size-32);
+    line-height: 43px;
+  }
+
+  .mat-hot-mat__card .mat-body-small,
+  .mat-hot-mat__closing,
+  .mat-schedule__intro .mat-body-small,
+  .mat-schedule__time,
+  .mat-studio__details .mat-body-small {
+    font-size: var(--mat-font-size-20);
+    line-height: 30px;
+  }
+
+  .mat-hero__primary,
+  .mat-hero__secondary,
+  .mat-schedule__button,
+  .mat-studio__link,
+  .mat-reservation__button {
+    min-height: 56px;
+    padding: 18px 24px;
+    font-size: var(--mat-font-size-18);
+    line-height: 20px;
+  }
+
+  .mat-reservation__copy {
+    height: min(541px, 100%);
+    align-self: center;
+  }
+
+  .mat-reservation__image {
+    height: min(468px, 100%);
+    align-self: center;
+  }
+
+  .mat-hot-mat {
+    gap: 12px;
+    padding-block: 24px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .mat-hero__title {
+    font-size: var(--mat-font-size-100);
+    line-height: 76.75px;
+  }
+
+  .mat-hot-mat__heading .mat-h2,
+  .mat-classes__heading .mat-h2,
+  .mat-studio__copy .mat-h2,
+  .mat-reservation__copy > .mat-h2 {
+    font-size: var(--mat-font-size-64);
+    line-height: 58px;
+  }
+
+  .mat-hero__description,
+  .mat-hot-mat__heading .mat-section-heading__description,
+  .mat-classes__heading .mat-section-heading__description,
+  .mat-studio__description,
+  .mat-reservation__copy .mat-body {
+    font-size: var(--mat-font-size-30);
+    line-height: 38px;
+  }
+
+  .mat-hot-mat__card .mat-h3,
+  .mat-schedule__intro .mat-h3,
+  .mat-studio__manifesto .mat-h3 {
+    font-size: var(--mat-font-size-40);
+    line-height: 43px;
+  }
+
+  .mat-hot-mat__card .mat-body-small,
+  .mat-hot-mat__closing,
+  .mat-schedule__intro .mat-body-small,
+  .mat-schedule__time,
+  .mat-studio__details .mat-body-small {
+    font-size: var(--mat-font-size-24);
+    line-height: 30px;
+  }
+
+  .mat-hero__primary,
+  .mat-hero__secondary,
+  .mat-schedule__button,
+  .mat-studio__link,
+  .mat-reservation__button {
+    min-height: 68px;
+    padding: 24px;
+    font-size: var(--mat-font-size-22);
+    line-height: 20px;
+  }
+
+  .mat-reservation__copy {
+    height: min(564px, 100%);
+    align-self: center;
+  }
+
+  .mat-reservation__image {
+    height: min(494px, 100%);
+    align-self: center;
+  }
+
+  .mat-classes__heading {
+    grid-template-columns: minmax(0, 650px) minmax(0, 1fr);
+    gap: 80px;
+  }
+}
+
+@media (min-width: 1280px) and (min-height: 821px) {
+  .mat-hot-mat__heading .mat-section-heading__title {
+    gap: 36px;
+  }
+
+  .mat-hot-mat__cards {
+    height: min(clamp(379px, calc(1008px - 43.68vw), 448px), 100%);
+    align-self: center;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) and (min-height: 800px) {
+  .mat-classes {
+    grid-template-rows: auto auto;
+    align-content: center;
+  }
+
+  .mat-schedule {
+    height: 385px;
+  }
+}
+
+@media (min-width: 1280px) and (min-height: 780px) {
+  .mat-classes {
+    grid-template-rows: auto auto;
+    align-content: center;
+  }
+
+  .mat-schedule {
+    height: 417px;
+  }
+}
+
+/* Preserve the Figma CTA proportions instead of distributing spare width between controls. */
+@media (min-width: 1280px) {
+  .mat-hero__actions {
+    display: grid;
+    justify-content: start;
+  }
+
+  .mat-hero__primary,
+  .mat-hero__secondary {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .mat-hero__actions {
+    grid-template-columns: minmax(0, 317fr) minmax(0, 269fr);
+    gap: clamp(48px, 5.625vw, 81px);
+  }
+
+  .mat-hero__primary,
+  .mat-hero__secondary {
+    min-height: 56px;
+    padding: 18px 24px;
+    font-size: var(--mat-font-size-18);
+    line-height: 20px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .mat-hero__actions {
+    grid-template-columns: 317px 269px;
+    gap: 81px;
+  }
+}
+
+/* Short desktop keeps the approved CTA hierarchy while the surrounding rhythm stays fluid. */
+@media (min-width: 1280px) and (max-height: 820px) {
+  .mat-hero .mat-label,
+  .mat-manifesto .mat-label,
+  .mat-hot-mat .mat-label,
+  .mat-classes .mat-label,
+  .mat-studio .mat-label,
+  .mat-reservation .mat-label {
+    font-size: clamp(16px, 2.4dvh, 18px);
+  }
+
+  .mat-hero__title {
+    font-size: clamp(80px, 12dvh, 96px);
+    line-height: 0.78;
+  }
+
+  .mat-hero__description {
+    font-size: clamp(22px, 3.5dvh, 28px);
+    line-height: 1.25;
+  }
+
+  .mat-manifesto__copy .mat-h2,
+  .mat-hot-mat__heading .mat-h2,
+  .mat-classes__heading .mat-h2,
+  .mat-studio__copy .mat-h2,
+  .mat-reservation__copy > .mat-h2 {
+    font-size: clamp(48px, 7.5dvh, 58px);
+    line-height: 0.95;
+  }
+
+  .mat-hot-mat__heading .mat-section-heading__description,
+  .mat-classes__heading .mat-section-heading__description,
+  .mat-studio__description,
+  .mat-reservation__copy .mat-body {
+    font-size: clamp(20px, 3.4dvh, 26px);
+    line-height: 1.28;
+  }
+
+  .mat-hot-mat__card .mat-h3,
+  .mat-schedule__intro .mat-h3,
+  .mat-studio__manifesto .mat-h3 {
+    font-size: clamp(32px, 5dvh, 36px);
+    line-height: 1.08;
+  }
+
+  .mat-hot-mat__card .mat-body-small,
+  .mat-hot-mat__closing,
+  .mat-schedule__intro .mat-body-small,
+  .mat-schedule__time,
+  .mat-studio__details .mat-body-small {
+    font-size: clamp(18px, 3dvh, 22px);
+    line-height: 1.3;
+  }
+
+  .mat-schedule__button,
+  .mat-studio__link,
+  .mat-reservation__button {
+    min-height: clamp(56px, 8.5dvh, 68px);
+    padding: clamp(18px, 3dvh, 24px) 24px;
+    font-size: clamp(18px, 2.8dvh, 22px);
+  }
+
+  .mat-hero__actions {
+    grid-template-columns: 317px;
+    grid-template-rows: repeat(2, 68px);
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .mat-hero__primary,
+  .mat-hero__secondary {
+    min-height: 68px;
+    padding: 24px;
+    font-size: clamp(18px, 2.8dvh, 22px);
+    line-height: 20px;
+  }
+
+  .mat-hero__primary {
+    width: 317px;
+  }
+
+  .mat-hero__secondary {
+    width: 269px;
+    justify-self: center;
+  }
+}
+
+/* Below the measured 650px safe height, scrolling replaces further visual compression. */
+@media (min-width: 1280px) and (max-height: 649px) {
+  :root {
+    --mat-responsive-mode: "compact-short-scroll";
+  }
+
+  .mat-hero {
+    height: 570px;
+    min-height: 570px;
+    overflow: visible;
   }
 }

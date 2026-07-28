@@ -30,6 +30,7 @@ Thumbs.db
 
 # Agent scratch space
 /.agent-tmp/
+/.codex-remote-attachments/
 
 # Machine-local project context
 /docs/project-context.local.md

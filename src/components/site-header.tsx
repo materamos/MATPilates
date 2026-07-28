@@ -7,7 +7,6 @@ import { Button } from "./button";
 
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -31,8 +30,6 @@ export function SiteHeader() {
       element.inert = true;
     });
     document.addEventListener("keydown", closeOnEscape);
-    closeButtonRef.current?.focus();
-
     return () => {
       document.body.style.overflow = previousOverflow;
       backgroundElements.forEach((element) => {
@@ -62,8 +59,13 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <div className="site-header__bar" inert={isMenuOpen}>
-        <a aria-label="MAT Pilates, inicio" className="site-header__logo" href="#inicio">
+      <div className={`site-header__bar${isMenuOpen ? " site-header__bar--menu-open" : ""}`}>
+        <a
+          aria-label="MAT Pilates, inicio"
+          className="site-header__logo"
+          href="#inicio"
+          onClick={closeMenu}
+        >
           <Image
             alt="MAT Pilates"
             className="site-header__logo-mobile"
@@ -104,9 +106,9 @@ export function SiteHeader() {
         <button
           aria-controls="mobile-navigation"
           aria-expanded={isMenuOpen}
-          aria-label="Abrir menú"
-          className="site-header__menu-toggle"
-          onClick={() => setIsMenuOpen(true)}
+          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+          className={`site-header__menu-toggle${isMenuOpen ? " site-header__menu-toggle--open" : ""}`}
+          onClick={() => setIsMenuOpen((currentValue) => !currentValue)}
           ref={menuButtonRef}
           type="button"
         >
@@ -119,32 +121,6 @@ export function SiteHeader() {
       </div>
       {isMenuOpen ? (
         <div className="site-menu" id="mobile-navigation">
-          <div className="site-menu__header">
-            <div className="site-header__logo">
-              <Image
-                alt="MAT Pilates"
-                fill
-                sizes="115px"
-                src="/brand/mat-wordmark-light-menu-mobile.svg"
-              />
-            </div>
-            <button
-              aria-label="Cerrar menú"
-              className="site-menu__close"
-              onClick={closeMenu}
-              ref={closeButtonRef}
-              type="button"
-            >
-              <Image
-                alt=""
-                aria-hidden="true"
-                className="site-menu__close-icon"
-                height={24}
-                src="/icons/menu-close.svg"
-                width={24}
-              />
-            </button>
-          </div>
           <nav aria-label="Navegación móvil" className="site-menu__links">
             <ul>
               {navigationItems.map((item) => (
