@@ -2717,6 +2717,49 @@ a {
   .mat-reservation__image {
     order: initial;
   }
+
+  .site-footer__links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .site-footer__links nav {
+    display: block;
+    margin-left: auto;
+  }
+
+  .site-footer__navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(18px, 3vw, 28px);
+  }
+
+  .site-footer__navigation li:nth-child(1) {
+    order: 1;
+  }
+
+  .site-footer__navigation li:nth-child(2) {
+    order: 3;
+  }
+
+  .site-footer__navigation li:nth-child(3) {
+    order: 2;
+  }
+
+  .site-footer__navigation li:nth-child(4) {
+    order: 4;
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -3715,7 +3758,8 @@ a {
 }
 
 /* Real browser chrome can leave wide desktop screens with a compact content viewport. */
-@media (min-width: 1280px) and (max-height: 900px) {
+@media (min-width: 1024px) and (max-width: 1279px) and (max-height: 799px),
+  (min-width: 1280px) and (max-height: 900px) {
   :root {
     --mat-responsive-mode: "compact-content";
   }
@@ -3870,6 +3914,13 @@ a {
 
   .mat-reservation__button {
     margin-top: auto;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) and (max-height: 799px) {
+  .mat-schedule__intro,
+  .mat-schedule__times {
+    padding: clamp(24px, 4dvh, 32px);
   }
 }
 
