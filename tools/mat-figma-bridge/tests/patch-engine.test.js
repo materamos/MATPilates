@@ -141,6 +141,63 @@ describe("PatchEngine safety harness", () => {
     expect(harness.commitUndo).not.toHaveBeenCalled();
   });
 
+  it.each(["COMPONENT", "INSTANCE"])(
+    "allows binding an exact local text style inside a %s",
+    async (parentType) => {
+      const harness = installFigmaHarness();
+      const engine = new PatchEngine(vi.fn());
+      harness.existingStyle.boundVariables = {
+        fontFamily: { type: "VARIABLE_ALIAS", id: "variable-font-family" },
+        fontSize: { type: "VARIABLE_ALIAS", id: "variable-font-size" },
+        fontStyle: { type: "VARIABLE_ALIAS", id: "variable-font-style" },
+      };
+      const component = {
+        id: `style-binding-${parentType.toLowerCase()}`,
+        name: "Style binding parent",
+        type: parentType,
+        parent: harness.page,
+        visible: true,
+        locked: false,
+        width: 320,
+        height: 200,
+        children: [],
+        appendChild: vi.fn(),
+      };
+      const textNode = attachTextNode(harness, "component-label", "MAT");
+      harness.parent.children = harness.parent.children.filter(
+        (child) => child !== textNode,
+      );
+      textNode.parent = component;
+      component.children.push(textNode);
+      harness.page.children.push(component);
+      harness.nodes.set(component.id, component);
+
+      const pending = await engine.propose(
+        proposal([
+          {
+            op: "bind_text_style",
+            nodeId: textNode.id,
+            expectedFingerprint: fingerprintTextNode(textNode),
+            style: {
+              kind: "existing",
+              styleId: EXISTING_STYLE_ID,
+              expectedFingerprint: fingerprintTextStyle(harness.existingStyle),
+            },
+          },
+        ]),
+      );
+      const applied = await engine.approve(
+        pending.patchId,
+        pending.approvalDigest,
+      );
+
+      expect(applied).toMatchObject({ status: "applied" });
+      expect(textNode.setTextStyleIdAsync).toHaveBeenCalledWith(
+        EXISTING_STYLE_ID,
+      );
+    },
+  );
+
   it("rejects explicit x/y placement inside an Auto Layout parent", async () => {
     const harness = installFigmaHarness();
     const engine = new PatchEngine(vi.fn());
@@ -648,6 +705,39 @@ describe("PatchEngine safety harness", () => {
     });
     expect(harness.commitUndo).not.toHaveBeenCalled();
     expect(harness.triggerUndo).not.toHaveBeenCalled();
+  });
+
+  it("replaces content while preserving bound typography variables", async () => {
+    const harness = installFigmaHarness();
+    const engine = new PatchEngine(vi.fn());
+    const textNode = attachTextNode(harness, "bound-copy", "Before");
+    textNode.boundVariables = {
+      fontFamily: [{ type: "VARIABLE_ALIAS", id: "variable-font-family" }],
+      fontStyle: [{ type: "VARIABLE_ALIAS", id: "variable-font-style" }],
+    };
+
+    const pending = await engine.propose(
+      proposal([
+        {
+          op: "set_characters",
+          nodeId: textNode.id,
+          expectedFingerprint: fingerprintTextNode(textNode),
+          characters: "After",
+        },
+      ]),
+    );
+    const applied = await engine.approve(
+      pending.patchId,
+      pending.approvalDigest,
+    );
+
+    expect(applied).toMatchObject({ status: "applied" });
+    expect(textNode.characters).toBe("After");
+    expect(textNode.boundVariables).toEqual({
+      fontFamily: [{ type: "VARIABLE_ALIAS", id: "variable-font-family" }],
+      fontStyle: [{ type: "VARIABLE_ALIAS", id: "variable-font-style" }],
+    });
+    expect(harness.commitUndo).toHaveBeenCalled();
   });
 
   it("rejects set_characters when the exact content is already present", async () => {
@@ -1895,7 +1985,45 @@ describe("PatchEngine safety harness", () => {
     },
   );
 
-  it("rejects a semantic rename that would keep variable-bound font-role fields", async () => {
+  it("allows a semantic rename that preserves variable-bound font-role fields", async () => {
+    const harness = installFigmaHarness();
+    const engine = new PatchEngine(vi.fn());
+    harness.existingStyle.boundVariables = {
+      fontFamily: { type: "VARIABLE_ALIAS", id: "variable-font-family" },
+      fontStyle: { type: "VARIABLE_ALIAS", id: "variable-font-style" },
+    };
+
+    const pending = await engine.propose(
+      proposal([
+        {
+          op: "update_text_style",
+          styleId: EXISTING_STYLE_ID,
+          expectedFingerprint: fingerprintTextStyle(harness.existingStyle),
+          name: "MAT desktop/Body desktop",
+        },
+      ]),
+    );
+    const applied = await engine.approve(
+      pending.patchId,
+      pending.approvalDigest,
+    );
+
+    expect(applied).toMatchObject({ status: "applied" });
+    expect(harness.existingStyle).toMatchObject({
+      name: "MAT desktop/Body desktop",
+      boundVariables: {
+        fontFamily: { type: "VARIABLE_ALIAS", id: "variable-font-family" },
+        fontStyle: { type: "VARIABLE_ALIAS", id: "variable-font-style" },
+      },
+    });
+    expect(harness.loadFontAsync).toHaveBeenCalledWith({
+      family: "Neue Montreal",
+      style: "Regular",
+    });
+    expect(harness.commitUndo).toHaveBeenCalled();
+  });
+
+  it("still rejects a semantic font-role change when its fields are variable-bound", async () => {
     const harness = installFigmaHarness();
     const engine = new PatchEngine(vi.fn());
     harness.existingStyle.boundVariables = {
@@ -1909,7 +2037,7 @@ describe("PatchEngine safety harness", () => {
             op: "update_text_style",
             styleId: EXISTING_STYLE_ID,
             expectedFingerprint: fingerprintTextStyle(harness.existingStyle),
-            name: "MAT desktop/H1 desktop",
+            typography: { fontRole: "bold" },
           },
         ]),
       ),

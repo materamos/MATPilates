@@ -1,118 +1,150 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { navigationItems } from "@/lib/site-content";
+import { useEffect, useRef, useState } from "react";
+import { navigationItems, siteContact } from "@/lib/site-content";
 import { Button } from "./button";
 
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    if (!isMenuOpen) {
+      return;
+    }
 
+    const previousOverflow = document.body.style.overflow;
+    const backgroundElements = Array.from(
+      document.querySelectorAll<HTMLElement>("main, footer, body > a"),
+    );
+    const menuButton = menuButtonRef.current;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    backgroundElements.forEach((element) => {
+      element.inert = true;
+    });
+    document.addEventListener("keydown", closeOnEscape);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+      backgroundElements.forEach((element) => {
+        element.inert = false;
+      });
+      document.removeEventListener("keydown", closeOnEscape);
+      menuButton?.focus();
     };
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    const closeAtDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    desktopQuery.addEventListener("change", closeAtDesktop);
+
+    return () => {
+      desktopQuery.removeEventListener("change", closeAtDesktop);
+    };
+  }, []);
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-30 bg-[var(--mat-surface-default)]">
-      <div className="mx-auto flex h-20 max-w-[1232px] items-center justify-between px-6 lg:h-28 lg:px-[var(--mat-layout-compact-gutter)] xl:px-0">
-        <a aria-label="MAT Pilates, inicio" className="relative h-9 w-[100px] lg:h-[60px] lg:w-[164px]" href="#inicio">
+    <header className="site-header">
+      <div className={`site-header__bar${isMenuOpen ? " site-header__bar--menu-open" : ""}`}>
+        <a
+          aria-label="MAT Pilates, inicio"
+          className="site-header__logo"
+          href="#inicio"
+          onClick={closeMenu}
+        >
           <Image
             alt="MAT Pilates"
+            className="site-header__logo-mobile"
             fill
             priority
-            sizes="(min-width: 1024px) 164px, 100px"
-            src="/brand/mat-wordmark-dark.svg"
-            style={{ objectFit: "cover" }}
+            sizes="115px"
+            src="/brand/mat-wordmark-light-menu-mobile.svg"
+          />
+          <Image
+            alt="MAT Pilates"
+            className="site-header__logo-desktop"
+            fill
+            priority
+            sizes="173px"
+            src="/brand/mat-wordmark-light-menu-desktop.svg"
           />
         </a>
-        <nav aria-label="Navegación principal" className="hidden lg:block">
-          <ul className="flex items-center gap-6 text-xs font-medium tracking-[0.0667em] uppercase xl:gap-9">
-            {navigationItems.map((item) => (
-              <li key={item.href}>
-                <a className="transition-opacity hover:opacity-60" href={item.href}>
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <nav aria-label="Navegación principal" className="site-header__desktop-nav">
+          <div className="site-header__desktop-group">
+            <ul className="site-header__desktop-links">
+              {navigationItems.map((item) => (
+                <li key={item.href}>
+                  <a
+                    className="site-header__desktop-link transition-opacity hover:opacity-60"
+                    href={item.href}
+                  >
+                    {item.desktopLabel}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <span aria-hidden="true" className="site-header__desktop-spacer" />
+            <Button className="site-header__desktop-cta" href="#contacto" variant="light">
+              Reservá tu clase
+            </Button>
+          </div>
         </nav>
-        <Button className="!hidden lg:!inline-flex lg:!min-h-11 lg:!py-3" href="#contacto">
-          Reservar
-        </Button>
         <button
           aria-controls="mobile-navigation"
           aria-expanded={isMenuOpen}
           aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
-          className="relative grid size-11 place-items-center lg:hidden"
-          onClick={() => setIsMenuOpen((open) => !open)}
+          className={`site-header__menu-toggle${isMenuOpen ? " site-header__menu-toggle--open" : ""}`}
+          onClick={() => setIsMenuOpen((currentValue) => !currentValue)}
+          ref={menuButtonRef}
           type="button"
         >
           <span className="sr-only">Menú</span>
-          <span
-            aria-hidden="true"
-            className={`absolute h-px w-6 bg-current transition-transform duration-300 ${
-              isMenuOpen ? "rotate-45" : "-translate-y-1"
-            }`}
-          />
-          <span
-            aria-hidden="true"
-            className={`absolute h-px w-6 bg-current transition-opacity duration-200 ${
-              isMenuOpen ? "opacity-0" : "opacity-100"
-            }`}
-          />
-          <span
-            aria-hidden="true"
-            className={`absolute h-px w-6 bg-current transition-transform duration-300 ${
-              isMenuOpen ? "-rotate-45" : "translate-y-1"
-            }`}
-          />
+          <span aria-hidden="true" className="site-header__menu-toggle-lines">
+            <span className="site-header__menu-toggle-line" />
+            <span className="site-header__menu-toggle-line" />
+          </span>
         </button>
       </div>
-      <div
-        aria-hidden={!isMenuOpen}
-        className={`fixed inset-0 z-40 bg-[var(--mat-surface-inverse)] text-[var(--mat-text-inverse)] transition-opacity duration-300 lg:hidden ${
-          isMenuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        id="mobile-navigation"
-      >
-        <div className="flex h-20 items-center justify-between px-6">
-          <div className="relative h-9 w-[100px]">
-            <Image alt="MAT Pilates" fill sizes="100px" src="/brand/mat-wordmark-light.svg" style={{ objectFit: "cover" }} />
-          </div>
-          <button aria-label="Cerrar menú" className="relative grid size-11 place-items-center" onClick={closeMenu} type="button">
-            <span aria-hidden="true" className="absolute h-px w-6 rotate-45 bg-current" />
-            <span aria-hidden="true" className="absolute h-px w-6 -rotate-45 bg-current" />
-          </button>
-        </div>
-        <div className="flex h-[calc(100%-5rem)] flex-col px-6 pt-[3.625rem] pb-9">
-          <p className="text-xs font-medium tracking-[0.0667em] uppercase">MENÚ</p>
-          <nav aria-label="Navegación móvil" className="mt-2">
+      {isMenuOpen ? (
+        <div className="site-menu" id="mobile-navigation">
+          <nav aria-label="Navegación móvil" className="site-menu__links">
             <ul>
-              {navigationItems.map((item, index) => (
-                <li key={item.href} className={index === 0 ? "" : "border-t border-[var(--mat-text-inverse)]/25"}>
-                  <a
-                    className="flex h-[69px] items-center text-[2rem] font-semibold leading-10 tracking-[-0.025em]"
-                    href={item.href}
-                    onClick={closeMenu}
-                  >
-                    {item.label}
+              {navigationItems.map((item) => (
+                <li key={item.href}>
+                  <a className="site-menu__link" href={item.href} onClick={closeMenu}>
+                    <span>{item.label}</span>
+                    <span aria-hidden="true" className="site-menu__arrow">
+                      →
+                    </span>
                   </a>
                 </li>
               ))}
             </ul>
           </nav>
-          <Button className="mt-auto min-h-[52px] w-full" href="#contacto" onClick={closeMenu} variant="light">
-            Reservar
+          <div aria-hidden="true" className="site-menu__spacer" />
+          <Button className="site-menu__cta" href="#contacto" onClick={closeMenu} variant="light">
+            Reservá tu clase
           </Button>
-          <p className="mt-8 text-xs font-medium tracking-[0.0667em] uppercase">Pilates MAT · Canning, Buenos Aires</p>
+          <div className="site-menu__location">
+            <p className="site-menu__venue">{siteContact.location.venue}</p>
+            <p className="site-menu__address">{siteContact.location.address.replace(",", " ·")}</p>
+          </div>
         </div>
-      </div>
+      ) : null}
     </header>
   );
 }

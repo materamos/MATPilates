@@ -28,7 +28,7 @@ export function Button({
 
   return (
     <a
-      className={`inline-flex min-h-[52px] items-center justify-center rounded-full px-6 py-4 text-sm font-semibold leading-5 tracking-[0.0143em] uppercase transition-opacity hover:opacity-80 ${className}`}
+      className={`inline-flex min-h-[52px] items-center justify-center rounded-full px-6 py-4 text-sm font-normal leading-5 tracking-[0.2px] uppercase transition-opacity hover:opacity-80 ${className}`}
       href={href}
       onClick={onClick}
       style={colorStyle}

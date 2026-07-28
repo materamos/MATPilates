@@ -10,7 +10,7 @@ It includes:
 
 - method, classes, studio, and contact sections;
 - internal navigation and Instagram integration;
-- a reusable visual system with tokens, components, and Montserrat typography;
+- a reusable visual system with tokens, components, and Neue Montreal typography;
 - SVG brand assets and an adaptive favicon for light and dark schemes.
 
 ## Stack

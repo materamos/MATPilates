@@ -71,7 +71,7 @@ The Figma plugin main sandbox:
   fonts, limits, and patch expiry;
 - supports only Neue Montreal `Regular`, `Medium`, and `Bold`;
 - enforces MAT semantic text-style roles for H1, H2, H3, Body, Button, and
-  mobile/desktop labels;
+  mobile/desktop/compact labels;
 - performs a complete preflight before the first write;
 - rechecks fingerprints after loading every required font;
 - verifies exact postconditions before completing the undo group;
@@ -107,8 +107,9 @@ The Figma plugin main sandbox:
 
 The bridge does not delete styles or nodes, detach components, upload font
 files, accept raw JavaScript, or apply to an unresolved name-based scope.
-Direct writes anywhere inside `COMPONENT`, `COMPONENT_SET`, or `INSTANCE` are
-rejected in v0.1 because their propagated impact cannot be enumerated safely.
+Inside `COMPONENT`, `COMPONENT_SET`, or `INSTANCE`, only exact local text-style
+binding is supported; other writes remain rejected because their propagated
+impact cannot be enumerated safely.
 Full-text replacement uses Figma's style-preserving insertion/deletion APIs;
 it never assigns `TextNode.characters` on an existing layer. When Figma Auto
 Rename is active, the approval warns that the layer name will follow the new
@@ -122,12 +123,13 @@ is fixed:
 | Semantic style | Required role |
 | --- | --- |
 | `H1` | `Bold` |
-| `H2`, `H3`, `Button` | `Medium` |
+| `H2`, `H3` | `Medium` |
 | `Body`, `Body S` | `Regular` |
+| `Button` | `Regular` |
 | mobile `Label` | `Regular` |
-| desktop `Label` | `Medium` |
+| desktop and compact `Label` | `Medium` |
 
-The matcher accepts the supported mobile/desktop namespace or matching suffix
+The matcher accepts the supported mobile/desktop/compact namespace or matching suffix
 forms and normalizes case and spacing. A create, update, rename, or bind
 operation is rejected when a recognized semantic style would end with a
 different role. Unknown names still remain subject to the general
@@ -194,10 +196,14 @@ within the safety timeout, the bridge leaves the result indeterminate and
 blocks later writes instead of claiming a confirmed rollback. The disposable
 Figma smoke test remains mandatory evidence for this boundary.
 
-Text properties bound to Figma variables are preserved. A patch is rejected
-only when it would overwrite a bound typography field. Applying an existing
-text style is rejected when that style itself has typography-variable
-bindings, because v0.1 cannot prove the resolved font role.
+Text properties bound to Figma variables are preserved. Content replacement
+uses style-preserving insertion and deletion and therefore keeps those
+bindings; a patch is rejected when it would overwrite a bound typography
+field. Applying an existing
+local text style with typography-variable bindings is supported after the
+bridge resolves and validates its exact Neue Montreal role. Style binding is
+also allowed on text layers inside main components and instances; all other
+text mutations in those component contexts remain blocked.
 
 Hyperlinks are preserved by refusing operations whose Figma behavior is not
 documented strongly enough to prove preservation. Whole-node style rebinding,

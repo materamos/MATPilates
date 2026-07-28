@@ -9,8 +9,8 @@ export function WhatsAppButton() {
       rel="noreferrer"
       target="_blank"
       style={{
-        backgroundColor: "var(--mat-action-primary)",
-        color: "var(--mat-action-on-primary)",
+        backgroundColor: "#25D366",
+        color: "#FFFFFF",
       }}
     >
       <svg aria-hidden="true" fill="currentColor" viewBox="0 0 448 512" className="size-6">

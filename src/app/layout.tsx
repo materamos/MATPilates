@@ -1,23 +1,42 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
+const neueMontreal = localFont({
+  src: [
+    {
+      path: "./fonts/neue-montreal-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/neue-montreal-medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/neue-montreal-bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   display: "swap",
-  variable: "--font-montserrat",
+  fallback: ["Arial", "Helvetica", "sans-serif"],
+  preload: true,
+  variable: "--font-neue-montreal",
 });
 
 export const metadata: Metadata = {
   title: "MAT Pilates Canning",
-  description: "Movimiento, equilibrio y transformación en Canning.",
+  description:
+    "Hot Pilates y Mat Pilates en Canning Center. Una experiencia cercana, consciente y enfocada en el bienestar.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={montserrat.variable}>
+    <html className={neueMontreal.variable} lang="es">
       <body className="antialiased">{children}</body>
     </html>
   );
