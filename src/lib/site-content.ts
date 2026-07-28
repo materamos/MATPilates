@@ -23,11 +23,7 @@ export const navigationItems = [
   { label: "El Estudio", desktopLabel: "El estudio", href: "#estudio" },
 ] as const;
 
-export const footerNavigationItems = [
-  navigationItems[0],
-  navigationItems[2],
-  navigationItems[1],
-] as const;
+export const footerNavigationItems = navigationItems;
 
 export const landingContent = {
   hero: {
