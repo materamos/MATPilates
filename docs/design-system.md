@@ -120,4 +120,4 @@ Distances produced by `Space Between` are local mathematical results and are not
 - Mobile landing and closed navigation: [node `492:194`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=492-194)
 - Mobile open menu: node `497:534` inside the Mobile page.
 
-The implementation uses the exact responsive wordmark and close-icon exports from Figma under `public/brand/` and `public/icons/`, plus the supplied Regular, Medium, and Bold font files under `public/fonts/`.
+The implementation uses the exact responsive wordmark exports from Figma under `public/brand/`, plus WOFF2 exports of the supplied Regular, Medium, and Bold font files under `src/app/fonts/`, loaded once from the root layout through `next/font/local`. The original OTF files remain in the project library. The mobile menu toggle draws both the hamburger and close states with CSS; it does not consume a separate close-icon asset.

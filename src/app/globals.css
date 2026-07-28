@@ -2,30 +2,6 @@
 
 /* Responsive implementation mirrors the four approved Figma modes. */
 
-@font-face {
-  font-family: "Neue Montreal";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/neue-montreal-regular.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "Neue Montreal";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/fonts/neue-montreal-medium.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "Neue Montreal";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/fonts/neue-montreal-bold.otf") format("opentype");
-}
-
 @theme inline {
   --color-mat-surface: var(--mat-surface-default);
   --color-mat-brand: var(--mat-surface-brand);
@@ -84,7 +60,7 @@
   --mat-action-primary: var(--mat-color-action-primary);
   --mat-action-on-primary: var(--mat-color-action-on-primary);
 
-  --mat-font-sans: "Neue Montreal", Arial, Helvetica, sans-serif;
+  --mat-font-sans: var(--font-neue-montreal);
   --mat-font-weight-regular: 400;
   --mat-font-weight-medium: 500;
   --mat-font-weight-bold: 700;

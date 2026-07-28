@@ -33,11 +33,9 @@ export default function HomePage() {
               alt="Sala de MAT Pilates"
               className="mat-cropped-image mat-hero__photo"
               height={1448}
-              loading="eager"
-              priority
-              sizes="(min-width: 1440px) 609px, calc(100vw - 48px)"
+              preload
+              sizes="(min-width: 1440px) 609px, (min-width: 1280px) calc(38vw + 55px), (min-width: 1024px) calc(39vw - 53px), (min-width: 768px) 720px, calc(100vw - 48px)"
               src="/hero/mat-studio-hero.png"
-              unoptimized
               width={1086}
             />
             <div className="mat-hero__logo">
@@ -156,9 +154,8 @@ export default function HomePage() {
                 alt="Interior del estudio MAT Pilates"
                 className="mat-cropped-image mat-studio__photo"
                 height={1448}
-                sizes="(min-width: 1280px) 622px, (min-width: 1024px) 432px, calc(100vw - 48px)"
+                sizes="(min-width: 1440px) 622px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
                 src="/hero/mat-studio-infrared-heater-closeup.png"
-                unoptimized
                 width={1086}
               />
             </div>
@@ -206,9 +203,8 @@ export default function HomePage() {
               alt="Clase grupal de pilates"
               className="object-cover"
               fill
-              sizes="(min-width: 1440px) 601px, calc(100vw - 48px)"
+              sizes="(min-width: 1440px) 632px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
               src="/sections/reservation-photo.png"
-              unoptimized
             />
           </div>
         </section>
