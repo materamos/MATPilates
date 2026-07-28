@@ -443,11 +443,11 @@ a {
 }
 
 .mat-hero__photo {
-  top: -28%;
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: 152%;
-  object-fit: fill;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .mat-hero__logo {
@@ -687,11 +687,11 @@ a {
 }
 
 .mat-studio__photo {
-  top: -30.83%;
-  left: -10.63%;
-  width: 121.06%;
-  height: 207.89%;
-  object-fit: fill;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .mat-studio__copy {
@@ -1024,13 +1024,6 @@ a {
     aspect-ratio: auto;
   }
 
-  .mat-hero__photo {
-    top: -6.21%;
-    left: -23.28%;
-    width: 146.78%;
-    height: 119.55%;
-  }
-
   .mat-hero__logo {
     width: 67.71%;
     aspect-ratio: 239 / 182;
@@ -1203,13 +1196,6 @@ a {
     width: 100%;
     height: 586px;
     aspect-ratio: auto;
-  }
-
-  .mat-studio__photo {
-    top: -6.14%;
-    left: -20.09%;
-    width: 148%;
-    height: 167.5%;
   }
 
   .mat-studio__manifesto {
@@ -1843,13 +1829,6 @@ a {
     margin-top: 79px;
   }
 
-  .mat-hero__photo {
-    top: -8.45%;
-    left: -8.22%;
-    width: 116.67%;
-    height: 129.34%;
-  }
-
   .mat-reservation {
     min-height: 681px;
   }
@@ -1887,13 +1866,6 @@ a {
 
   .mat-hero__details {
     margin-top: 124px;
-  }
-
-  .mat-hero__photo {
-    top: -9.61%;
-    left: -12.53%;
-    width: 119.26%;
-    height: 130.22%;
   }
 
   .mat-reservation {
@@ -3746,7 +3718,31 @@ a {
   }
 }
 
+/* Keep approved media proportions on oversized desktop viewports, including browser zoom-out. */
 @media (min-width: 1440px) and (min-height: 901px) {
+  .mat-hero__image {
+    width: 100%;
+    max-width: 609px;
+    height: auto;
+    aspect-ratio: 609 / 729;
+    align-self: start;
+    justify-self: end;
+  }
+
+  .mat-studio__visual {
+    width: 100%;
+    max-width: 622px;
+    height: auto;
+    aspect-ratio: 622 / 742;
+    align-self: start;
+    justify-self: start;
+  }
+
+  .mat-studio__image {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
   .mat-hero__actions {
     grid-template-columns: 589px;
     gap: 24px;
