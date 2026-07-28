@@ -88,10 +88,10 @@ Regular, Medium, and Bold are implemented across Mobile, Desktop, and Desktop Co
 | --- | --- | --- | --- | --- |
 | Mobile / Tablet | 0-1023 px | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
 | Compact Narrow | 1024-1279 px | Compact | Horizontal | 60 px gutter; 1160 px maximum |
-| Compact Short | 1280 px or wider and 820 px tall or shorter | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
-| Desktop | 1280 px or wider and 821 px tall or taller | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
+| Compact Content | 1280 px or wider and 900 px tall or shorter | Compact for landing content; Desktop for hero and navigation | Horizontal | 60 px gutter; 1320 px maximum |
+| Desktop | 1280 px or wider and 901 px tall or taller | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
 
-Width takes precedence over height. Therefore, 1024 x 768 is Narrow, 1280 x 820 is Short, and 1280 x 821 is Desktop.
+Width defines the composition and available height defines its content density. Therefore, 1024 x 768 is Narrow, 1280 x 720 is Compact Content, and 1280 x 901 is Desktop.
 
 Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights.
 
@@ -101,7 +101,7 @@ Containers remain fluid until their maximum width and are centered afterwards. S
 | --- | --- |
 | Desktop | Detail and header 20 px; cards 36 px; section and gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
 | Mobile / Tablet | Controls 8 px; groups 12 px; content 16 px; gutter 24 px; sections 32 px; radius 8 / 24 / full |
-| Compact Narrow and Short | Detail and header 20 px; controls 24 px; cards 36 px; panel 48 px; gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
+| Compact Narrow and Content | Detail and header 20 px; controls 24 px; cards 36 px; panel and section 48 px; gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
 
 Distances produced by `Space Between` are local mathematical results and are not reusable tokens. This includes values such as 25, 35, 79, 81, and 128 px that preserve the approved outer geometry.
 
