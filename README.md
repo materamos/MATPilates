@@ -18,7 +18,7 @@ It includes:
 - Next.js 16 with the App Router
 - React 19 and TypeScript
 - Tailwind CSS 4
-- ESLint
+- ESLint and Stylelint
 
 ## Requirements
 
@@ -36,7 +36,9 @@ npm install
 | Command | Description |
 | --- | --- |
 | `npm run dev` | Starts the development server with Turbopack. |
-| `npm run lint` | Runs ESLint rules. |
+| `npm run lint` | Runs the JavaScript/TypeScript and CSS linters sequentially. |
+| `npm run lint:js` | Runs ESLint rules. |
+| `npm run lint:css` | Runs Stylelint over CSS files under `src/`. |
 | `npm run build` | Creates the production build and validates TypeScript. |
 | `npm run start` | Starts the compiled application; requires `npm run build` first. |
 | `npm run figma:bridge:build` | Builds the local Codex–Figma typography bridge. |

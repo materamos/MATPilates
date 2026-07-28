@@ -86,7 +86,8 @@ Regular, Medium, and Bold are implemented across Mobile, Desktop, and Desktop Co
 
 | Mode | Condition | Typography | Navigation | Container |
 | --- | --- | --- | --- | --- |
-| Mobile / Tablet | 0-1023 px | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
+| Mobile | 0-767 px | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
+| Tablet | 768-1023 px | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
 | Compact Narrow | 1024-1279 px | Compact | Horizontal | 60 px gutter; 1160 px maximum |
 | Compact Content | 1280 px or wider and 900 px tall or shorter | Compact for landing content; Desktop for hero and navigation | Horizontal | 60 px gutter; 1320 px maximum |
 | Desktop | 1280 px or wider and 901 px tall or taller | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
@@ -94,6 +95,12 @@ Regular, Medium, and Bold are implemented across Mobile, Desktop, and Desktop Co
 Width defines the composition and available height defines its content density. Therefore, 1024 x 768 is Narrow, 1280 x 720 is Compact Content, and 1280 x 901 is Desktop.
 
 Within the 768-1023 px tablet range, sections use intrinsic height and normal document scrolling at every viewport height. The viewport minus the header is a minimum-height floor, not a fixed-height boundary; content must remain accessible instead of being clipped when a landscape or split-screen viewport is short.
+
+### Global CSS organization
+
+`src/app/globals.css` is the single global stylesheet. Its internal order is Tailwind imports, design tokens, reset and accessibility, typography and shared primitives, header and menu, mobile-first landing sections, footer, and responsive modes. A selector has one definition per responsive context; later patches for the same mode are not part of the contract.
+
+The four composition families are Mobile/Tablet, Compact Narrow, Compact Content, and Desktop. They are implemented through the five width/height ranges in the table above, plus one tablet-landscape adjustment inside the Tablet range. Layout should prefer intrinsic sizing, maximum-width containers, and `clamp()` over new one-off breakpoints. Content sections must not combine a rigid height with clipping; overflow cropping is reserved for media wrappers.
 
 Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights.
 
