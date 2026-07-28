@@ -32,9 +32,9 @@ export const footerNavigationItems = [
 export const landingContent = {
   hero: {
     eyebrow: "MAT Pilates · Canning",
-    title: "Volvé a habitar tu cuerpo.",
+    title: "No se trata solo de entrenar.",
     description:
-      "Una práctica consciente para ganar fuerza, movilidad y conexión en tu día a día.",
+      "Se trata de conectar con tu cuerpo, explorar tus límites y descubrir una nueva forma de moverte.",
   },
   manifesto: {
     eyebrow: "Movimiento · Presencia · Bienestar",
