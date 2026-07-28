@@ -127,6 +127,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
   background: var(--mat-surface-inverse);
 }
 
@@ -481,6 +482,7 @@ a {
 
 .mat-manifesto__copy .mat-h2 {
   max-width: 287px;
+  text-wrap: balance;
 }
 
 .mat-manifesto__graphic {
@@ -716,7 +718,7 @@ a {
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  border-radius: var(--mat-radius-sm);
+  border-radius: var(--mat-radius-lg);
   background: var(--mat-color-pale-pink);
 }
 
@@ -2063,9 +2065,64 @@ a {
   .mat-hot-mat__closing {
     padding-inline: 64px;
   }
+
+  .mat-manifesto__graphic {
+    width: 384px;
+    max-width: 100%;
+    align-self: center;
+  }
+
+  .mat-manifesto__reduction-image {
+    left: 50%;
+    translate: -50% 0;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .mat-manifesto {
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mat-manifesto__copy {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .mat-manifesto__copy .mat-h2 {
+    width: 100%;
+    max-width: none;
+  }
+
 }
 
 @media (min-width: 768px) and (max-width: 1023px) and (max-height: 820px) {
+  .mat-manifesto {
+    justify-content: space-between;
+  }
+
+  .mat-manifesto__copy {
+    align-items: center;
+    text-align: center;
+  }
+
+  .mat-manifesto__copy .mat-h2 {
+    width: 100%;
+    max-width: none;
+  }
+
+  .mat-manifesto__graphic {
+    width: 384px;
+    max-width: 100%;
+    align-self: center;
+  }
+
+  .mat-manifesto__reduction-image {
+    left: 50%;
+    translate: -50% 0;
+  }
+
   .mat-hero {
     grid-template-rows: minmax(0, 1fr);
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
@@ -2089,6 +2146,7 @@ a {
   }
 
   .mat-hero__actions {
+    grid-template-columns: minmax(0, 1fr);
     margin-top: auto;
   }
 
@@ -2117,8 +2175,10 @@ a {
   }
 
   .mat-hot-mat__cards {
+    height: calc(100% - 144px);
     grid-template-rows: minmax(0, 1fr);
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-self: center;
     gap: 16px;
   }
 
@@ -2126,6 +2186,12 @@ a {
   .mat-hot-mat__card:nth-child(-n + 2) {
     height: 100%;
     padding: 20px;
+  }
+
+  .mat-hot-mat__card > .mat-body-small {
+    display: flex;
+    flex: 1;
+    align-items: center;
   }
 }
 
@@ -2552,8 +2618,10 @@ a {
   }
 
   .mat-schedule {
+    height: calc(100% - 96px);
     grid-template-rows: minmax(0, 1fr);
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-self: end;
     gap: 16px;
     padding: 20px;
   }
@@ -2563,18 +2631,59 @@ a {
     height: 100%;
   }
 
-  .mat-studio {
-    grid-template-rows: minmax(0, 1fr);
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 24px;
+  .mat-schedule__intro {
+    justify-content: center;
   }
 
+  .mat-studio {
+    grid-template-rows:
+      auto auto auto minmax(0, 1fr) auto auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 24px;
+    row-gap: 10px;
+  }
+
+  .mat-studio__visual,
   .mat-studio__copy {
-    height: 100%;
+    display: contents;
+  }
+
+  .mat-studio__image {
+    grid-row: 1 / -1;
+    grid-column: 1;
+  }
+
+  .mat-studio__manifesto {
+    position: static;
+    width: 100%;
+    grid-row: 5;
+    grid-column: 2;
+  }
+
+  .mat-studio__copy > .mat-label {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .mat-studio__copy > .mat-h2 {
+    grid-row: 2;
+    grid-column: 2;
+  }
+
+  .mat-studio__description {
+    grid-row: 3;
+    grid-column: 2;
   }
 
   .mat-studio__details {
-    margin-top: auto;
+    grid-row: 6;
+    grid-column: 2;
+    margin-block: 0;
+  }
+
+  .mat-studio__link {
+    grid-row: 8;
+    grid-column: 2;
   }
 
   .mat-reservation {
@@ -3731,7 +3840,7 @@ a {
   }
 
   .mat-studio__photo {
-    object-position: center 25%;
+    object-position: center top;
   }
 
   .mat-studio__copy {
@@ -3797,6 +3906,7 @@ a {
   .mat-hero__secondary {
     width: fit-content;
     min-height: 56px;
+    justify-self: center;
     padding: 18px 24px;
     font-size: var(--mat-font-size-18);
   }
@@ -3815,6 +3925,16 @@ a {
 @media (min-width: 1024px) {
   :root {
     --mat-section-space-y: 60px;
+  }
+}
+
+@media (min-width: 768px) {
+  .mat-studio__details {
+    margin-block: auto;
+  }
+
+  .mat-studio__link {
+    margin-top: 0;
   }
 }
 

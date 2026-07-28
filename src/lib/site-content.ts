@@ -20,7 +20,7 @@ export const siteContact = {
 export const navigationItems = [
   { label: "Hot Mat", desktopLabel: "Hot Mat", href: "#hotmat" },
   { label: "Clases", desktopLabel: "Clases", href: "#clases" },
-  { label: "Estudio", desktopLabel: "El estudio", href: "#estudio" },
+  { label: "El Estudio", desktopLabel: "El estudio", href: "#estudio" },
 ] as const;
 
 export const footerNavigationItems = [
@@ -90,7 +90,7 @@ export const landingContent = {
     manifesto: "Un cuerpo que se mueve se siente en casa.",
     manifestoLabel: "MAT Pilates · Movimiento consciente",
     location: "Canning Center · Mariano Castex 1560, Canning",
-    details: ["Grupos reducidos", "Todos los niveles"],
+    details: ["Todos los niveles"],
   },
   reservation: {
     eyebrow: "Tu momento empieza acá",

@@ -157,7 +157,7 @@ export default function HomePage() {
                 className="mat-cropped-image mat-studio__photo"
                 height={1448}
                 sizes="(min-width: 1280px) 622px, (min-width: 1024px) 432px, calc(100vw - 48px)"
-                src="/hero/mat-studio-heaters.png"
+                src="/hero/mat-studio-infrared-heater-closeup.png"
                 unoptimized
                 width={1086}
               />
