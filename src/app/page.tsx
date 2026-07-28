@@ -22,7 +22,7 @@ export default function HomePage() {
               <Button className="mat-desktop-button mat-hero__primary" href="#contacto">
                 Reservá tu clase
               </Button>
-              <a className="mat-text-button mat-hero__secondary" href="#metodo">
+              <a className="mat-text-button mat-hero__secondary" href="#hotmat">
                 Conocé Hot Mat <span aria-hidden="true">→</span>
               </a>
             </div>
@@ -72,7 +72,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mat-hot-mat mat-scroll-target" id="metodo">
+        <section className="mat-hot-mat mat-scroll-target" id="hotmat">
           <div className="mat-section-heading mat-hot-mat__heading">
             <div className="mat-section-heading__title">
               <p className="mat-label">{hotMat.eyebrow}</p>

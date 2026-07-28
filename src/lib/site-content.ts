@@ -18,7 +18,7 @@ export const siteContact = {
 } as const;
 
 export const navigationItems = [
-  { label: "Hot Mat", desktopLabel: "Hot Mat", href: "#metodo" },
+  { label: "Hot Mat", desktopLabel: "Hot Mat", href: "#hotmat" },
   { label: "Clases", desktopLabel: "Clases", href: "#clases" },
   { label: "Estudio", desktopLabel: "El estudio", href: "#estudio" },
 ] as const;
