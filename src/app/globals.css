@@ -110,6 +110,7 @@
   --mat-space-6: 24px;
   --mat-space-8: 32px;
   --mat-space-12: 48px;
+  --mat-section-space-y: 32px;
 
   --mat-radius-none: 0;
   --mat-radius-sm: 8px;
@@ -486,17 +487,23 @@ a {
   overflow: hidden;
   width: 100%;
   height: 100px;
+  background: var(--mat-color-charcoal);
   border-radius: var(--mat-radius-lg);
 }
 
-.mat-manifesto__graphic-image {
+.mat-manifesto__graphic-canvas {
   position: absolute;
   top: -0.12%;
   left: -5.9%;
   width: 112.05%;
-  height: 215.55%;
-  max-width: none;
-  object-fit: fill;
+  aspect-ratio: 923.42 / 535.07;
+}
+
+.mat-manifesto__graphic-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .mat-hot-mat,
@@ -1051,11 +1058,17 @@ a {
     height: 230px;
   }
 
-  .mat-manifesto__graphic-image {
+  .mat-manifesto__graphic-canvas {
     top: 0.06%;
-    left: -55.78%;
-    width: 170.96%;
-    height: 218.58%;
+    left: -37%;
+    width: auto;
+    height: 200%;
+  }
+
+  .mat-manifesto__graphic-shape--blue,
+  .mat-manifesto__graphic-shape--pearl,
+  .mat-manifesto__graphic-shape--burgundy {
+    display: none;
   }
 
   .mat-hot-mat,
@@ -1499,11 +1512,17 @@ a {
     flex: none;
   }
 
-  .mat-manifesto__graphic-image {
+  .mat-manifesto__graphic-canvas {
     top: 0.06%;
-    left: -55.78%;
-    width: 170.96%;
-    height: 218.58%;
+    left: -37%;
+    width: auto;
+    height: 200%;
+  }
+
+  .mat-manifesto__graphic-shape--blue,
+  .mat-manifesto__graphic-shape--pearl,
+  .mat-manifesto__graphic-shape--burgundy {
+    display: none;
   }
 
   .mat-hot-mat,
@@ -3718,21 +3737,49 @@ a {
   }
 }
 
+/* Keep one vertical rhythm across the landing sections at each responsive mode. */
+.mat-hero,
+.mat-manifesto,
+.mat-hot-mat,
+.mat-classes,
+.mat-studio,
+.mat-reservation {
+  padding-block: var(--mat-section-space-y);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --mat-section-space-y: 60px;
+  }
+}
+
 /* Keep approved media proportions on oversized desktop viewports, including browser zoom-out. */
 @media (min-width: 1440px) and (min-height: 901px) {
   .mat-hero__image {
-    width: 100%;
+    width: auto;
     max-width: 609px;
-    height: auto;
+    height: min(
+      729px,
+      calc(
+        100dvh - var(--mat-header-height) - var(--mat-section-space-y) -
+          var(--mat-section-space-y)
+      )
+    );
     aspect-ratio: 609 / 729;
     align-self: start;
     justify-self: end;
   }
 
   .mat-studio__visual {
-    width: 100%;
+    width: auto;
     max-width: 622px;
-    height: auto;
+    height: min(
+      742px,
+      calc(
+        100dvh - var(--mat-header-height) - var(--mat-section-space-y) -
+          var(--mat-section-space-y)
+      )
+    );
     aspect-ratio: 622 / 742;
     align-self: start;
     justify-self: start;

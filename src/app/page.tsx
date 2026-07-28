@@ -59,16 +59,14 @@ export default function HomePage() {
               {manifesto.title}
             </h2>
           </div>
-          <div className="mat-manifesto__graphic">
-            <Image
-              alt=""
-              aria-hidden="true"
-              className="mat-manifesto__graphic-image"
-              height={1080}
-              sizes="(min-width: 1440px) 543px, calc(100vw - 48px)"
-              src="/sections/manifesto-graphic.png"
-              width={1920}
-            />
+          <div aria-hidden="true" className="mat-manifesto__graphic">
+            <div className="mat-manifesto__graphic-canvas">
+              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--blue" height={535} src="/sections/manifesto/blue.svg" unoptimized width={923} />
+              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--beige" height={535} src="/sections/manifesto/beige.svg" unoptimized width={923} />
+              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--pearl" height={535} src="/sections/manifesto/pearl.svg" unoptimized width={923} />
+              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--burgundy" height={535} src="/sections/manifesto/burgundy.svg" unoptimized width={923} />
+              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--pink" height={535} src="/sections/manifesto/pink.svg" unoptimized width={923} />
+            </div>
           </div>
         </section>
 
