@@ -60,12 +60,14 @@ export default function HomePage() {
             </h2>
           </div>
           <div aria-hidden="true" className="mat-manifesto__graphic">
-            <div className="mat-manifesto__graphic-canvas">
-              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--blue" height={535} src="/sections/manifesto/blue.svg" unoptimized width={923} />
-              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--beige" height={535} src="/sections/manifesto/beige.svg" unoptimized width={923} />
-              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--pearl" height={535} src="/sections/manifesto/pearl.svg" unoptimized width={923} />
-              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--burgundy" height={535} src="/sections/manifesto/burgundy.svg" unoptimized width={923} />
-              <Image alt="" className="mat-manifesto__graphic-shape mat-manifesto__graphic-shape--pink" height={535} src="/sections/manifesto/pink.svg" unoptimized width={923} />
+            <div className="mat-manifesto__reduction mat-manifesto__reduction--pearl">
+              <Image alt="" className="mat-manifesto__reduction-image" height={535} src="/sections/manifesto/pearl.svg" unoptimized width={923} />
+            </div>
+            <div className="mat-manifesto__reduction mat-manifesto__reduction--pink">
+              <Image alt="" className="mat-manifesto__reduction-image" height={535} src="/sections/manifesto/pink.svg" unoptimized width={923} />
+            </div>
+            <div className="mat-manifesto__reduction mat-manifesto__reduction--beige">
+              <Image alt="" className="mat-manifesto__reduction-image" height={535} src="/sections/manifesto/beige.svg" unoptimized width={923} />
             </div>
           </div>
         </section>
@@ -179,7 +181,7 @@ export default function HomePage() {
               rel="noreferrer"
               target="_blank"
             >
-              Conocé el estudio <span aria-hidden="true">→</span>
+              Cómo llegar <span aria-hidden="true">→</span>
             </a>
             <span aria-hidden="true" className="mat-studio__spacer" />
           </div>

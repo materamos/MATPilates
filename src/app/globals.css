@@ -463,6 +463,7 @@ a {
 .mat-manifesto {
   display: flex;
   flex-direction: column;
+  min-height: 296px;
   gap: 16px;
   background: var(--mat-color-deep-burgundy);
   color: var(--mat-color-pearl-neutral);
@@ -491,19 +492,22 @@ a {
   border-radius: var(--mat-radius-lg);
 }
 
-.mat-manifesto__graphic-canvas {
+.mat-manifesto__reduction {
   position: absolute;
-  top: -0.12%;
-  left: -5.9%;
-  width: 112.05%;
-  aspect-ratio: 923.42 / 535.07;
-}
-
-.mat-manifesto__graphic-shape {
-  position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+.mat-manifesto__reduction-image {
+  position: absolute;
+  top: 18px;
+  left: 48px;
+  width: 292px;
+  height: auto;
+  max-width: none;
 }
 
 .mat-hot-mat,
@@ -1058,17 +1062,36 @@ a {
     height: 230px;
   }
 
-  .mat-manifesto__graphic-canvas {
-    top: 0.06%;
-    left: -37%;
-    width: auto;
-    height: 200%;
+  .mat-manifesto__reduction--pearl {
+    display: none;
   }
 
-  .mat-manifesto__graphic-shape--blue,
-  .mat-manifesto__graphic-shape--pearl,
-  .mat-manifesto__graphic-shape--burgundy {
-    display: none;
+  .mat-manifesto__reduction-image {
+    width: 711px;
+  }
+
+  .mat-manifesto__reduction--pink {
+    top: 28px;
+    left: 41px;
+    width: 210px;
+    height: 180px;
+  }
+
+  .mat-manifesto__reduction--pink .mat-manifesto__reduction-image {
+    left: -250px;
+  }
+
+  .mat-manifesto__reduction--beige {
+    top: 20px;
+    left: 280px;
+    width: 180px;
+    height: 190px;
+  }
+
+  .mat-manifesto__reduction--beige .mat-manifesto__reduction-image {
+    top: 21px;
+    left: -405px;
+    width: 582px;
   }
 
   .mat-hot-mat,
@@ -1512,17 +1535,36 @@ a {
     flex: none;
   }
 
-  .mat-manifesto__graphic-canvas {
-    top: 0.06%;
-    left: -37%;
-    width: auto;
-    height: 200%;
+  .mat-manifesto__reduction-image {
+    width: 781px;
   }
 
-  .mat-manifesto__graphic-shape--blue,
-  .mat-manifesto__graphic-shape--pearl,
-  .mat-manifesto__graphic-shape--burgundy {
+  .mat-manifesto__reduction--pearl {
     display: none;
+  }
+
+  .mat-manifesto__reduction--pink {
+    top: 25px;
+    left: 59px;
+    width: 225px;
+    height: 190px;
+  }
+
+  .mat-manifesto__reduction--pink .mat-manifesto__reduction-image {
+    left: -275px;
+  }
+
+  .mat-manifesto__reduction--beige {
+    top: 20px;
+    left: 325px;
+    width: 190px;
+    height: 190px;
+  }
+
+  .mat-manifesto__reduction--beige .mat-manifesto__reduction-image {
+    top: 27px;
+    left: -424px;
+    width: 609px;
   }
 
   .mat-hot-mat,
@@ -3579,9 +3621,16 @@ a {
     padding-block: var(--mat-space-12);
   }
 
-  .mat-hot-mat,
+  .mat-hot-mat {
+    min-height: calc(100dvh - var(--mat-header-height));
+    gap: 24px;
+  }
+
   .mat-classes {
-    gap: 36px;
+    min-height: calc(100dvh - var(--mat-header-height));
+    grid-template-rows: auto minmax(332px, 1fr);
+    align-content: space-between;
+    gap: 16px;
   }
 
   .mat-hot-mat__heading .mat-section-heading__title,
@@ -3647,7 +3696,7 @@ a {
 
   .mat-hot-mat__card,
   .mat-hot-mat__card:nth-child(-n + 2) {
-    min-height: 360px;
+    min-height: 270px;
   }
 
   .mat-schedule,
@@ -3656,22 +3705,33 @@ a {
     min-height: 0;
   }
 
+  .mat-schedule {
+    height: 100%;
+    max-height: 400px;
+    align-self: end;
+  }
+
   .mat-schedule__intro,
   .mat-schedule__times {
-    padding: 36px;
+    padding: clamp(36px, calc(4dvh + 8px), 44px);
   }
 
   .mat-studio {
+    min-height: calc(100dvh - var(--mat-header-height));
     align-items: stretch;
   }
 
   .mat-studio__visual {
     height: auto;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: auto;
   }
 
   .mat-studio__image {
     height: 100%;
+  }
+
+  .mat-studio__photo {
+    object-position: center 25%;
   }
 
   .mat-studio__copy {
@@ -3690,12 +3750,17 @@ a {
     align-self: stretch;
   }
 
+  .mat-reservation {
+    min-height: calc(100dvh - var(--mat-header-height));
+    align-items: stretch;
+  }
+
   .mat-reservation__image {
-    aspect-ratio: 3 / 2;
+    aspect-ratio: auto;
   }
 
   .mat-reservation__button {
-    margin-top: var(--mat-space-12);
+    margin-top: auto;
   }
 }
 

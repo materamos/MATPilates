@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MAT Pilates Canning",
-  description: "Movimiento, equilibrio y transformación en Canning.",
+  description:
+    "Hot Pilates y Mat Pilates en Canning Center. Una experiencia cercana, consciente y enfocada en el bienestar.",
 };
 
 export default function RootLayout({

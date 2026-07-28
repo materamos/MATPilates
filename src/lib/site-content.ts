@@ -12,7 +12,7 @@ export const siteContact = {
   location: {
     venue: "Canning Center",
     address: "Mariano Castex 1560, Canning",
-    label: "Pilates MAT · Canning, Buenos Aires",
+    label: "MAT Pilates · Canning, Buenos Aires",
     mapsUrl: "https://maps.app.goo.gl/FVzpJd571G4QpZPF7",
   },
 } as const;
@@ -31,7 +31,7 @@ export const footerNavigationItems = [
 
 export const landingContent = {
   hero: {
-    eyebrow: "Pilates MAT · Canning",
+    eyebrow: "MAT Pilates · Canning",
     title: "Volvé a habitar tu cuerpo.",
     description:
       "Una práctica consciente para ganar fuerza, movilidad y conexión en tu día a día.",
@@ -89,7 +89,7 @@ export const landingContent = {
       "Un espacio de práctica en Canning para entrenar con presencia, técnica y acompañamiento real.",
     manifesto: "Un cuerpo que se mueve se siente en casa.",
     manifestoLabel: "MAT Pilates · Movimiento consciente",
-    location: "Canning, Buenos Aires",
+    location: "Canning Center · Mariano Castex 1560, Canning",
     details: ["Grupos reducidos", "Todos los niveles"],
   },
   reservation: {
@@ -103,14 +103,14 @@ export const landingContent = {
 
 export const schedule = [
   {
-    name: "MAT INICIAL",
+    name: "CLASE 1",
     time: "LUNES · MIÉRCOLES · 09:00",
     mobileTime: "LUN · MIE · 09:00",
   },
   {
-    name: "MAT FLOW",
+    name: "CLASE 2",
     time: "MARTES · JUEVES · 18:30",
     mobileTime: "MAR · JUE · 18:30",
   },
-  { name: "MAT FUERZA", time: "SÁBADO · 10:00", mobileTime: "SÁB · 10:00" },
+  { name: "CLASE 3", time: "SÁBADO · 10:00", mobileTime: "SÁB · 10:00" },
 ] as const;
