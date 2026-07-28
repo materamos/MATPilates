@@ -93,6 +93,8 @@ Regular, Medium, and Bold are implemented across Mobile, Desktop, and Desktop Co
 
 Width defines the composition and available height defines its content density. Therefore, 1024 x 768 is Narrow, 1280 x 720 is Compact Content, and 1280 x 901 is Desktop.
 
+Within the 768-1023 px tablet range, sections use intrinsic height and normal document scrolling at every viewport height. The viewport minus the header is a minimum-height floor, not a fixed-height boundary; content must remain accessible instead of being clipped when a landscape or split-screen viewport is short.
+
 Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights.
 
 ### Composition values
