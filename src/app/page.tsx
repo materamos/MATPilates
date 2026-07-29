@@ -133,12 +133,6 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <p className="mat-label mat-schedule__details mat-schedule__details--wide">
-                {classes.details}
-              </p>
-              <p className="mat-label mat-schedule__details mat-schedule__details--mobile">
-                {classes.mobileDetails}
-              </p>
             </div>
           </article>
         </section>
