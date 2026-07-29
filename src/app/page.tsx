@@ -3,6 +3,7 @@ import { Button } from "@/components/button";
 import { ClassCard } from "@/components/class-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { StudioGallery } from "@/components/studio-gallery";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { classCatalog, landingContent, siteContact } from "@/lib/site-content";
 
@@ -24,7 +25,7 @@ export default function HomePage() {
                 Reservá tu clase
               </Button>
               <a className="mat-text-button mat-hero__secondary" href="#hotmat">
-                Conocé Hot Mat <span aria-hidden="true">→</span>
+                Conocé Hot Mat
               </a>
             </div>
             <span aria-hidden="true" className="mat-hero__spacer" />
@@ -52,23 +53,19 @@ export default function HomePage() {
         </section>
 
         <section aria-labelledby="manifesto-title" className="mat-manifesto">
-          <div className="mat-manifesto__copy">
-            <p className="mat-label">{manifesto.eyebrow}</p>
-            <h2 className="mat-h2" id="manifesto-title">
-              {manifesto.title}
-            </h2>
-          </div>
-          <div aria-hidden="true" className="mat-manifesto__graphic">
-            <div className="mat-manifesto__reduction mat-manifesto__reduction--pearl">
-              <Image alt="" className="mat-manifesto__reduction-image" height={535} src="/sections/manifesto/pearl.svg" unoptimized width={923} />
-            </div>
-            <div className="mat-manifesto__reduction mat-manifesto__reduction--pink">
-              <Image alt="" className="mat-manifesto__reduction-image" height={535} src="/sections/manifesto/pink.svg" unoptimized width={923} />
-            </div>
-            <div className="mat-manifesto__reduction mat-manifesto__reduction--beige">
-              <Image alt="" className="mat-manifesto__reduction-image" height={535} src="/sections/manifesto/beige.svg" unoptimized width={923} />
-            </div>
-          </div>
+          <h1
+            aria-label={`${manifesto.concepts.join(" · ")} ·`}
+            className="mat-manifesto__title"
+            id="manifesto-title"
+          >
+            <span className="mat-manifesto__track">
+              {[0, 1].map((copy) => (
+                <span aria-hidden="true" className="mat-manifesto__term" key={copy}>
+                  {manifesto.concepts.join(" · ")} ·
+                </span>
+              ))}
+            </span>
+          </h1>
         </section>
 
         <section className="mat-hot-mat mat-scroll-target" id="hotmat">
@@ -127,40 +124,19 @@ export default function HomePage() {
 
         <section className="mat-studio mat-scroll-target" id="estudio">
           <div className="mat-studio__visual">
-            <div className="mat-studio__manifesto">
-              <p className="mat-h3">{studio.manifesto}</p>
-              <p className="mat-label">{studio.manifestoLabel}</p>
-            </div>
-            <div className="mat-studio__image">
-              <Image
-                alt="Interior del estudio MAT Pilates"
-                className="mat-cropped-image mat-studio__photo"
-                height={1448}
-                sizes="(min-width: 1440px) 622px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
-                src="/hero/mat-studio-infrared-heater-closeup.png"
-                width={1086}
-              />
-            </div>
+            <StudioGallery images={studio.images} />
           </div>
           <div className="mat-studio__copy">
             <p className="mat-label">{studio.eyebrow}</p>
             <h2 className="mat-h2">{studio.title}</h2>
-            <p className="mat-body mat-studio__description">{studio.description}</p>
-            <div className="mat-studio__details">
-              <p className="mat-label">{studio.location}</p>
-              <p className="mat-body-small">
-                {studio.details.map((detail) => (
-                  <span key={detail}>{detail}</span>
-                ))}
-              </p>
-            </div>
+            <p className="mat-body-small mat-studio__location">{studio.location}</p>
             <a
               className="mat-text-button mat-studio__link"
-              href={siteContact.location.mapsUrl}
+              href={siteContact.location.directionsUrl}
               rel="noreferrer"
               target="_blank"
             >
-              Cómo llegar <span aria-hidden="true">→</span>
+              Cómo llegar
             </a>
             <span aria-hidden="true" className="mat-studio__spacer" />
           </div>

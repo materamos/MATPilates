@@ -22,6 +22,8 @@ export const siteContact = {
     address: "Mariano Castex 1560, Canning",
     label: "MAT Pilates · Canning, Buenos Aires",
     mapsUrl: "https://maps.app.goo.gl/FVzpJd571G4QpZPF7",
+    directionsUrl:
+      "https://www.google.com/maps/dir/?api=1&destination=-34.8630031%2C-58.5018518",
   },
 } as const;
 
@@ -41,8 +43,7 @@ export const landingContent = {
       "Se trata de conectar con tu cuerpo, explorar tus límites y descubrir una nueva forma de moverte.",
   },
   manifesto: {
-    eyebrow: "Movimiento · Presencia · Bienestar",
-    title: "Un cuerpo que se mueve se siente en casa.",
+    concepts: ["Movimiento", "Presencia", "Bienestar"],
   },
   hotMat: {
     eyebrow: "Hot Mat",
@@ -83,12 +84,17 @@ export const landingContent = {
   studio: {
     eyebrow: "El estudio",
     title: "Cerca, cálido y pensado para vos.",
-    description:
-      "Un espacio de práctica en Canning para entrenar con presencia, técnica y acompañamiento real.",
-    manifesto: "Un cuerpo que se mueve se siente en casa.",
-    manifestoLabel: "MAT Pilates · Movimiento consciente",
+    images: [
+      {
+        alt: "Interior del estudio MAT Pilates con paneles infrarrojos encendidos",
+        src: "/sections/studio/mat-pilates-studio-interior-heaters-wide.png",
+      },
+      {
+        alt: "Equipamiento de MAT Pilates preparado sobre el piso del estudio",
+        src: "/sections/studio/mat-pilates-studio-equipment-shelf-floor.png",
+      },
+    ],
     location: "Canning Center · Mariano Castex 1560, Canning",
-    details: ["Todos los niveles"],
   },
   reservation: {
     eyebrow: "Tu momento empieza acá",

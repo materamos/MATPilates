@@ -127,9 +127,7 @@ export function SiteHeader() {
                 <li key={item.href}>
                   <a className="site-menu__link" href={item.href} onClick={closeMenu}>
                     <span>{item.label}</span>
-                    <span aria-hidden="true" className="site-menu__arrow">
-                      →
-                    </span>
+                    <span aria-hidden="true" className="site-menu__arrow" />
                   </a>
                 </li>
               ))}
@@ -139,10 +137,16 @@ export function SiteHeader() {
           <Button className="site-menu__cta" href="#contacto" onClick={closeMenu} variant="light">
             Reservá tu clase
           </Button>
-          <div className="site-menu__location">
+          <a
+            className="site-menu__location"
+            href={siteContact.location.mapsUrl}
+            onClick={closeMenu}
+            rel="noreferrer"
+            target="_blank"
+          >
             <p className="site-menu__venue">{siteContact.location.venue}</p>
             <p className="site-menu__address">{siteContact.location.address.replace(",", " ·")}</p>
-          </div>
+          </a>
         </div>
       ) : null}
     </header>

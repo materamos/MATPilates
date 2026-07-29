@@ -1,23 +1,98 @@
+"use client";
+
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import type { ClassOffering } from "@/lib/site-content";
 
 interface ClassCardProps {
   classOffering: ClassOffering;
 }
 
-const environmentLabels: Record<ClassOffering["environment"], string> = {
-  hot: "Con calor",
-  "room-temperature": "Sin calor",
-};
-
 export function ClassCard({ classOffering }: ClassCardProps) {
+  const isHot = classOffering.environment === "hot";
+  const titleLabel = isHot ? `${classOffering.name}, con calor` : classOffering.name;
+  const titleViewportRef = useRef<HTMLSpanElement>(null);
+  const titleMeasureRef = useRef<HTMLSpanElement>(null);
+  const [isTitleOverflowing, setIsTitleOverflowing] = useState(false);
+
+  useEffect(() => {
+    const titleViewport = titleViewportRef.current;
+    const titleMeasure = titleMeasureRef.current;
+
+    if (!titleViewport || !titleMeasure) {
+      return;
+    }
+
+    const updateOverflow = () => {
+      setIsTitleOverflowing(titleMeasure.getBoundingClientRect().width > titleViewport.clientWidth);
+    };
+
+    const resizeObserver = new ResizeObserver(updateOverflow);
+    resizeObserver.observe(titleViewport);
+    resizeObserver.observe(titleMeasure);
+    updateOverflow();
+
+    return () => resizeObserver.disconnect();
+  }, [classOffering.name]);
+
   return (
-    <details className="mat-class-card">
+    <details className="mat-class-card" name="mat-class-catalog">
       <summary className="mat-class-card__summary">
         <span className="mat-class-card__summary-copy">
-          <span className="mat-label mat-class-card__environment">
-            {environmentLabels[classOffering.environment]}
-          </span>
-          <h3 className="mat-h3 mat-class-card__name">{classOffering.name}</h3>
+          <h3
+            aria-label={isTitleOverflowing ? titleLabel : undefined}
+            className="mat-h3 mat-class-card__name"
+          >
+            <span className="mat-class-card__title-viewport" ref={titleViewportRef}>
+              {isTitleOverflowing ? (
+                <span aria-hidden="true" className="mat-class-card__title-track">
+                  {[0, 1].map((copy) => (
+                    <span className="mat-class-card__title-track-item" key={copy}>
+                      <span className="mat-class-card__title-content">
+                        <span>{classOffering.name}</span>
+                        {isHot ? (
+                          <Image
+                            alt=""
+                            className="mat-class-card__title-fire"
+                            height={15}
+                            src="/icons/hot-class-fire.svg"
+                            width={12}
+                          />
+                        ) : null}
+                      </span>
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                <span className="mat-class-card__title-content">
+                  <span>{classOffering.name}</span>
+                  {isHot ? (
+                    <Image
+                      alt="Con calor"
+                      className="mat-class-card__title-fire"
+                      height={15}
+                      src="/icons/hot-class-fire.svg"
+                      width={12}
+                    />
+                  ) : null}
+                </span>
+              )}
+            </span>
+            <span aria-hidden="true" className="mat-class-card__title-measure" ref={titleMeasureRef}>
+              <span className="mat-class-card__title-content">
+                <span>{classOffering.name}</span>
+                {isHot ? (
+                  <Image
+                    alt=""
+                    className="mat-class-card__title-fire"
+                    height={15}
+                    src="/icons/hot-class-fire.svg"
+                    width={12}
+                  />
+                ) : null}
+              </span>
+            </span>
+          </h3>
           <span className="mat-body-small mat-class-card__tagline">
             {classOffering.tagline}
           </span>
