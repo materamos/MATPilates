@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { Button } from "@/components/button";
+import { ClassCard } from "@/components/class-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { landingContent, schedule, siteContact } from "@/lib/site-content";
+import { classCatalog, landingContent, siteContact } from "@/lib/site-content";
 
 export default function HomePage() {
   const { hero, manifesto, hotMat, classes, studio, reservation } = landingContent;
@@ -106,35 +107,22 @@ export default function HomePage() {
             </div>
             <p className="mat-body mat-section-heading__description">{classes.description}</p>
           </div>
-          <article className="mat-schedule">
-            <div className="mat-schedule__intro">
-              <p className="mat-label">{classes.panelEyebrow}</p>
-              <h3 className="mat-h3">
-                {classes.panelTitle.map((line) => (
-                  <span key={line}>{line}</span>
-                ))}
-              </h3>
-              <p className="mat-body-small">{classes.panelDescription}</p>
-              <Button className="mat-desktop-button mat-schedule__button" href="#contacto">
-                Reservá tu clase
-              </Button>
-            </div>
-            <div className="mat-schedule__times">
-              <ul className="mat-schedule__list">
-                {schedule.map((item) => (
-                  <li className="mat-schedule__row" key={item.name}>
-                    <span className="mat-text-button">{item.name}</span>
-                    <span className="mat-body-small mat-schedule__time mat-schedule__time--wide">
-                      {item.time}
-                    </span>
-                    <span className="mat-body-small mat-schedule__time mat-schedule__time--mobile">
-                      {item.mobileTime}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </article>
+          <ul aria-label="Catálogo de clases" className="mat-class-catalog">
+            {classCatalog.map((classOffering) => (
+              <li className="mat-class-catalog__item" key={classOffering.id}>
+                <ClassCard classOffering={classOffering} />
+              </li>
+            ))}
+          </ul>
+          <div className="mat-classes__actions">
+            <Button
+              className="mat-desktop-button mat-classes__button"
+              href="#contacto"
+              variant="light"
+            >
+              Reservá tu clase
+            </Button>
+          </div>
         </section>
 
         <section className="mat-studio mat-scroll-target" id="estudio">
