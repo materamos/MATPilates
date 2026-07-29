@@ -9,6 +9,12 @@ interface ClassCardProps {
   classOffering: ClassOffering;
 }
 
+const intensityLabels = {
+  low: "Baja",
+  moderate: "Moderada",
+  high: "Alta",
+} as const satisfies Record<ClassOffering["intensity"], string>;
+
 function closeOtherOpenCards(event: SyntheticEvent<HTMLDetailsElement>) {
   const currentCard = event.currentTarget;
 
@@ -113,6 +119,11 @@ export function ClassCard({ classOffering }: ClassCardProps) {
           </h3>
           <span className="mat-body-small mat-class-card__tagline">
             {classOffering.tagline}
+          </span>
+          <span
+            className={`mat-class-card__intensity mat-class-card__intensity--${classOffering.intensity}`}
+          >
+            Intensidad {intensityLabels[classOffering.intensity]}
           </span>
         </span>
         <span aria-hidden="true" className="mat-class-card__indicator" />

@@ -1,4 +1,4 @@
-const whatsappDisplayNumber = "11-2222-3333";
+const whatsappDisplayNumber = "11-4022-9138";
 const whatsappUrl = `https://wa.me/54${whatsappDisplayNumber.replace(/\D/g, "")}`;
 
 export interface ClassOffering {

@@ -548,7 +548,7 @@ a {
   cursor: pointer;
   list-style: none;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   column-gap: 8px;
   row-gap: 2px;
   align-items: start;
@@ -635,9 +635,39 @@ a {
   text-wrap: balance;
 }
 
+.mat-class-card__intensity {
+  grid-row: 3;
+  grid-column: 1;
+  justify-self: start;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: var(--mat-radius-full);
+  font-size: var(--mat-font-size-12);
+  font-weight: var(--mat-font-weight-medium);
+  line-height: 16px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mat-class-card__intensity--low {
+  background: var(--mat-color-desaturated-beige);
+  color: var(--mat-color-charcoal);
+}
+
+.mat-class-card__intensity--moderate {
+  background: var(--mat-color-pale-pink);
+  color: var(--mat-color-deep-burgundy);
+}
+
+.mat-class-card__intensity--high {
+  background: var(--mat-color-deep-burgundy);
+  color: var(--mat-color-pearl-neutral);
+}
+
 .mat-class-card__indicator {
   position: relative;
-  grid-row: 1 / -1;
+  grid-row: 1 / 3;
   grid-column: 2;
   width: 24px;
   height: 24px;
