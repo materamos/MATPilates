@@ -48,7 +48,7 @@ Regular, Medium, and Bold are implemented across Mobile, Desktop, and Desktop Co
 | Style | Weight | Size | Line height | Letter spacing | Case |
 | --- | --- | ---: | ---: | ---: | --- |
 | `MAT mobile/H1 Mobile` | Bold | 56 px | 49 px | -1.4 px | Uppercase |
-| `MAT mobile/H2 Mobile` | Medium | 32 px | 28 px | -0.4 px | Uppercase |
+| `MAT mobile/H2 Mobile` | Medium | 32 px | 32 px | -0.4 px | Uppercase |
 | `MAT mobile/H3 Mobile` | Medium | 24 px | 31 px | 0 px | Uppercase |
 | `MAT mobile/Body Mobile` | Regular | 16 px | 26 px | 0 px | Sentence |
 | `MAT mobile/Body S Mobile` | Regular | 14 px | 22 px | 0 px | Sentence |
@@ -92,23 +92,26 @@ Regular, Medium, and Bold are implemented across Mobile, Desktop, and Desktop Co
 
 | Mode | Condition | Typography | Navigation | Container |
 | --- | --- | --- | --- | --- |
-| Mobile | 0-767 px | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
-| Tablet | 768-1023 px | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
-| Compact Narrow | 1024-1279 px | Compact | Horizontal | 60 px gutter; 1160 px maximum |
-| Compact Content | 1280 px or wider and 900 px tall or shorter | Compact for landing content; Desktop for hero and navigation | Horizontal | 60 px gutter; 1320 px maximum |
-| Desktop | 1280 px or wider and 901 px tall or taller | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
+| Mobile | Less than 768 px wide | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
+| Tablet | 768 px or wider and less than 1024 px wide | Mobile | Fullscreen menu | 24 px gutter; 720 px maximum |
+| Compact Narrow Short | 1024 px or wider and less than 1280 px wide; 700 px tall or shorter | Compact with reduced hero density | Horizontal | 60 px gutter; 1160 px maximum |
+| Compact Narrow | 1024 px or wider and less than 1280 px wide; taller than 700 px | Compact | Horizontal | 60 px gutter; 1160 px maximum |
+| Compact Content | 1280 px or wider; shorter than 901 px | Compact for landing content; Desktop for hero and navigation | Horizontal | 60 px gutter; 1320 px maximum |
+| Desktop | 1280 px or wider; 901 px tall or taller | Desktop | Horizontal | 60 px gutter; 1320 px maximum |
 
-Width defines the composition and available height defines its content density. Therefore, 1024 x 768 is Narrow, 1280 x 720 is Compact Content, and 1280 x 901 is Desktop.
+Width defines the composition and available height defines its content density. Therefore, 1077 x 609 is Compact Narrow Short, 1024 x 768 is Compact Narrow, 1280 x 720 is Compact Content, and 1280 x 901 is Desktop.
 
-Within the 768-1023 px tablet range, sections use intrinsic height and normal document scrolling at every viewport height. The viewport minus the header is a minimum-height floor, not a fixed-height boundary; content must remain accessible instead of being clipped when a landscape or split-screen viewport is short.
+Within the tablet range from 768 px inclusive to 1024 px exclusive, sections use intrinsic height and normal document scrolling at every viewport height. The viewport minus the header is a minimum-height floor, not a fixed-height boundary; content must remain accessible instead of being clipped when a landscape or split-screen viewport is short.
 
 ### Global CSS organization
 
 `src/app/globals.css` is the single global stylesheet. Its internal order is Tailwind imports, design tokens, reset and accessibility, typography and shared primitives, header and menu, mobile-first landing sections, footer, and responsive modes. A selector has one definition per responsive context; later patches for the same mode are not part of the contract.
 
-The four composition families are Mobile/Tablet, Compact Narrow, Compact Content, and Desktop. They are implemented through the five width/height ranges in the table above, plus one tablet-landscape adjustment inside the Tablet range. Layout should prefer intrinsic sizing, maximum-width containers, and `clamp()` over new one-off breakpoints. Content sections must not combine a rigid height with clipping; overflow cropping is reserved for media wrappers.
+The four composition families are Mobile/Tablet, Compact Narrow, Compact Content, and Desktop. They are implemented through the six non-overlapping width/height ranges in the table above, plus one tablet-landscape adjustment inside the Tablet range. Layout should prefer intrinsic sizing, maximum-width containers, and `clamp()` over new one-off breakpoints. Content sections must not combine a rigid height with clipping; overflow cropping is reserved for media wrappers.
 
-Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights.
+Adjacent CSS media queries overlap at their exact boundary because the stylesheet uses the prefix notation required by its lint configuration. The later composition in the stylesheet takes precedence at 768, 1024, and 1280 px wide and at 901 px tall, producing the non-overlapping modes documented above without fractional gaps.
+
+Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights. In Compact Narrow Short, the studio gallery is 320-420 px tall; in Compact Content, it has a 640 px height floor. Both ranges may extend below a short viewport so portrait images remain legible.
 
 ### Composition values
 

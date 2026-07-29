@@ -1,11 +1,12 @@
 import Image from "next/image";
 import { footerNavigationItems, siteContact } from "@/lib/site-content";
+import styles from "./site-footer.module.css";
 
 export function SiteFooter() {
   return (
-    <footer className="site-footer">
-      <div className="site-footer__links">
-        <a aria-label="MAT Pilates, inicio" className="site-footer__brand" href="#inicio">
+    <footer className={styles["site-footer"]}>
+      <div className={styles["site-footer__links"]}>
+        <a aria-label="MAT Pilates, inicio" className={styles["site-footer__brand"]} href="#inicio">
           <Image
             alt="MAT Pilates"
             fill
@@ -13,9 +14,8 @@ export function SiteFooter() {
             src="/brand/mat-wordmark-light-menu-desktop.svg"
           />
         </a>
-        <span aria-hidden="true" className="site-footer__spacer" />
-        <nav aria-label="Enlaces del pie de página">
-          <ul className="site-footer__navigation">
+        <nav aria-label="Enlaces del pie de página" className={styles["site-footer__nav"]}>
+          <ul className={styles["site-footer__navigation"]}>
             {footerNavigationItems.map((item) => (
               <li key={item.href}>
                 <a href={item.href}>{item.label}</a>
@@ -23,17 +23,17 @@ export function SiteFooter() {
             ))}
           </ul>
         </nav>
-        <a className="site-footer__instagram" href={siteContact.instagram.url} rel="noreferrer" target="_blank">
+        <a className={styles["site-footer__instagram"]} href={siteContact.instagram.url} rel="noreferrer" target="_blank">
           Instagram
         </a>
       </div>
-      <div className="site-footer__legal">
-        <p>
+      <div className={styles["site-footer__legal"]}>
+        <p className={styles["site-footer__location"]}>
           <a href={siteContact.location.mapsUrl} rel="noreferrer" target="_blank">
             {siteContact.location.label}
           </a>
         </p>
-        <p>© 2026 MAT Pilates. Todos los derechos reservados.</p>
+        <p className={styles["site-footer__copyright"]}>© 2026 MAT Pilates. Todos los derechos reservados.</p>
       </div>
     </footer>
   );

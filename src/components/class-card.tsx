@@ -1,11 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import type { ClassOffering } from "@/lib/site-content";
+import { type SyntheticEvent, useEffect, useRef, useState } from "react";
+import { siteContact, type ClassOffering } from "@/lib/site-content";
+import { Button } from "./button";
 
 interface ClassCardProps {
   classOffering: ClassOffering;
+}
+
+function closeOtherOpenCards(event: SyntheticEvent<HTMLDetailsElement>) {
+  const currentCard = event.currentTarget;
+
+  if (!currentCard.open) {
+    return;
+  }
+
+  currentCard
+    .closest(".mat-class-catalog")
+    ?.querySelectorAll<HTMLDetailsElement>(".mat-class-card[open]")
+    .forEach((card) => {
+      if (card !== currentCard) {
+        card.open = false;
+      }
+    });
 }
 
 export function ClassCard({ classOffering }: ClassCardProps) {
@@ -36,7 +54,7 @@ export function ClassCard({ classOffering }: ClassCardProps) {
   }, [classOffering.name]);
 
   return (
-    <details className="mat-class-card" name="mat-class-catalog">
+    <details className="mat-class-card" name="mat-class-catalog" onToggle={closeOtherOpenCards}>
       <summary className="mat-class-card__summary">
         <span className="mat-class-card__summary-copy">
           <h3
@@ -101,6 +119,15 @@ export function ClassCard({ classOffering }: ClassCardProps) {
       </summary>
       <div className="mat-class-card__details">
         <p className="mat-body-small">{classOffering.description}</p>
+        <Button
+          ariaLabel={`Elegir la clase ${classOffering.name}`}
+          className="mat-desktop-button mat-class-card__cta"
+          href={siteContact.whatsapp.url}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Elegí esta clase
+        </Button>
       </div>
     </details>
   );

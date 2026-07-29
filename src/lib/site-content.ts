@@ -98,10 +98,10 @@ export const landingContent = {
   },
   reservation: {
     eyebrow: "Tu momento empieza acá",
-    title: "Regalate una hora para volver a vos.",
+    title: "Encontrá tu forma de moverte.",
     description:
-      "Coordinamos tu primera clase y encontramos el horario ideal para tu rutina.",
-    note: "Te respondemos para coordinar tu lugar",
+      "Conocé las propuestas de MAT y descubrí cuál acompaña mejor tu momento.",
+    note: "Cada experiencia empieza con un primer paso",
   },
 } as const;
 
