@@ -22,7 +22,7 @@ export default function HomePage() {
             <span aria-hidden="true" className="mat-hero__spacer" />
             <div className="mat-hero__actions">
               <Button className="mat-desktop-button mat-hero__primary" href="#contacto">
-                Reservá tu clase
+                Elegí tu experiencia
               </Button>
               <a className="mat-text-button mat-hero__secondary" href="#hotmat">
                 Conocé Hot Mat
@@ -117,7 +117,7 @@ export default function HomePage() {
               href="#contacto"
               variant="light"
             >
-              Reservá tu clase
+              Elegí tu experiencia
             </Button>
           </div>
         </section>
@@ -152,7 +152,7 @@ export default function HomePage() {
               href={siteContact.whatsapp.url}
               variant="light"
             >
-              Reservá tu clase
+              Elegí tu experiencia
             </Button>
             <p className="mat-label mat-reservation__note">{reservation.note}</p>
           </div>

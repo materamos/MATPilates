@@ -99,7 +99,7 @@ export function SiteHeader() {
             </ul>
             <span aria-hidden="true" className="site-header__desktop-spacer" />
             <Button className="site-header__desktop-cta" href="#contacto" variant="light">
-              Reservá tu clase
+              Elegí tu experiencia
             </Button>
           </div>
         </nav>
@@ -135,7 +135,7 @@ export function SiteHeader() {
           </nav>
           <div aria-hidden="true" className="site-menu__spacer" />
           <Button className="site-menu__cta" href="#contacto" onClick={closeMenu} variant="light">
-            Reservá tu clase
+            Elegí tu experiencia
           </Button>
           <a
             className="site-menu__location"
