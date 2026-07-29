@@ -29,7 +29,7 @@ const neueMontreal = localFont({
 export const metadata: Metadata = {
   title: "MAT Pilates Canning",
   description:
-    "Hot Pilates y Mat Pilates en Canning Center. Una experiencia cercana, consciente y enfocada en el bienestar.",
+    "Hot Mat Pilates y Mat Pilates en Canning Center. Una experiencia cercana, consciente y enfocada en el bienestar.",
 };
 
 export default function RootLayout({
