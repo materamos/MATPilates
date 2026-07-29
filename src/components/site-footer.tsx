@@ -21,16 +21,18 @@ export function SiteFooter() {
                 <a href={item.href}>{item.label}</a>
               </li>
             ))}
-            <li>
-              <a href={siteContact.instagram.url} rel="noreferrer" target="_blank">
-                Instagram
-              </a>
-            </li>
           </ul>
         </nav>
+        <a className="site-footer__instagram" href={siteContact.instagram.url} rel="noreferrer" target="_blank">
+          Instagram
+        </a>
       </div>
       <div className="site-footer__legal">
-        <p>{siteContact.location.label}</p>
+        <p>
+          <a href={siteContact.location.mapsUrl} rel="noreferrer" target="_blank">
+            {siteContact.location.label}
+          </a>
+        </p>
         <p>© 2026 MAT Pilates. Todos los derechos reservados.</p>
       </div>
     </footer>
