@@ -36,15 +36,12 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 
 ## Workflow and branches
 
-- Every versioned change, including code, documentation, and configuration, must be linked to an open GitHub Issue.
-- Move the related GitHub Project item to `Doing` when implementation starts.
-- Create feature branches from an updated `dev` branch using `feature/<short-description>`.
-- Do not commit or push directly to `dev` or `main`.
-- Open Pull Requests from `feature/*` into `dev`.
-- Include `Closes #<issue-number>` in the Pull Request description when the change completes an Issue.
-- Before opening a Pull Request, run the validation relevant to the change.
-- After merging into `dev`, move the Project item to `Done` and delete the merged `feature/*` branch.
-- Promote changes from `dev` to `main` through a separate Pull Request only.
+- Use `dev` as the default working branch.
+- Direct commits and pushes to `dev` are allowed.
+- GitHub Issues, GitHub Project items, feature branches, and Pull Requests into `dev` are optional. Use them only when explicitly requested or when a specific task materially benefits from them.
+- Keep `main` protected from direct commits and pushes.
+- Promote changes from `dev` to `main` through a Pull Request only.
+- Run the validation relevant to the change before pushing to `dev` or opening a Pull Request.
 
 ## Tooling and validation
 
