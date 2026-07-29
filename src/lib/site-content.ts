@@ -75,8 +75,6 @@ export const landingContent = {
     panelTitle: ["Una práctica", "para cada ritmo."],
     panelDescription:
       "Tres propuestas para empezar, sostener o intensificar tu práctica.",
-    details: "Todos los niveles · 50 min",
-    mobileDetails: "Todos los niveles · 50 min",
   },
   studio: {
     eyebrow: "El estudio",
