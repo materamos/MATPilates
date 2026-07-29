@@ -1,6 +1,6 @@
 # MAT Pilates
 
-Public landing page for MAT Pilates in Canning, scheduled to open on July 25, 2026.
+Public landing page for MAT Pilates in Canning, scheduled to open during the last week of July 2026.
 
 ## Current scope
 

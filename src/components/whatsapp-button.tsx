@@ -4,7 +4,7 @@ export function WhatsAppButton() {
   return (
     <a
       aria-label="Ir a contacto por WhatsApp"
-      className="fixed right-6 bottom-6 z-20 grid size-[54px] place-items-center rounded-full transition-transform hover:scale-105 lg:right-8"
+      className="mat-whatsapp-button fixed right-6 bottom-6 z-20 grid size-[54px] place-items-center rounded-full transition-transform hover:scale-105 lg:right-8"
       href={siteContact.whatsapp.url}
       rel="noreferrer"
       target="_blank"

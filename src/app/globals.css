@@ -19,6 +19,9 @@
   --mat-text-primary: var(--mat-color-text-primary);
   --mat-action-primary: var(--mat-color-action-primary);
   --mat-action-on-primary: var(--mat-color-action-on-primary);
+  --mat-focus-ring-on-light: var(--mat-color-deep-burgundy);
+  --mat-focus-ring-on-dark: var(--mat-color-pale-pink);
+  --mat-focus-ring: var(--mat-focus-ring-on-light);
   --mat-font-sans: var(--font-neue-montreal);
   --mat-font-weight-regular: 400;
   --mat-font-weight-medium: 500;
@@ -75,8 +78,18 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid var(--mat-color-pale-pink);
+  outline: 3px solid var(--mat-focus-ring);
   outline-offset: 4px;
+}
+
+.site-header,
+.site-menu,
+.mat-manifesto,
+.mat-classes,
+.mat-reservation,
+.site-footer,
+.mat-whatsapp-button {
+  --mat-focus-ring: var(--mat-focus-ring-on-dark);
 }
 
 /* Typography and shared primitives */
@@ -524,6 +537,8 @@ a {
 }
 
 .mat-schedule {
+  --mat-focus-ring: var(--mat-focus-ring-on-light);
+
   display: grid;
   flex-direction: column;
   gap: 8px;

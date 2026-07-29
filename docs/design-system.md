@@ -30,6 +30,12 @@ This document mirrors the confirmed system in [MAT - Foundations](https://www.fi
 | Schedule text on `brand/blue-grey` | `brand/charcoal` (5.38:1) |
 | Inverse text and icons | `brand/pearl-neutral` |
 | Subtle inverse border | `brand/desaturated-beige` |
+| Keyboard focus on light surfaces | `brand/deep-burgundy` |
+| Keyboard focus on dark surfaces | `brand/pale-pink` |
+
+### Keyboard focus
+
+Keyboard focus uses a 3 px outline with a 4 px offset. Light surfaces inherit `--mat-focus-ring-on-light` (`brand/deep-burgundy`), while charcoal and burgundy surfaces inherit `--mat-focus-ring-on-dark` (`brand/pale-pink`). A light component nested inside a dark section must restore the light-surface token so the indicator contrasts with its immediate background.
 
 ## Typography
 
