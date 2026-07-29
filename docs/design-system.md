@@ -111,7 +111,7 @@ The four composition families are Mobile/Tablet, Compact Narrow, Compact Content
 
 Adjacent CSS media queries overlap at their exact boundary because the stylesheet uses the prefix notation required by its lint configuration. The later composition in the stylesheet takes precedence at 768, 1024, and 1280 px wide and at 901 px tall, producing the non-overlapping modes documented above without fractional gaps.
 
-Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights. In Compact Narrow Short, the studio gallery is 320-420 px tall; in Compact Content, it has a 640 px height floor. Both ranges may extend below a short viewport so portrait images remain legible.
+Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights. In Compact Narrow Short and Compact Content, the studio gallery has a 640 px height floor and may extend below a short viewport so portrait images remain legible.
 
 ### Composition values
 

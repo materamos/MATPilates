@@ -1670,7 +1670,13 @@ a {
   }
 
   .mat-studio__visual {
-    height: clamp(320px, 55dvh, 420px);
+    height: clamp(640px,
+        calc(100dvh - var(--mat-header-height) - var(--mat-section-space-y) - var(--mat-section-space-y)),
+        742px);
+  }
+
+  .mat-studio__copy .mat-h2 {
+    text-wrap: balance;
   }
 }
 
