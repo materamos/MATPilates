@@ -7,6 +7,8 @@ import { StudioGallery } from "@/components/studio-gallery";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { classCatalog, landingContent, siteContact } from "@/lib/site-content";
 
+const manifestoMarqueeGroup = [0, 1, 2, 3];
+
 export default function HomePage() {
   const { hero, manifesto, hotMat, classes, studio, reservation } = landingContent;
 
@@ -58,10 +60,14 @@ export default function HomePage() {
             className="mat-manifesto__title"
             id="manifesto-title"
           >
-            <span className="mat-manifesto__track">
-              {[0, 1].map((copy) => (
-                <span aria-hidden="true" className="mat-manifesto__term" key={copy}>
-                  {manifesto.concepts.join(" · ")} ·
+            <span aria-hidden="true" className="mat-manifesto__track">
+              {[0, 1].map((group) => (
+                <span className="mat-manifesto__group" key={group}>
+                  {manifestoMarqueeGroup.map((copy) => (
+                    <span className="mat-manifesto__term" key={copy}>
+                      {manifesto.concepts.join(" · ")} ·
+                    </span>
+                  ))}
                 </span>
               ))}
             </span>
