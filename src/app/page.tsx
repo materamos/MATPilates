@@ -62,12 +62,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section aria-labelledby="manifesto-title" className="mat-manifesto">
-          <h1
-            aria-label={`${manifesto.concepts.join(" · ")} ·`}
-            className="mat-manifesto__title"
-            id="manifesto-title"
-          >
+        <section aria-label="Manifiesto de MAT" className="mat-manifesto">
+          <p className="mat-manifesto__title">
+            <span className="sr-only">{manifesto.concepts.join(" · ")}.</span>
             <span aria-hidden="true" className="mat-manifesto__track">
               {[0, 1].map((group) => (
                 <span className="mat-manifesto__group" key={group}>
@@ -79,7 +76,7 @@ export default function HomePage() {
                 </span>
               ))}
             </span>
-          </h1>
+          </p>
         </section>
 
         <section className="mat-hot-mat mat-scroll-target" id="hotmat">

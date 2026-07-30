@@ -1,17 +1,24 @@
 # MAT Pilates
 
-Public landing page for MAT Pilates in Canning, scheduled to open during the last week of July 2026.
+Responsive public landing page for MAT Pilates in Canning. It is a static discovery and contact experience that presents the studio and routes prospective clients to direct communication channels.
 
 ## Current scope
 
-The application presents the studio identity, method, classes, informational schedule, and contact section in a single responsive landing page.
+The application presents the studio identity, Hot Mat method, class catalog, studio, location, and contact paths in a single responsive landing page.
 
 It includes:
 
-- method, classes, studio, and contact sections;
-- internal navigation and Instagram integration;
+- the Hot Mat method and a catalog of 11 classes with intensity and environment information;
+- a studio gallery, location details, progressive map, and external directions;
+- internal navigation, Instagram integration, and direct WhatsApp calls to action;
 - a reusable visual system with tokens, components, and Neue Montreal typography;
 - SVG brand assets and an adaptive favicon for light and dark schemes.
+
+Schedules, instructors, prices, packs, promotions, reservations, and other operational or commercial data are not part of the current implementation. They must remain undefined until they are incorporated into the canonical documentary source with confirmed status.
+
+## Content authority
+
+The project's documentary library is the canonical source for approved business decisions. `src/lib/site-content.ts` is the typed runtime mirror of that confirmed content; it is not a source for inventing or approving commercial information.
 
 ## Stack
 
@@ -59,7 +66,7 @@ npm run build
 | `src/app/` | Application routes, global layout, styles, and metadata. |
 | `src/components/` | Reusable UI components. |
 | `src/lib/` | Shared data and utilities, including the landing page's structured content. |
-| `public/` | Public static assets, such as brand variants. |
+| `public/` | Static assets consumed at runtime, including brand, icon, and photography files. |
 | `docs/` | Supporting technical documentation and decisions. |
 | `tools/mat-figma-bridge/` | Local MCP server and Figma Desktop plugin for font-safe typography operations. |
 

@@ -1,6 +1,15 @@
 # MAT Design System
 
-This document mirrors the confirmed system in [MAT - Foundations](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=66-10) and the current Desktop, Desktop Compact, and Mobile compositions. Figma is the visual source of truth; the brandbook is supporting material when Foundations does not resolve a value.
+## Authority and status
+
+This is a hybrid specification that distinguishes confirmed design rules from the current implementation:
+
+- [MAT - Foundations](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=66-10) is normative for brand tokens, typography, and confirmed design-system values. The brandbook is supporting material when Foundations does not resolve a value.
+- The application source is authoritative for the composition and behavior currently implemented in the landing page.
+- The project documentary library is authoritative for approved business content. Application content mirrors confirmed decisions; it does not create them.
+- The existing Desktop, Desktop Compact, and Mobile Figma frames are historical composition references. They no longer represent the complete landing page and must not be used as visual-regression or acceptance baselines.
+
+Normative rules, implemented behavior, and known differences are identified explicitly below. Documenting an implementation difference does not authorize a code or Figma change.
 
 ## Color
 
@@ -27,7 +36,6 @@ This document mirrors the confirmed system in [MAT - Foundations](https://www.fi
 | Inverse surface and primary text | `brand/charcoal` |
 | Highlight text or surface | `brand/pale-pink` |
 | Cool supporting surface | `brand/blue-grey` |
-| Schedule text on `brand/blue-grey` | `brand/charcoal` (5.38:1) |
 | Inverse text and icons | `brand/pearl-neutral` |
 | Subtle inverse border | `brand/desaturated-beige` |
 | Keyboard focus on light surfaces | `brand/deep-burgundy` |
@@ -35,7 +43,9 @@ This document mirrors the confirmed system in [MAT - Foundations](https://www.fi
 
 ### Keyboard focus
 
-Keyboard focus uses a 3 px outline with a 4 px offset. Light surfaces inherit `--mat-focus-ring-on-light` (`brand/deep-burgundy`), while charcoal and burgundy surfaces inherit `--mat-focus-ring-on-dark` (`brand/pale-pink`). A light component nested inside a dark section must restore the light-surface token so the indicator contrasts with its immediate background.
+The normative keyboard-focus treatment uses a 3 px outline with a 4 px offset. The current implementation uses a 2 px outline with the same 4 px offset; this is a known implementation difference, not a change to the normative value.
+
+Light surfaces inherit `--mat-focus-ring-on-light` (`brand/deep-burgundy`), while charcoal and burgundy surfaces inherit `--mat-focus-ring-on-dark` (`brand/pale-pink`). A light component nested inside a dark section must restore the light-surface token so the indicator contrasts with its immediate background.
 
 ## Typography
 
@@ -103,9 +113,11 @@ Width defines the composition and available height defines its content density. 
 
 Within the tablet range from 768 px inclusive to 1024 px exclusive, sections use intrinsic height and normal document scrolling at every viewport height. The viewport minus the header is a minimum-height floor, not a fixed-height boundary; content must remain accessible instead of being clipped when a landscape or split-screen viewport is short.
 
-### Global CSS organization
+### CSS organization
 
-`src/app/globals.css` is the single global stylesheet. Its internal order is Tailwind imports, design tokens, reset and accessibility, typography and shared primitives, header and menu, mobile-first landing sections, footer, and responsive modes. A selector has one definition per responsive context; later patches for the same mode are not part of the contract.
+`src/app/globals.css` owns the global foundation: Tailwind imports, design tokens, reset and accessibility, typography and shared primitives, header and menu, mobile-first landing sections, and responsive modes. The footer uses the component-scoped `src/components/site-footer.module.css` stylesheet.
+
+The intended contract keeps one selector definition per responsive context. The current global stylesheet still contains late breakpoint patches for established modes; these are implementation debt to consolidate, not a pattern for future additions.
 
 The four composition families are Mobile/Tablet, Compact Narrow, Compact Content, and Desktop. They are implemented through the six non-overlapping width/height ranges in the table above, plus one tablet-landscape adjustment inside the Tablet range. Layout should prefer intrinsic sizing, maximum-width containers, and `clamp()` over new one-off breakpoints. Content sections must not combine a rigid height with clipping; overflow cropping is reserved for media wrappers.
 
@@ -125,13 +137,22 @@ The studio map is progressive, non-essential content. It is shown when the studi
 
 Distances produced by `Space Between` are local mathematical results and are not reusable tokens. This includes values such as 25, 35, 79, 81, and 128 px that preserve the approved outer geometry.
 
+## Motion and interaction
+
+- The manifesto marquee moves continuously in the default motion mode. With `prefers-reduced-motion: reduce`, its animation and transform are removed so the concepts remain static.
+- Class names animate only when they overflow their available title viewport. With reduced motion, the title animation is removed.
+- The studio gallery advances automatically every five seconds when it has multiple images and is not paused. Clicking the gallery or pressing Enter or Space toggles pause and resume.
+- The gallery starts paused when the user prefers reduced motion. Its accessible name reports the available action and current image, and `aria-pressed` exposes the paused state.
+
 ## Effects
 
 | Style | Value | Usage |
 | --- | --- | --- |
-| `MAT/Shadow/Mobile` | 0 4px 4px rgb(0 0 0 / 18%) | Mobile navigation; landing body CTAs at every breakpoint; mobile pillars and schedules |
+| `MAT/Shadow/Mobile` | 0 4px 4px rgb(0 0 0 / 18%) | Mobile navigation, landing body CTAs, Hot Mat pillar cards, and class cards; wider modes remove it where explicitly overridden |
 
-## Menu references
+## Historical Figma composition references
+
+The following frames preserve design history and menu-specific context. They do not represent the current full-page copy, class catalog, studio gallery, map, or section composition, and they are not acceptance baselines.
 
 - Desktop: [node `492:193`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=492-193)
 - Desktop Compact, Narrow and Short: [node `264:4`](https://www.figma.com/design/IcAaBXTryXYQLsFBIp5YgY/MAT-Pilates?node-id=264-4)

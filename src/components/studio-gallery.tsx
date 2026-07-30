@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { type KeyboardEvent, useEffect, useState, useSyncExternalStore } from "react";
 
 const AUTO_ROTATION_MS = 5000;
 const SLIDE_TRANSITION_MS = 400;
@@ -15,14 +15,36 @@ type StudioGalleryProps = {
   images: readonly StudioGalleryImage[];
 };
 
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
+function subscribeToReducedMotion(callback: () => void) {
+  const mediaQuery = window.matchMedia(reducedMotionQuery);
+  mediaQuery.addEventListener("change", callback);
+
+  return () => mediaQuery.removeEventListener("change", callback);
+}
+
+function getReducedMotionPreference() {
+  return window.matchMedia(reducedMotionQuery).matches;
+}
+
 export function StudioGallery({ images }: StudioGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [manualPaused, setManualPaused] = useState<boolean | null>(null);
   const [transitionEnabled, setTransitionEnabled] = useState(true);
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionPreference,
+    () => false,
+  );
 
   const renderedImages = images.length > 1 ? [...images, images[0]] : images;
+  const canRotate = images.length > 1;
+  const isPaused = manualPaused ?? prefersReducedMotion;
+  const currentImage = images[currentIndex % images.length];
 
   useEffect(() => {
-    if (images.length < 2) {
+    if (!canRotate || isPaused) {
       return;
     }
 
@@ -33,7 +55,7 @@ export function StudioGallery({ images }: StudioGalleryProps) {
     }, AUTO_ROTATION_MS);
 
     return () => window.clearInterval(intervalId);
-  }, [images.length]);
+  }, [canRotate, isPaused]);
 
   useEffect(() => {
     if (images.length < 2 || currentIndex !== images.length) {
@@ -60,8 +82,35 @@ export function StudioGallery({ images }: StudioGalleryProps) {
     return null;
   }
 
+  const togglePaused = () => {
+    if (canRotate) {
+      setManualPaused((paused) => !(paused ?? prefersReducedMotion));
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    togglePaused();
+  };
+
   return (
-    <div className="mat-studio__image mat-studio-gallery">
+    <div
+      aria-label={
+        canRotate
+          ? `${isPaused ? "Reanudar" : "Pausar"} galería del estudio. ${currentImage.alt}`
+          : undefined
+      }
+      aria-pressed={canRotate ? isPaused : undefined}
+      className="mat-studio__image mat-studio-gallery"
+      onClick={togglePaused}
+      onKeyDown={canRotate ? handleKeyDown : undefined}
+      role={canRotate ? "button" : undefined}
+      tabIndex={canRotate ? 0 : undefined}
+    >
       <div
         aria-live="off"
         className={`mat-studio-gallery__track${transitionEnabled ? "" : " mat-studio-gallery__track--instant"}`}

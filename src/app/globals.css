@@ -488,7 +488,9 @@ a {
 
 @media (prefers-reduced-motion: reduce) {
   .mat-manifesto__track {
-    animation-play-state: paused;
+    animation: none;
+    transform: none;
+    will-change: auto;
   }
 }
 
@@ -832,6 +834,10 @@ a {
   height: 100%;
   transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
+}
+
+.mat-studio-gallery[role="button"] {
+  cursor: pointer;
 }
 
 .mat-studio-gallery__track--instant {
@@ -1586,7 +1592,7 @@ a {
   }
 
   .site-header__desktop-cta {
-    width: clamp(208px, 20vw, 224px);
+    width: fit-content;
     padding: 18px 16px;
     font-size: var(--mat-font-size-16);
     white-space: nowrap;
@@ -1866,7 +1872,7 @@ a {
   }
 
   .site-header__desktop-cta {
-    width: clamp(230px, 21vw, 272px);
+    width: fit-content;
     padding: 18px 24px;
     font-size: var(--mat-font-size-18);
   }
