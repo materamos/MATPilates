@@ -30,12 +30,13 @@ export default function HomePage() {
               >
                 {landingCtas.explore.label}
               </Button>
-              <a
+              <Button
                 className="mat-text-button mat-hero__secondary"
                 href={landingCtas.learnHotMat.href}
+                variant="text"
               >
                 {landingCtas.learnHotMat.label}
-              </a>
+              </Button>
             </div>
             <span aria-hidden="true" className="mat-hero__spacer" />
           </div>
@@ -144,14 +145,15 @@ export default function HomePage() {
             <h2 className="mat-h2">{studio.title}</h2>
             <StudioMap embedUrl={siteContact.location.embedUrl} />
             <p className="mat-body-small mat-studio__location">{studio.location}</p>
-            <a
+            <Button
               className="mat-text-button mat-studio__link"
               href={siteContact.location.directionsUrl}
               rel="noreferrer"
               target="_blank"
+              variant="text"
             >
               {landingCtas.directions.label}
-            </a>
+            </Button>
             <span aria-hidden="true" className="mat-studio__spacer" />
           </div>
         </section>

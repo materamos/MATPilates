@@ -138,12 +138,48 @@ a {
   text-transform: uppercase;
 }
 
+.mat-button--primary {
+  --mat-origin-fill: var(--mat-color-charcoal);
+  --mat-origin-fill-foreground: var(--mat-color-pearl-neutral);
+
+  background: var(--mat-action-primary);
+  color: var(--mat-action-on-primary);
+}
+
+.mat-button--light {
+  --mat-origin-fill: var(--mat-color-pale-pink);
+  --mat-origin-fill-foreground: var(--mat-text-primary);
+
+  background: var(--mat-surface-default);
+  color: var(--mat-text-primary);
+}
+
+.mat-button--text {
+  --mat-origin-fill: var(--mat-color-pale-pink);
+  --mat-origin-fill-foreground: var(--mat-text-primary);
+
+  background: transparent;
+  color: var(--mat-text-primary);
+}
+
+.mat-origin-button[data-origin-active="true"] {
+  color: var(--mat-origin-fill-foreground);
+}
+
 .site-menu__cta,
 .mat-hero__primary,
+.mat-hero__secondary,
 .mat-class-card__cta,
 .mat-classes__button,
+.mat-studio__link,
 .mat-reservation__button {
   box-shadow: var(--mat-shadow-mobile);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mat-origin-button {
+    transition-duration: 0.01ms;
+  }
 }
 
 .mat-cropped-image {

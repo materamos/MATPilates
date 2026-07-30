@@ -1,14 +1,15 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
+import { OriginButton } from "@/components/ui/origin-button";
 
 interface ButtonProps {
   children: ReactNode;
   href: string;
   ariaLabel?: string;
   className?: string;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
   rel?: string;
   target?: "_blank" | "_parent" | "_self" | "_top";
-  variant?: "primary" | "light";
+  variant?: "primary" | "light" | "text";
 }
 
 export function Button({
@@ -21,28 +22,18 @@ export function Button({
   target,
   variant = "primary",
 }: ButtonProps) {
-  const colorStyle: CSSProperties =
-    variant === "primary"
-      ? {
-          backgroundColor: "var(--mat-action-primary)",
-          color: "var(--mat-action-on-primary)",
-        }
-      : {
-          backgroundColor: "var(--mat-surface-default)",
-          color: "var(--mat-text-primary)",
-        };
+  const variantClassName = `mat-button--${variant}`;
 
   return (
-    <a
+    <OriginButton
       aria-label={ariaLabel}
-      className={`inline-flex min-h-[52px] items-center justify-center rounded-full px-6 py-4 text-sm font-normal leading-5 tracking-[0.2px] uppercase transition-opacity hover:opacity-80 ${className}`}
+      className={`mat-button ${variantClassName} inline-flex min-h-[52px] items-center justify-center rounded-full px-6 py-4 text-sm font-normal leading-5 tracking-[0.2px] uppercase ${className}`}
       href={href}
       onClick={onClick}
       rel={rel}
-      style={colorStyle}
       target={target}
     >
       {children}
-    </a>
+    </OriginButton>
   );
 }
