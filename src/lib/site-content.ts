@@ -1,5 +1,32 @@
 const whatsappDisplayNumber = "11-4022-9138";
 const whatsappUrl = `https://wa.me/54${whatsappDisplayNumber.replace(/\D/g, "")}`;
+const whatsappUrlWithMessage = (message: string) =>
+  `${whatsappUrl}?text=${encodeURIComponent(message)}`;
+
+export const landingCtas = {
+  explore: {
+    href: "#clases",
+    label: "Elegí tu experiencia",
+  },
+  join: {
+    href: "#contacto",
+    label: "Sumate a MAT",
+  },
+  selectExperience: {
+    label: "Quiero esta experiencia",
+  },
+  learnHotMat: {
+    href: "#hotmat",
+    label: "Conocé Hot Mat",
+  },
+  directions: {
+    label: "Cómo llegar",
+  },
+} as const;
+
+export function getClassWhatsappUrl(className: string) {
+  return whatsappUrlWithMessage(`Hola, quiero sumarme a MAT. Me interesa ${className}.`);
+}
 
 export interface ClassOffering {
   id: string;
@@ -16,6 +43,9 @@ export const siteContact = {
   },
   whatsapp: {
     displayNumber: whatsappDisplayNumber,
+    joinUrl: whatsappUrlWithMessage(
+      "Hola, quiero sumarme a MAT y conocer qué experiencia puede acompañarme.",
+    ),
     url: whatsappUrl,
   },
   location: {
@@ -23,6 +53,8 @@ export const siteContact = {
     address: "Mariano Castex 1560, Canning",
     label: "MAT Pilates · Canning, Buenos Aires",
     mapsUrl: "https://maps.app.goo.gl/FVzpJd571G4QpZPF7",
+    embedUrl:
+      "https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s-34.8630031,-58.5018518!6i17",
     directionsUrl:
       "https://www.google.com/maps/dir/?api=1&destination=-34.8630031%2C-58.5018518",
   },
@@ -79,8 +111,7 @@ export const landingContent = {
   classes: {
     eyebrow: "Clases",
     title: "Encontrá la clase que acompañe tu momento.",
-    description:
-      "Elegí la propuesta que acompañe tu momento. Todas las clases están pensadas para trabajar con presencia y progresión.",
+    description: "Todas las clases están pensadas para trabajar con presencia y progresión.",
   },
   studio: {
     eyebrow: "El estudio",

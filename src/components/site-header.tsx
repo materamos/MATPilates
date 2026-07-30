@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { navigationItems, siteContact } from "@/lib/site-content";
+import { landingCtas, navigationItems, siteContact } from "@/lib/site-content";
 import { Button } from "./button";
 
 export function SiteHeader() {
@@ -98,8 +98,12 @@ export function SiteHeader() {
               ))}
             </ul>
             <span aria-hidden="true" className="site-header__desktop-spacer" />
-            <Button className="site-header__desktop-cta" href="#contacto" variant="light">
-              Elegí tu experiencia
+            <Button
+              className="site-header__desktop-cta"
+              href={landingCtas.join.href}
+              variant="light"
+            >
+              {landingCtas.join.label}
             </Button>
           </div>
         </nav>
@@ -134,8 +138,13 @@ export function SiteHeader() {
             </ul>
           </nav>
           <div aria-hidden="true" className="site-menu__spacer" />
-          <Button className="site-menu__cta" href="#contacto" onClick={closeMenu} variant="light">
-            Elegí tu experiencia
+          <Button
+            className="site-menu__cta"
+            href={landingCtas.join.href}
+            onClick={closeMenu}
+            variant="light"
+          >
+            {landingCtas.join.label}
           </Button>
           <a
             className="site-menu__location"

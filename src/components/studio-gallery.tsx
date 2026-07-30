@@ -68,7 +68,12 @@ export function StudioGallery({ images }: StudioGalleryProps) {
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {renderedImages.map((image, index) => (
-          <div aria-hidden={index !== currentIndex} className="mat-studio-gallery__slide" key={`${image.src}-${index}`}>
+          <div
+            aria-hidden={index !== currentIndex}
+            className="mat-studio-gallery__slide"
+            data-studio-image-index={index % images.length}
+            key={`${image.src}-${index}`}
+          >
             <Image
               alt={index === currentIndex ? image.alt : ""}
               className="mat-cropped-image mat-studio__photo"

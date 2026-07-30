@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { type SyntheticEvent, useEffect, useRef, useState } from "react";
-import { siteContact, type ClassOffering } from "@/lib/site-content";
+import { getClassWhatsappUrl, landingCtas, type ClassOffering } from "@/lib/site-content";
 import { Button } from "./button";
 
 interface ClassCardProps {
@@ -131,13 +131,13 @@ export function ClassCard({ classOffering }: ClassCardProps) {
       <div className="mat-class-card__details">
         <p className="mat-body-small">{classOffering.description}</p>
         <Button
-          ariaLabel={`Elegir la clase ${classOffering.name}`}
+          ariaLabel={`Quiero la experiencia ${classOffering.name}`}
           className="mat-desktop-button mat-class-card__cta"
-          href={siteContact.whatsapp.url}
+          href={getClassWhatsappUrl(classOffering.name)}
           rel="noreferrer"
           target="_blank"
         >
-          Elegí esta clase
+          {landingCtas.selectExperience.label}
         </Button>
       </div>
     </details>

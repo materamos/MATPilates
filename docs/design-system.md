@@ -113,6 +113,8 @@ Adjacent CSS media queries overlap at their exact boundary because the styleshee
 
 Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights. In Compact Narrow Short and Compact Content, the studio gallery has a 640 px height floor and may extend below a short viewport so portrait images remain legible.
 
+The studio map is progressive, non-essential content. It is shown when the studio has a stable two-column composition at 1025 px or wider in landscape orientation, occupies the full width of the studio copy column, and reserves at least 240 px before its lazy-loaded iframe mounts. Once visible, it grows to absorb the column's remaining vertical space while preserving its 32 px top margin, 16 px bottom margin, and the section's outer spacing. Mobile, Tablet, the 1024 px boundary, and portrait compositions do not render or reserve space for the map. The address and `Cómo llegar` link remain available as the location fallback in every mode.
+
 ### Composition values
 
 | Reference | Confirmed composition |
@@ -127,7 +129,7 @@ Distances produced by `Space Between` are local mathematical results and are not
 
 | Style | Value | Usage |
 | --- | --- | --- |
-| `MAT/Shadow/Mobile` | 0 4px 4px rgb(0 0 0 / 18%) | Mobile navigation, buttons, pillars, and schedules |
+| `MAT/Shadow/Mobile` | 0 4px 4px rgb(0 0 0 / 18%) | Mobile navigation; landing body CTAs at every breakpoint; mobile pillars and schedules |
 
 ## Menu references
 

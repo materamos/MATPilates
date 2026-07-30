@@ -4,8 +4,9 @@ import { ClassCard } from "@/components/class-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StudioGallery } from "@/components/studio-gallery";
+import { StudioMap } from "@/components/studio-map";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { classCatalog, landingContent, siteContact } from "@/lib/site-content";
+import { classCatalog, landingContent, landingCtas, siteContact } from "@/lib/site-content";
 
 const manifestoMarqueeGroup = [0, 1, 2, 3];
 
@@ -23,11 +24,17 @@ export default function HomePage() {
             <p className="mat-body mat-hero__description">{hero.description}</p>
             <span aria-hidden="true" className="mat-hero__spacer" />
             <div className="mat-hero__actions">
-              <Button className="mat-desktop-button mat-hero__primary" href="#contacto">
-                Elegí tu experiencia
+              <Button
+                className="mat-desktop-button mat-hero__primary"
+                href={landingCtas.explore.href}
+              >
+                {landingCtas.explore.label}
               </Button>
-              <a className="mat-text-button mat-hero__secondary" href="#hotmat">
-                Conocé Hot Mat
+              <a
+                className="mat-text-button mat-hero__secondary"
+                href={landingCtas.learnHotMat.href}
+              >
+                {landingCtas.learnHotMat.label}
               </a>
             </div>
             <span aria-hidden="true" className="mat-hero__spacer" />
@@ -120,10 +127,10 @@ export default function HomePage() {
           <div className="mat-classes__actions">
             <Button
               className="mat-desktop-button mat-classes__button"
-              href="#contacto"
+              href={landingCtas.join.href}
               variant="light"
             >
-              Elegí tu experiencia
+              {landingCtas.join.label}
             </Button>
           </div>
         </section>
@@ -135,6 +142,7 @@ export default function HomePage() {
           <div className="mat-studio__copy">
             <p className="mat-label">{studio.eyebrow}</p>
             <h2 className="mat-h2">{studio.title}</h2>
+            <StudioMap embedUrl={siteContact.location.embedUrl} />
             <p className="mat-body-small mat-studio__location">{studio.location}</p>
             <a
               className="mat-text-button mat-studio__link"
@@ -142,7 +150,7 @@ export default function HomePage() {
               rel="noreferrer"
               target="_blank"
             >
-              Cómo llegar
+              {landingCtas.directions.label}
             </a>
             <span aria-hidden="true" className="mat-studio__spacer" />
           </div>
@@ -155,10 +163,10 @@ export default function HomePage() {
             <p className="mat-body">{reservation.description}</p>
             <Button
               className="mat-desktop-button mat-reservation__button"
-              href={siteContact.whatsapp.url}
+              href={siteContact.whatsapp.joinUrl}
               variant="light"
             >
-              Elegí tu experiencia
+              {landingCtas.join.label}
             </Button>
             <p className="mat-label mat-reservation__note">{reservation.note}</p>
           </div>

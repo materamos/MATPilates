@@ -1,11 +1,36 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { siteContact } from "@/lib/site-content";
 
 export function WhatsAppButton() {
+  const [isClassCatalogVisible, setIsClassCatalogVisible] = useState(false);
+
+  useEffect(() => {
+    const classCatalog = document.querySelector("#clases");
+
+    if (!classCatalog) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsClassCatalogVisible(entry.isIntersecting),
+      { threshold: 0.01 },
+    );
+
+    observer.observe(classCatalog);
+    return () => observer.disconnect();
+  }, []);
+
+  if (isClassCatalogVisible) {
+    return null;
+  }
+
   return (
     <a
       aria-label="Ir a contacto por WhatsApp"
-      className="mat-whatsapp-button fixed right-6 bottom-6 z-20 grid size-[54px] place-items-center rounded-full transition-transform hover:scale-105 lg:right-8"
-      href={siteContact.whatsapp.url}
+      className="mat-whatsapp-button fixed right-6 bottom-6 z-20 grid size-[54px] place-items-center rounded-full transition-transform hover:scale-105 lg:hidden"
+      href={siteContact.whatsapp.joinUrl}
       rel="noreferrer"
       target="_blank"
       style={{
