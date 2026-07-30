@@ -865,6 +865,10 @@ a {
   display: contents;
 }
 
+.mat-reservation__actions {
+  display: contents;
+}
+
 .mat-reservation__image {
   position: relative;
   order: 4;
@@ -874,6 +878,10 @@ a {
   border-radius: var(--mat-radius-lg);
   height: 100%;
   min-height: 0;
+}
+
+.mat-reservation__image img {
+  transform: scale(1.01);
 }
 
 .mat-reservation__button {
@@ -903,7 +911,7 @@ a {
   color: var(--mat-color-pearl-neutral);
 }
 
-.mat-reservation__copy>.mat-reservation__note {
+.mat-reservation__note {
   order: 6;
   color: var(--mat-color-pearl-neutral);
   text-align: center;
@@ -1250,14 +1258,6 @@ a {
     gap: 0;
   }
 
-  .mat-reservation__button {
-    margin-top: auto;
-  }
-
-  .mat-reservation__note {
-    margin-top: 10px;
-  }
-
   .mat-reservation__image {
     order: initial;
     height: 100%;
@@ -1478,10 +1478,6 @@ a {
     line-height: 58px;
   }
 
-  .mat-reservation__note {
-    margin-top: 12px;
-  }
-
   .mat-reservation__copy {
     display: flex;
     flex-direction: column;
@@ -1495,7 +1491,6 @@ a {
   }
 
   .mat-reservation__button {
-    margin-top: auto;
     line-height: 20px;
   }
 
@@ -2341,5 +2336,19 @@ a {
     width: 100%;
     height: 100%;
     border: 0;
+  }
+}
+
+@media (min-width: 1024px), (min-width: 768px) and (orientation: landscape) {
+  .mat-flow-action {
+    padding-top: 24px;
+  }
+
+  .mat-reservation__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+    order: 5;
   }
 }

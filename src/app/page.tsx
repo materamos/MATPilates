@@ -23,7 +23,7 @@ export default function HomePage() {
             <h1 className="mat-hero__title">{hero.title}</h1>
             <p className="mat-body mat-hero__description">{hero.description}</p>
             <span aria-hidden="true" className="mat-hero__spacer" />
-            <div className="mat-hero__actions">
+            <div className="mat-flow-action mat-hero__actions">
               <Button
                 className="mat-desktop-button mat-hero__primary"
                 href={landingCtas.explore.href}
@@ -161,14 +161,16 @@ export default function HomePage() {
             <p className="mat-label">{reservation.eyebrow}</p>
             <h2 className="mat-h2">{reservation.title}</h2>
             <p className="mat-body">{reservation.description}</p>
-            <Button
-              className="mat-desktop-button mat-reservation__button"
-              href={siteContact.whatsapp.joinUrl}
-              variant="light"
-            >
-              {landingCtas.join.label}
-            </Button>
-            <p className="mat-label mat-reservation__note">{reservation.note}</p>
+            <div className="mat-flow-action mat-reservation__actions">
+              <Button
+                className="mat-desktop-button mat-reservation__button"
+                href={siteContact.whatsapp.joinUrl}
+                variant="light"
+              >
+                {landingCtas.join.label}
+              </Button>
+              <p className="mat-label mat-reservation__note">{reservation.note}</p>
+            </div>
           </div>
           <div className="mat-reservation__image">
             <Image
