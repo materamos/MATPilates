@@ -383,7 +383,6 @@ a {
 
 .mat-hero__actions {
   display: grid;
-  flex-direction: column;
   gap: 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1004,8 +1003,8 @@ a {
 
   .mat-hero__actions {
     display: flex;
+    flex-direction: column;
     gap: 20px;
-    grid-template-columns: none;
   }
 
   .mat-hero__primary {
@@ -1015,7 +1014,6 @@ a {
   }
 
   .mat-hero__secondary {
-    min-height: 48px;
     padding: 12px 16px;
     font-size: var(--mat-font-size-14);
   }
@@ -1032,9 +1030,6 @@ a {
 
   .mat-hero {
     gap: 20px;
-    height: auto;
-    min-height: calc(100svh - var(--mat-header-height));
-    overflow: visible;
     grid-template-rows: auto auto;
     align-content: start;
   }
@@ -1056,9 +1051,6 @@ a {
 
   .mat-hot-mat {
     gap: 16px;
-    height: auto;
-    min-height: calc(100svh - var(--mat-header-height));
-    overflow: visible;
     grid-template-rows: auto auto auto;
     align-content: start;
   }
@@ -1072,9 +1064,6 @@ a {
   .mat-classes,
   .mat-studio {
     gap: 16px;
-    height: auto;
-    min-height: calc(100svh - var(--mat-header-height));
-    overflow: visible;
     align-content: start;
   }
 
@@ -1113,9 +1102,6 @@ a {
 
   .mat-reservation {
     gap: 16px;
-    height: auto;
-    min-height: calc(100svh - var(--mat-header-height));
-    overflow: visible;
     padding-bottom: 32px;
     grid-template-rows: repeat(4, auto) minmax(min-content, 1fr) auto;
     align-content: start;
@@ -1563,6 +1549,12 @@ a {
     order: initial;
   }
 
+  .mat-reservation__copy,
+  .mat-reservation__image {
+    height: auto;
+    align-self: stretch;
+  }
+
   .mat-reservation__button {
     line-height: 20px;
   }
@@ -1728,7 +1720,7 @@ a {
   }
 
   .mat-classes {
-    padding: 60px max(60px, calc((100% - 1160px) / 2)) 32px;
+    padding: 60px max(60px, calc((100% - 1160px) / 2));
     height: auto;
     min-height: calc(100dvh - var(--mat-header-height));
     overflow: visible;
@@ -1774,20 +1766,6 @@ a {
 
   .mat-studio__copy .mat-h2 {
     font-size: var(--mat-font-size-48);
-  }
-
-  .mat-reservation__copy {
-    height: clamp(541px,
-        calc(966.7702307692px - 51.9230769231dvh),
-        568px);
-    align-self: center;
-  }
-
-  .mat-reservation__image {
-    height: clamp(468px,
-        calc(2044.9240769231px - 192.3076923077dvh),
-        568px);
-    align-self: center;
   }
 
   .mat-reservation__button {
@@ -1936,7 +1914,7 @@ a {
   }
 
   .mat-classes {
-    padding: 60px max(60px, calc((100% - 1320px) / 2)) 32px;
+    padding: 60px max(60px, calc((100% - 1320px) / 2));
   }
 
   .mat-studio__spacer {
@@ -2109,16 +2087,6 @@ a {
 
   .mat-studio__copy .mat-h2 {
     font-size: var(--mat-font-size-48);
-  }
-
-  .mat-reservation__copy {
-    height: auto;
-    align-self: stretch;
-  }
-
-  .mat-reservation__image {
-    height: auto;
-    align-self: stretch;
   }
 
   .mat-reservation__button {
@@ -2304,16 +2272,6 @@ a {
     min-height: 68px;
     padding: 24px;
     font-size: var(--mat-font-size-22);
-  }
-
-  .mat-reservation__copy {
-    height: min(564px, 100%);
-    align-self: center;
-  }
-
-  .mat-reservation__image {
-    height: min(494px, 100%);
-    align-self: center;
   }
 
   .mat-reservation__copy>.mat-h2 {
