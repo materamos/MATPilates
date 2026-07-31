@@ -15,7 +15,7 @@ export const localBusinessStructuredData = {
   telephone: siteContact.whatsapp.internationalNumber,
   image: [
     absoluteSiteUrl("/opengraph-image.png"),
-    absoluteSiteUrl("/hero/mat-studio-hero.png"),
+    absoluteSiteUrl("/hero/mat-studio-hero-purple-lighting.png"),
     absoluteSiteUrl("/sections/reservation-photo.png"),
   ],
   logo: absoluteSiteUrl("/icon.svg"),

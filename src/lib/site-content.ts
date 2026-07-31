@@ -139,11 +139,11 @@ export const landingContent = {
     images: [
       {
         alt: "Interior del estudio MAT Pilates con paneles infrarrojos encendidos",
-        src: "/sections/studio/mat-pilates-studio-interior-heaters-wide.png",
+        src: "/sections/studio/mat-pilates-studio-interior-heaters-highres.png",
       },
       {
         alt: "Equipamiento de MAT Pilates preparado sobre el piso del estudio",
-        src: "/sections/studio/mat-pilates-studio-equipment-shelf-floor.png",
+        src: "/sections/studio/mat-pilates-studio-equipment-shelf-floor-highres.png",
       },
     ],
     location: "Canning Center · Mariano Castex 1560, Canning",
