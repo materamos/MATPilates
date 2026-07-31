@@ -54,11 +54,11 @@ export default function HomePage() {
             <Image
               alt="Sala de MAT Pilates"
               className="mat-cropped-image mat-hero__photo"
-              height={1448}
+              height={941}
               preload
               sizes="(min-width: 1440px) 609px, (min-width: 1280px) calc(38vw + 55px), (min-width: 1024px) calc(39vw - 53px), (min-width: 768px) 720px, calc(100vw - 48px)"
               src="/hero/mat-studio-hero.png"
-              width={1086}
+              width={1672}
             />
             <div className="mat-hero__logo">
               <Image
