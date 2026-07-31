@@ -43,7 +43,7 @@ Normative rules, implemented behavior, and known differences are identified expl
 
 ### Keyboard focus
 
-The normative keyboard-focus treatment uses a 3 px outline with a 4 px offset. The current implementation uses a 2 px outline with the same 4 px offset; this is a known implementation difference, not a change to the normative value.
+The normative keyboard-focus treatment uses a 2 px outline with a 4 px offset, matching the current implementation.
 
 Light surfaces inherit `--mat-focus-ring-on-light` (`brand/deep-burgundy`), while charcoal and burgundy surfaces inherit `--mat-focus-ring-on-dark` (`brand/pale-pink`). A light component nested inside a dark section must restore the light-surface token so the indicator contrasts with its immediate background.
 
