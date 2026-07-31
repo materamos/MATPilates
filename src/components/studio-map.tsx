@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const MAP_LAYOUT_QUERY = "(min-width: 1025px) and (orientation: landscape)";
+const MAP_LAYOUT_QUERY =
+  "(min-width: 900px) and (min-height: 600px) and (orientation: landscape)";
 
 type StudioMapProps = {
   embedUrl: string;

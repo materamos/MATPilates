@@ -365,6 +365,7 @@ a {
   flex-direction: column;
   gap: clamp(10px, 1.6dvh, 16px);
   min-height: 0;
+  min-width: 0;
 }
 
 .mat-hero__title {
@@ -415,6 +416,7 @@ a {
   border-radius: var(--mat-radius-lg);
   height: 100%;
   min-height: 0;
+  min-width: 0;
 }
 
 .mat-hero {
@@ -548,7 +550,7 @@ a {
 }
 
 .mat-hot-mat__heading .mat-h2 {
-  max-width: 300px;
+  max-width: clamp(300px, 60vw, 360px);
 }
 
 .mat-hot-mat__card:nth-child(-n + 2) {
@@ -623,6 +625,8 @@ a {
   grid-row: 1;
   grid-column: 1;
   min-width: 0;
+  font-size: var(--mat-font-size-22);
+  line-height: 28px;
   overflow-wrap: normal;
   white-space: nowrap;
 }
@@ -656,11 +660,18 @@ a {
   padding-right: 0.5em;
 }
 
-.mat-class-card__title-measure {
+.mat-class-card__title-measurement {
   position: absolute;
+  width: 0;
+  height: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.mat-class-card__title-measure {
+  display: inline-block;
   visibility: hidden;
   width: max-content;
-  pointer-events: none;
 }
 
 @keyframes mat-class-card-title-marquee {
@@ -700,6 +711,10 @@ a {
 .mat-class-card__intensity--low {
   background: var(--mat-color-desaturated-beige);
   color: var(--mat-color-charcoal);
+}
+
+.mat-class-card[open] .mat-class-card__intensity--low {
+  background: var(--mat-color-pearl-neutral);
 }
 
 .mat-class-card__intensity--moderate {
@@ -807,6 +822,7 @@ a {
 
 .mat-classes__heading .mat-section-heading__description {
   max-width: 292px;
+  line-height: 22px;
 }
 
 .mat-classes__actions {
@@ -1022,7 +1038,7 @@ a {
   }
 
   .mat-hero__title {
-    font-size: var(--mat-font-size-56);
+    font-size: clamp(44px, calc(17.15vw - 8.3px), var(--mat-font-size-56));
     line-height: 49px;
   }
 
@@ -2322,6 +2338,11 @@ a {
 }
 
 @media (min-width: 768px) {
+  .mat-class-card__name {
+    font-size: var(--mat-font-size-24);
+    line-height: 31px;
+  }
+
   .mat-classes {
     padding-bottom: 32px;
     grid-template-rows: auto auto auto;
@@ -2336,11 +2357,6 @@ a {
 }
 
 @media (min-width: 1024px) {
-  .mat-class-card__name {
-    font-size: var(--mat-font-size-24);
-    line-height: 31px;
-  }
-
   .mat-class-card .mat-body-small {
     font-size: var(--mat-font-size-14);
     line-height: 22px;
@@ -2360,7 +2376,7 @@ a {
   }
 }
 
-@media (min-width: 1025px) and (orientation: landscape) {
+@media (min-width: 900px) and (min-height: 600px) and (orientation: landscape) {
   .mat-studio__map {
     display: block;
     width: 100%;

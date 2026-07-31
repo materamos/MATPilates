@@ -135,10 +135,10 @@ export default function HomePage() {
           <div className="mat-classes__actions">
             <Button
               className="mat-desktop-button mat-classes__button"
-              href={landingCtas.join.href}
+              href={landingCtas.learnHowToJoin.href}
               variant="light"
             >
-              {landingCtas.join.label}
+              {landingCtas.learnHowToJoin.label}
             </Button>
           </div>
         </section>

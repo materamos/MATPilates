@@ -25,12 +25,16 @@ export const landingCtas = {
     href: "#contacto",
     label: "Sumate a MAT",
   },
+  learnHowToJoin: {
+    href: "#contacto",
+    label: "Conocé cómo sumarte",
+  },
   selectExperience: {
     label: "Quiero esta experiencia",
   },
   learnHotMat: {
     href: "#hotmat",
-    label: "Conocé Hot Mat",
+    label: "¿Qué es Hot Mat?",
   },
   directions: {
     label: "Cómo llegar",
