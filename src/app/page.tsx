@@ -93,7 +93,9 @@ export default function HomePage() {
           <div className="mat-section-heading mat-hot-mat__heading">
             <div className="mat-section-heading__title">
               <p className="mat-label">{hotMat.eyebrow}</p>
-              <h2 className="mat-h2">{hotMat.title}</h2>
+              <h2 className="mat-h2" tabIndex={-1}>
+                {hotMat.title}
+              </h2>
             </div>
             <p className="mat-body mat-section-heading__description">{hotMat.description}</p>
           </div>
@@ -121,7 +123,9 @@ export default function HomePage() {
           <div className="mat-section-heading mat-classes__heading">
             <div className="mat-section-heading__title">
               <p className="mat-label">{classes.eyebrow}</p>
-              <h2 className="mat-h2">{classes.title}</h2>
+              <h2 className="mat-h2" tabIndex={-1}>
+                {classes.title}
+              </h2>
             </div>
             <p className="mat-body mat-section-heading__description">{classes.description}</p>
           </div>
@@ -149,7 +153,9 @@ export default function HomePage() {
           </div>
           <div className="mat-studio__copy">
             <p className="mat-label">{studio.eyebrow}</p>
-            <h2 className="mat-h2">{studio.title}</h2>
+            <h2 className="mat-h2" tabIndex={-1}>
+              {studio.title}
+            </h2>
             <StudioMap embedUrl={siteContact.location.embedUrl} />
             <p className="mat-body-small mat-studio__location">{studio.location}</p>
             <Button
@@ -168,7 +174,9 @@ export default function HomePage() {
         <section className="mat-reservation mat-scroll-target" id="contacto">
           <div className="mat-reservation__copy">
             <p className="mat-label">{reservation.eyebrow}</p>
-            <h2 className="mat-h2">{reservation.title}</h2>
+            <h2 className="mat-h2" tabIndex={-1}>
+              {reservation.title}
+            </h2>
             <p className="mat-body">{reservation.description}</p>
             <div className="mat-flow-action mat-reservation__actions">
               <Button

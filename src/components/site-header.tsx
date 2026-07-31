@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { landingCtas, navigationItems, siteContact } from "@/lib/site-content";
 import { Button } from "./button";
 
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuDestinationRef = useRef<{ element: HTMLElement; href: string } | null>(null);
 
   useEffect(() => {
     if (!isMenuOpen) {
@@ -36,8 +37,23 @@ export function SiteHeader() {
         element.inert = false;
       });
       document.removeEventListener("keydown", closeOnEscape);
-      menuButton?.focus();
+      if (!menuDestinationRef.current) {
+        menuButton?.focus();
+      }
     };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    if (isMenuOpen || !menuDestinationRef.current) {
+      return;
+    }
+
+    const destination = menuDestinationRef.current;
+    menuDestinationRef.current = null;
+    window.location.hash = destination.href;
+    window.requestAnimationFrame(() => {
+      destination.element.focus({ preventScroll: true });
+    });
   }, [isMenuOpen]);
 
   useEffect(() => {
@@ -56,6 +72,18 @@ export function SiteHeader() {
   }, []);
 
   const closeMenu = () => setIsMenuOpen(false);
+  const navigateFromMenu = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    const destination = document.querySelector<HTMLElement>(`${href} h2`);
+
+    if (!destination) {
+      closeMenu();
+      return;
+    }
+
+    event.preventDefault();
+    menuDestinationRef.current = { element: destination, href };
+    closeMenu();
+  };
 
   return (
     <header className="site-header">
@@ -129,7 +157,11 @@ export function SiteHeader() {
             <ul>
               {navigationItems.map((item) => (
                 <li key={item.href}>
-                  <a className="site-menu__link" href={item.href} onClick={closeMenu}>
+                  <a
+                    className="site-menu__link"
+                    href={item.href}
+                    onClick={(event) => navigateFromMenu(event, item.href)}
+                  >
                     <span>{item.label}</span>
                     <span aria-hidden="true" className="site-menu__arrow" />
                   </a>
@@ -141,7 +173,7 @@ export function SiteHeader() {
           <Button
             className="site-menu__cta"
             href={landingCtas.join.href}
-            onClick={closeMenu}
+            onClick={(event) => navigateFromMenu(event, landingCtas.join.href)}
             variant="light"
           >
             {landingCtas.join.label}
