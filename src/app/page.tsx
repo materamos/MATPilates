@@ -186,7 +186,6 @@ export default function HomePage() {
               alt="Clase grupal de pilates"
               className="object-cover"
               fill
-              loading="eager"
               sizes="(min-width: 1440px) 632px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
               src="/sections/reservation-photo.png"
             />
