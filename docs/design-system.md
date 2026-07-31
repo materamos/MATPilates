@@ -113,6 +113,8 @@ Width defines the composition and available height defines its content density. 
 
 Within the tablet range from 768 px inclusive to 1024 px exclusive, sections use intrinsic height and normal document scrolling at every viewport height. The viewport minus the header is a minimum-height floor, not a fixed-height boundary; content must remain accessible instead of being clipped when a landscape or split-screen viewport is short.
 
+In Tablet portrait, Hot Mat is content-sized instead of using the viewport-height floor. Its closing copy keeps the section's 32 px bottom inset, avoiding unused vertical space after the content.
+
 ### CSS organization
 
 `src/app/globals.css` owns the global foundation: Tailwind imports, design tokens, reset and accessibility, typography and shared primitives, header and menu, mobile-first landing sections, and responsive modes. The footer uses the component-scoped `src/components/site-footer.module.css` stylesheet.

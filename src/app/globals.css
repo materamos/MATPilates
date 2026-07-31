@@ -1188,6 +1188,17 @@ a {
   }
 }
 
+/* Tablet portrait */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .mat-hot-mat {
+    min-height: 0;
+  }
+
+  .mat-hot-mat__closing {
+    align-self: start;
+  }
+}
+
 /* Tablet landscape */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
   .mat-hero__copy {
