@@ -59,6 +59,12 @@ npm run lint
 npm run build
 ```
 
+## SEO configuration
+
+- `SITE_URL` optionally defines the absolute canonical site URL. Until a custom domain is configured, the application uses Vercel's production URL or `https://mat-pilates.vercel.app` as a stable fallback.
+- `SITE_INDEXING_ENABLED` must be set to `true` in Vercel Production to allow search-engine indexing. The site remains `noindex` by default, and Preview deployments remain `noindex` even if the variable is present.
+- `/robots.txt` and `/sitemap.xml` are generated from the same canonical URL and indexing policy.
+
 ## Repository structure
 
 | Path | Responsibility |
