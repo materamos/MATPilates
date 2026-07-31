@@ -106,10 +106,22 @@ test.describe("responsive contract", () => {
       const layout = await page.evaluate(() => {
         const documentElement = document.documentElement;
         const sections = Array.from(document.querySelectorAll<HTMLElement>("main > section"));
+        const classes = document.querySelector<HTMLElement>(".mat-classes")!;
+        const reservation = document.querySelector<HTMLElement>(".mat-reservation")!;
+        const classesStyles = getComputedStyle(classes);
+        const reservationStyles = getComputedStyle(reservation);
 
         return {
           clientWidth: documentElement.clientWidth,
           scrollWidth: documentElement.scrollWidth,
+          classesInset: {
+            bottom: Number.parseFloat(classesStyles.paddingBottom),
+            top: Number.parseFloat(classesStyles.paddingTop),
+          },
+          reservationInset: {
+            bottom: Number.parseFloat(reservationStyles.paddingBottom),
+            top: Number.parseFloat(reservationStyles.paddingTop),
+          },
           clippedSections: sections
             .filter(
               (section) =>
@@ -122,6 +134,41 @@ test.describe("responsive contract", () => {
 
       expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
       expect(layout.clippedSections).toEqual([]);
+      const expectedSectionInset = viewportCase.width >= 1024 ? 60 : 32;
+
+      expect(layout.classesInset).toEqual({
+        bottom: expectedSectionInset,
+        top: expectedSectionInset,
+      });
+      expect(layout.reservationInset).toEqual({
+        bottom: expectedSectionInset,
+        top: expectedSectionInset,
+      });
+
+      if (viewportCase.navigation === "desktop") {
+        const reservationContentInset = await page.evaluate(() => {
+          const section = document.querySelector<HTMLElement>(".mat-reservation")!;
+          const copy = document.querySelector<HTMLElement>(".mat-reservation__copy")!;
+          const image = document.querySelector<HTMLElement>(".mat-reservation__image")!;
+          const sectionRect = section.getBoundingClientRect();
+          const contentTop = Math.min(
+            copy.getBoundingClientRect().top,
+            image.getBoundingClientRect().top,
+          );
+          const contentBottom = Math.max(
+            copy.getBoundingClientRect().bottom,
+            image.getBoundingClientRect().bottom,
+          );
+
+          return {
+            bottom: sectionRect.bottom - contentBottom,
+            top: contentTop - sectionRect.top,
+          };
+        });
+
+        expect(reservationContentInset.top).toBeCloseTo(expectedSectionInset, 0);
+        expect(reservationContentInset.bottom).toBeCloseTo(expectedSectionInset, 0);
+      }
 
       const mobileMenuButton = page.getByRole("button", { name: "Abrir menú" });
       const desktopNavigation = page.getByRole("navigation", { name: "Navegación principal" });

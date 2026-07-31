@@ -127,6 +127,8 @@ Adjacent CSS media queries overlap at their exact boundary because the styleshee
 
 Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights. In Compact Narrow Short and Compact Content, the studio gallery has a 640 px height floor and may extend below a short viewport so portrait images remain legible.
 
+Classes and reservation use a 32 px vertical content inset in Mobile and Tablet, and a 60 px inset in Compact Narrow, Compact Content, and Desktop. In wide compositions, the reservation copy and image stretch between those limits so the content envelope preserves the same top and bottom spacing. Manifesto and footer retain their own component-specific vertical rhythm.
+
 The studio map is progressive, non-essential content. It is shown in landscape compositions that are at least 900 px wide and 600 px tall, occupies the full width of the studio copy column, and reserves at least 240 px before its lazy-loaded iframe mounts. Once visible, it grows to absorb the column's remaining vertical space while preserving its 32 px top margin, 16 px bottom margin, and the section's outer spacing. Narrower, shorter, and portrait compositions do not render or reserve space for the map. The address and `Cómo llegar` link remain available as the location fallback in every mode.
 
 ### Visual regression contract
@@ -147,7 +149,7 @@ Playwright renders the production build with Chromium, the bundled Neue Montreal
 | 1280 x 901 | 1 | Exact Desktop height boundary |
 | 1440 x 1000 | 1 | Desktop |
 
-Full-page snapshots cover the representative 320, 390, 768, 1077, 1280 x 720, 1280 x 901, and 1440 compositions. Structural tests cover the remaining boundaries, navigation mode, map eligibility, intrinsic section sizing, and horizontal overflow. Interaction tests cover menu focus transfer, exclusive class disclosures, reduced-motion gallery control, and the documented focus outline.
+Full-page snapshots cover the representative 320, 390, 768, 1077, 1280 x 720, 1280 x 901, and 1440 compositions. Structural tests cover the remaining boundaries, navigation mode, map eligibility, intrinsic section sizing, horizontal overflow, and the classes/reservation vertical content inset. Interaction tests cover menu focus transfer, exclusive class disclosures, reduced-motion gallery control, and the documented focus outline.
 
 Baseline updates require an intentional visual decision. Failure artifacts under `test-results/` are diagnostic only and must not be committed. Windows baselines are stored next to their spec files; CI on another operating system requires separately approved platform baselines.
 
@@ -157,7 +159,7 @@ Baseline updates require an intentional visual decision. Failure artifacts under
 | --- | --- |
 | Desktop | Detail and header 20 px; cards 36 px; section and gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
 | Mobile / Tablet | Controls 8 px; groups 12 px; content 16 px; gutter 24 px; sections 32 px; radius 8 / 24 / full |
-| Compact Narrow and Content | Detail and header 20 px; controls 24 px; cards 36 px; panel and section 48 px; gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
+| Compact Narrow and Content | Detail and header 20 px; controls 24 px; cards 36 px; panel 48 px; section and gutter 60 px; editorial gap 80 px; radius 16 / 24 / full |
 
 Distances produced by `Space Between` are local mathematical results and are not reusable tokens. This includes values such as 25, 35, 79, 81, and 128 px that preserve the approved outer geometry.
 
