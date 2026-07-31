@@ -131,7 +131,7 @@ export function SiteHeader() {
               href={landingCtas.join.href}
               variant="light"
             >
-              {landingCtas.join.label}
+              {landingCtas.learnHowToJoin.label}
             </Button>
           </div>
         </nav>
@@ -176,7 +176,7 @@ export function SiteHeader() {
             onClick={(event) => navigateFromMenu(event, landingCtas.join.href)}
             variant="light"
           >
-            {landingCtas.join.label}
+            {landingCtas.learnHowToJoin.label}
           </Button>
           <a
             className="site-menu__location"
