@@ -9,6 +9,10 @@
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "eslint .",
     "lint:css": "stylelint \"src/**/*.css\"",
+    "test:e2e": "playwright test",
+    "test:e2e:serve": "npm run build && npm run start -- --hostname 127.0.0.1 -p 3218",
+    "test:visual": "playwright test --grep @visual",
+    "test:visual:update": "playwright test --grep @visual --update-snapshots",
     "figma:bridge:build": "npm --prefix tools/mat-figma-bridge run build",
     "figma:bridge:check": "npm --prefix tools/mat-figma-bridge run check",
     "figma:bridge:start": "npm --prefix tools/mat-figma-bridge run start"
@@ -22,6 +26,7 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "4.3.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",

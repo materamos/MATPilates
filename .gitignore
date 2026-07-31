@@ -16,6 +16,10 @@ next-env.d.ts
 # Logs
 *.log
 
+# Playwright transient output
+/playwright-report/
+/test-results/
+
 # Tooling and operating-system files
 .vercel/
 .DS_Store
