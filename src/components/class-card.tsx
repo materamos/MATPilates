@@ -134,7 +134,7 @@ export function ClassCard({ classOffering }: ClassCardProps) {
         <p className="mat-body-small">{classOffering.description}</p>
         <Button
           ariaLabel={`Quiero la experiencia ${classOffering.name}`}
-          className="mat-desktop-button mat-class-card__cta"
+          className="mat-class-card__cta"
           href={getClassWhatsappUrl(classOffering.name)}
           rel="noreferrer"
           target="_blank"
