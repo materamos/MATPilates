@@ -702,6 +702,10 @@ a {
   color: var(--mat-color-charcoal);
 }
 
+.mat-class-card[open] .mat-class-card__intensity--low {
+  background: var(--mat-color-pearl-neutral);
+}
+
 .mat-class-card__intensity--moderate {
   background: var(--mat-color-pale-pink);
   color: var(--mat-color-deep-burgundy);
