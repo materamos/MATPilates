@@ -102,18 +102,20 @@ export function ClassCard({ classOffering }: ClassCardProps) {
                 </span>
               )}
             </span>
-            <span aria-hidden="true" className="mat-class-card__title-measure" ref={titleMeasureRef}>
-              <span className="mat-class-card__title-content">
-                <span>{classOffering.name}</span>
-                {isHot ? (
-                  <Image
-                    alt=""
-                    className="mat-class-card__title-fire"
-                    height={15}
-                    src="/icons/hot-class-fire.svg"
-                    width={12}
-                  />
-                ) : null}
+            <span aria-hidden="true" className="mat-class-card__title-measurement">
+              <span className="mat-class-card__title-measure" ref={titleMeasureRef}>
+                <span className="mat-class-card__title-content">
+                  <span>{classOffering.name}</span>
+                  {isHot ? (
+                    <Image
+                      alt=""
+                      className="mat-class-card__title-fire"
+                      height={15}
+                      src="/icons/hot-class-fire.svg"
+                      width={12}
+                    />
+                  ) : null}
+                </span>
               </span>
             </span>
           </h3>
