@@ -1188,6 +1188,17 @@ a {
   }
 }
 
+/* Tablet portrait */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .mat-hot-mat {
+    min-height: 0;
+  }
+
+  .mat-hot-mat__closing {
+    align-self: start;
+  }
+}
+
 /* Tablet landscape */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
   .mat-hero__copy {
@@ -1574,22 +1585,144 @@ a {
   }
 }
 
+/* Compact content foundation */
+@media (min-width: 1024px) and (max-width: 1280px),
+(min-width: 1280px) and (max-height: 901px) {
+  .mat-h2 {
+    line-height: 58px;
+  }
+
+  .mat-classes__heading .mat-h2,
+  .mat-hot-mat__heading .mat-h2,
+  .mat-studio__copy .mat-h2,
+  .mat-reservation__copy>.mat-h2 {
+    font-size: var(--mat-font-size-48);
+  }
+
+  .mat-h3 {
+    line-height: 43px;
+  }
+
+  .mat-hot-mat__card .mat-h3 {
+    font-size: var(--mat-font-size-32);
+  }
+
+  .mat-body-small {
+    line-height: 30px;
+  }
+
+  .mat-hot-mat__closing,
+  .mat-hot-mat__card .mat-body-small {
+    font-size: var(--mat-font-size-20);
+  }
+
+  .mat-hero__actions {
+    gap: 20px;
+    grid-template-columns: minmax(0, min(523px, 100%));
+  }
+
+  .mat-hero__primary {
+    min-height: 56px;
+    padding: 18px 24px;
+    font-size: var(--mat-font-size-18);
+    line-height: 20px;
+  }
+
+  .mat-hero__secondary,
+  .mat-studio__link {
+    min-height: 56px;
+    padding: 18px 24px;
+    font-size: var(--mat-font-size-18);
+  }
+
+  .mat-hot-mat__cards {
+    height: auto;
+    align-self: auto;
+  }
+
+  .mat-hot-mat__card {
+    min-height: 270px;
+    height: auto;
+  }
+
+  .mat-hot-mat {
+    gap: 24px;
+    height: auto;
+    min-height: calc(100dvh - var(--mat-header-height));
+    overflow: visible;
+  }
+
+  .mat-hot-mat__heading .mat-section-heading__title,
+  .mat-classes__heading .mat-section-heading__title {
+    gap: var(--mat-space-4);
+    height: auto;
+    overflow: visible;
+  }
+
+  .mat-hot-mat__heading .mat-section-heading__description,
+  .mat-classes__heading .mat-section-heading__description {
+    font-size: var(--mat-font-size-24);
+    line-height: 30px;
+  }
+
+  .mat-classes__button {
+    min-width: 272px;
+  }
+
+  .mat-classes {
+    height: auto;
+    min-height: calc(100dvh - var(--mat-header-height));
+    overflow: visible;
+  }
+
+  .mat-studio__visual {
+    aspect-ratio: auto;
+  }
+
+  .mat-studio__photo {
+    object-position: center top;
+  }
+
+  .mat-studio__copy {
+    height: auto;
+  }
+
+  .mat-studio,
+  .mat-reservation {
+    gap: clamp(24px, 4vw, 56px);
+    min-height: calc(100dvh - var(--mat-header-height));
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    justify-content: space-between;
+    height: auto;
+    overflow: visible;
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .mat-reservation__button {
+    min-height: 56px;
+    padding: 18px 24px;
+    font-size: var(--mat-font-size-18);
+  }
+
+  .mat-reservation__copy .mat-body {
+    font-size: var(--mat-font-size-24);
+    line-height: 30px;
+  }
+}
+
 /* Compact Narrow */
 @media (min-width: 1024px) and (max-width: 1280px) {
   .mat-label {
     font-size: var(--mat-font-size-16);
   }
 
-  .mat-h2,
-  .mat-classes__heading .mat-h2 {
+  .mat-h2 {
     font-size: var(--mat-font-size-48);
-    line-height: 58px;
   }
 
-  .mat-h3,
-  .mat-hot-mat__card .mat-h3 {
+  .mat-h3 {
     font-size: var(--mat-font-size-32);
-    line-height: 43px;
   }
 
   .mat-body {
@@ -1597,11 +1730,8 @@ a {
     line-height: 30px;
   }
 
-  .mat-body-small,
-  .mat-hot-mat__closing,
-  .mat-hot-mat__card .mat-body-small {
+  .mat-body-small {
     font-size: var(--mat-font-size-20);
-    line-height: 30px;
   }
 
   .mat-text-button {
@@ -1644,24 +1774,6 @@ a {
     line-height: 30px;
   }
 
-  .mat-hero__actions {
-    gap: 20px;
-    grid-template-columns: minmax(0, min(523px, 100%));
-  }
-
-  .mat-hero__primary {
-    min-height: 56px;
-    padding: 18px 24px;
-    font-size: var(--mat-font-size-18);
-    line-height: 20px;
-  }
-
-  .mat-hero__secondary {
-    min-height: 56px;
-    padding: 18px 24px;
-    font-size: var(--mat-font-size-18);
-  }
-
   .mat-hero {
     padding: 60px max(60px, calc((100% - 1160px) / 2));
     grid-template-columns: minmax(0, 1.482fr) minmax(0, 1fr);
@@ -1671,39 +1783,8 @@ a {
     font-size: clamp(52px, 6vw, 64px);
   }
 
-  .mat-hot-mat__cards {
-    height: auto;
-    align-self: auto;
-  }
-
-  .mat-hot-mat__card {
-    min-height: 270px;
-    height: auto;
-  }
-
   .mat-hot-mat {
     padding: 60px max(60px, calc((100% - 1160px) / 2));
-    gap: 24px;
-    height: auto;
-    min-height: calc(100dvh - var(--mat-header-height));
-    overflow: visible;
-  }
-
-  .mat-hot-mat__heading .mat-section-heading__title,
-  .mat-classes__heading .mat-section-heading__title {
-    gap: var(--mat-space-4);
-    height: auto;
-    overflow: visible;
-  }
-
-  .mat-hot-mat__heading .mat-h2 {
-    font-size: var(--mat-font-size-48);
-  }
-
-  .mat-hot-mat__heading .mat-section-heading__description,
-  .mat-classes__heading .mat-section-heading__description {
-    font-size: var(--mat-font-size-24);
-    line-height: 30px;
   }
 
   .mat-classes__heading {
@@ -1715,15 +1796,8 @@ a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .mat-classes__button {
-    min-width: 272px;
-  }
-
   .mat-classes {
     padding: 60px max(60px, calc((100% - 1160px) / 2));
-    height: auto;
-    min-height: calc(100dvh - var(--mat-header-height));
-    overflow: visible;
   }
 
   .mat-studio__spacer {
@@ -1733,54 +1807,15 @@ a {
   .mat-studio__visual {
     display: block;
     height: auto;
-    aspect-ratio: auto;
-  }
-
-  .mat-studio__photo {
-    object-position: center top;
   }
 
   .mat-studio__copy {
     display: flex;
-    height: auto;
   }
 
   .mat-studio,
   .mat-reservation {
     padding: 60px max(60px, calc((100% - 1160px) / 2));
-    gap: clamp(24px, 4vw, 56px);
-    min-height: calc(100dvh - var(--mat-header-height));
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    justify-content: space-between;
-    height: auto;
-    overflow: visible;
-    grid-template-rows: minmax(0, 1fr);
-    align-items: stretch;
-  }
-
-  .mat-studio__link {
-    min-height: 56px;
-    padding: 18px 24px;
-    font-size: var(--mat-font-size-18);
-  }
-
-  .mat-studio__copy .mat-h2 {
-    font-size: var(--mat-font-size-48);
-  }
-
-  .mat-reservation__button {
-    min-height: 56px;
-    padding: 18px 24px;
-    font-size: var(--mat-font-size-18);
-  }
-
-  .mat-reservation__copy>.mat-h2 {
-    font-size: var(--mat-font-size-48);
-  }
-
-  .mat-reservation__copy .mat-body {
-    font-size: var(--mat-font-size-24);
-    line-height: 30px;
   }
 }
 
@@ -1932,17 +1967,14 @@ a {
 
   .mat-h2 {
     font-size: var(--mat-font-size-64);
-    line-height: 58px;
   }
 
   .mat-h3 {
     font-size: var(--mat-font-size-40);
-    line-height: 43px;
   }
 
   .mat-body-small {
     font-size: var(--mat-font-size-24);
-    line-height: 30px;
   }
 
   .site-header__bar {
@@ -1962,8 +1994,6 @@ a {
   }
 
   .mat-hero__actions {
-    gap: 20px;
-    grid-template-columns: minmax(0, min(523px, 100%));
     grid-template-rows: repeat(2,
         clamp(56px, calc(116px - 6.6666666667dvh), 68px));
   }
@@ -1977,8 +2007,6 @@ a {
   }
 
   .mat-hero__secondary {
-    min-height: 56px;
-    padding: 18px 24px;
     font-size: var(--mat-font-size-18);
   }
 
@@ -1991,102 +2019,23 @@ a {
   }
 
   .mat-hot-mat__closing,
-  .mat-hot-mat__card .mat-body-small,
   .mat-studio__location,
   .mat-class-card__tagline {
     font-size: var(--mat-font-size-20);
-    line-height: 30px;
-  }
-
-  .mat-hot-mat__cards {
-    height: auto;
-    align-self: auto;
-  }
-
-  .mat-hot-mat__card {
-    min-height: 270px;
-    height: auto;
-  }
-
-  .mat-hot-mat {
-    gap: 24px;
-    height: auto;
-    min-height: calc(100dvh - var(--mat-header-height));
-    overflow: visible;
-  }
-
-  .mat-hot-mat__heading .mat-section-heading__title,
-  .mat-classes__heading .mat-section-heading__title {
-    gap: var(--mat-space-4);
-    height: auto;
-    overflow: visible;
-  }
-
-  .mat-hot-mat__heading .mat-h2 {
-    font-size: var(--mat-font-size-48);
-  }
-
-  .mat-hot-mat__heading .mat-section-heading__description,
-  .mat-classes__heading .mat-section-heading__description {
-    font-size: var(--mat-font-size-24);
-    line-height: 30px;
-  }
-
-  .mat-hot-mat__card .mat-h3 {
-    font-size: var(--mat-font-size-32);
-    line-height: 43px;
-  }
-
-  .mat-classes__button {
-    min-width: 272px;
-  }
-
-  .mat-classes {
-    height: auto;
-    min-height: calc(100dvh - var(--mat-header-height));
-    overflow: visible;
-  }
-
-  .mat-classes__heading .mat-h2 {
-    font-size: var(--mat-font-size-48);
-    line-height: 58px;
   }
 
   .mat-studio__visual {
     height: clamp(640px,
         calc(100dvh - var(--mat-header-height) - var(--mat-section-space-y) - var(--mat-section-space-y)),
         742px);
-    aspect-ratio: auto;
-  }
-
-  .mat-studio__photo {
-    object-position: center top;
-  }
-
-  .mat-studio__copy {
-    height: auto;
   }
 
   .mat-studio {
     padding: 60px max(60px, calc((100% - 1320px) / 2));
-    gap: clamp(24px, 4vw, 56px);
-    min-height: calc(100dvh - var(--mat-header-height));
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    justify-content: space-between;
-    height: auto;
-    overflow: visible;
-    grid-template-rows: minmax(0, 1fr);
-    align-items: stretch;
   }
 
   .mat-studio__link {
-    min-height: 56px;
-    padding: 18px 24px;
     font-size: var(--mat-font-size-18);
-  }
-
-  .mat-studio__copy .mat-h2 {
-    font-size: var(--mat-font-size-48);
   }
 
   .mat-reservation__button {
@@ -2097,23 +2046,6 @@ a {
 
   .mat-reservation {
     padding: 60px max(60px, calc((100% - 1320px) / 2));
-    gap: clamp(24px, 4vw, 56px);
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    justify-content: space-between;
-    min-height: calc(100dvh - var(--mat-header-height));
-    height: auto;
-    overflow: visible;
-    grid-template-rows: minmax(0, 1fr);
-    align-items: stretch;
-  }
-
-  .mat-reservation__copy>.mat-h2 {
-    font-size: var(--mat-font-size-48);
-  }
-
-  .mat-reservation__copy .mat-body {
-    font-size: var(--mat-font-size-24);
-    line-height: 30px;
   }
 
 }

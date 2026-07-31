@@ -113,11 +113,13 @@ Width defines the composition and available height defines its content density. 
 
 Within the tablet range from 768 px inclusive to 1024 px exclusive, sections use intrinsic height and normal document scrolling at every viewport height. The viewport minus the header is a minimum-height floor, not a fixed-height boundary; content must remain accessible instead of being clipped when a landscape or split-screen viewport is short.
 
+In Tablet portrait, Hot Mat is content-sized instead of using the viewport-height floor. Its closing copy keeps the section's 32 px bottom inset, avoiding unused vertical space after the content.
+
 ### CSS organization
 
 `src/app/globals.css` owns the global foundation: Tailwind imports, design tokens, reset and accessibility, typography and shared primitives, header and menu, mobile-first landing sections, and responsive modes. The footer uses the component-scoped `src/components/site-footer.module.css` stylesheet.
 
-The cascade is ordered from mobile-first foundations into Tablet, shared wide rules, Compact Narrow, Compact Narrow Short, shared desktop rules, Compact Content, and Desktop. Shared rules for Tablet and wider screens appear before the mode-specific blocks they support. Cross-cutting capability queries, such as the horizontal action flow and progressive map eligibility, are named separately instead of being appended as anonymous breakpoint patches.
+The cascade is ordered from mobile-first foundations into Tablet, shared wide rules, a shared compact-content foundation, Compact Narrow, Compact Narrow Short, shared desktop rules, Compact Content, and Desktop. Shared compact-content values appear before the mode-specific blocks; Compact Content keeps only the explicit restorations required after desktop primitives take effect. Cross-cutting capability queries, such as the horizontal action flow and progressive map eligibility, are named separately instead of being appended as anonymous breakpoint patches.
 
 Keep one final source of truth for each property within a responsive context. A grouped shared rule may be followed by a component-specific extension, but a later generic patch must not silently repair earlier specificity or ordering. Component roles may explicitly outrank a shared typography primitive when both classes are present, as with the catalog title role over `mat-h3`.
 

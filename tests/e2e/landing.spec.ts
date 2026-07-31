@@ -94,6 +94,29 @@ async function loadVisualContent(page: Page) {
 }
 
 test.describe("responsive contract", () => {
+  test("tablet portrait Hot Mat ends 32 px after its closing copy", async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1024 });
+    const runtimeErrors = await openLanding(page);
+    await loadVisualContent(page);
+
+    const layout = await page.evaluate(() => {
+      const section = document.querySelector<HTMLElement>(".mat-hot-mat")!;
+      const closing = document.querySelector<HTMLElement>(".mat-hot-mat__closing")!;
+      const sectionRect = section.getBoundingClientRect();
+      const closingRect = closing.getBoundingClientRect();
+
+      return {
+        bottomSpace: sectionRect.bottom - closingRect.bottom,
+        sectionHeight: sectionRect.height,
+        viewportHeight: window.innerHeight,
+      };
+    });
+
+    expect(layout.bottomSpace).toBeCloseTo(32, 0);
+    expect(layout.sectionHeight).toBeLessThan(layout.viewportHeight);
+    expect(runtimeErrors).toEqual([]);
+  });
+
   for (const viewportCase of viewportCases) {
     test(`${viewportCase.id} has intrinsic sections and no document overflow`, async ({ page }) => {
       await page.setViewportSize({
