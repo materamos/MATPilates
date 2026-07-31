@@ -351,6 +351,10 @@ a {
   object-position: center;
 }
 
+.mat-hero__photo {
+  object-position: 45% center;
+}
+
 .mat-hero__logo {
   position: absolute;
   top: 50%;
