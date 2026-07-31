@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { isSiteIndexable, siteMetadata } from "@/lib/site-metadata";
 import "./globals.css";
 
 const neueMontreal = localFont({
@@ -27,16 +28,46 @@ const neueMontreal = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MAT Pilates Canning",
-  description:
-    "Hot Mat Pilates y Mat Pilates en Canning Center. Una experiencia cercana, consciente y enfocada en el bienestar.",
+  metadataBase: siteMetadata.url,
+  title: {
+    default: siteMetadata.name,
+    template: `%s | ${siteMetadata.shortName}`,
+  },
+  description: siteMetadata.description,
+  applicationName: siteMetadata.shortName,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: siteMetadata.locale,
+    url: "/",
+    siteName: siteMetadata.shortName,
+    title: siteMetadata.name,
+    description: siteMetadata.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteMetadata.name,
+    description: siteMetadata.description,
+  },
+  robots: isSiteIndexable
+    ? {
+        index: true,
+        follow: true,
+      }
+    : {
+        index: false,
+        follow: false,
+        noarchive: true,
+      },
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html className={neueMontreal.variable} lang="es">
+    <html className={neueMontreal.variable} lang={siteMetadata.language}>
       <body className="antialiased">{children}</body>
     </html>
   );

@@ -7,14 +7,24 @@ import { StudioGallery } from "@/components/studio-gallery";
 import { StudioMap } from "@/components/studio-map";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { classCatalog, landingContent, landingCtas, siteContact } from "@/lib/site-content";
+import { localBusinessStructuredData } from "@/lib/site-structured-data";
 
 const manifestoMarqueeGroup = [0, 1, 2, 3];
+const localBusinessStructuredDataJson = JSON.stringify(localBusinessStructuredData).replace(
+  /</g,
+  "\\u003c",
+);
 
 export default function HomePage() {
   const { hero, manifesto, hotMat, classes, studio, reservation } = landingContent;
 
   return (
     <>
+      <script
+        dangerouslySetInnerHTML={{ __html: localBusinessStructuredDataJson }}
+        id="mat-pilates-structured-data"
+        type="application/ld+json"
+      />
       <SiteHeader />
       <main>
         <section className="mat-hero mat-scroll-target" id="inicio">
