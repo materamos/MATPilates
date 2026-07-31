@@ -43,7 +43,7 @@ Normative rules, implemented behavior, and known differences are identified expl
 
 ### Keyboard focus
 
-The normative keyboard-focus treatment uses a 3 px outline with a 4 px offset. The current implementation uses a 2 px outline with the same 4 px offset; this is a known implementation difference, not a change to the normative value.
+The normative keyboard-focus treatment uses a 2 px outline with a 4 px offset, matching the current implementation.
 
 Light surfaces inherit `--mat-focus-ring-on-light` (`brand/deep-burgundy`), while charcoal and burgundy surfaces inherit `--mat-focus-ring-on-dark` (`brand/pale-pink`). A light component nested inside a dark section must restore the light-surface token so the indicator contrasts with its immediate background.
 
@@ -117,7 +117,9 @@ Within the tablet range from 768 px inclusive to 1024 px exclusive, sections use
 
 `src/app/globals.css` owns the global foundation: Tailwind imports, design tokens, reset and accessibility, typography and shared primitives, header and menu, mobile-first landing sections, and responsive modes. The footer uses the component-scoped `src/components/site-footer.module.css` stylesheet.
 
-The intended contract keeps one selector definition per responsive context. The current global stylesheet still contains late breakpoint patches for established modes; these are implementation debt to consolidate, not a pattern for future additions.
+The cascade is ordered from mobile-first foundations into Tablet, shared wide rules, Compact Narrow, Compact Narrow Short, shared desktop rules, Compact Content, and Desktop. Shared rules for Tablet and wider screens appear before the mode-specific blocks they support. Cross-cutting capability queries, such as the horizontal action flow and progressive map eligibility, are named separately instead of being appended as anonymous breakpoint patches.
+
+Keep one final source of truth for each property within a responsive context. A grouped shared rule may be followed by a component-specific extension, but a later generic patch must not silently repair earlier specificity or ordering. Component roles may explicitly outrank a shared typography primitive when both classes are present, as with the catalog title role over `mat-h3`.
 
 The four composition families are Mobile/Tablet, Compact Narrow, Compact Content, and Desktop. They are implemented through the six non-overlapping width/height ranges in the table above, plus one tablet-landscape adjustment inside the Tablet range. Layout should prefer intrinsic sizing, maximum-width containers, and `clamp()` over new one-off breakpoints. Content sections must not combine a rigid height with clipping; overflow cropping is reserved for media wrappers.
 
@@ -126,6 +128,28 @@ Adjacent CSS media queries overlap at their exact boundary because the styleshee
 Containers remain fluid until their maximum width and are centered afterwards. Section backgrounds remain full-width. Images preserve their crop with `cover`; implementations must not scale the complete Figma canvas proportionally. Sections grow with content, so frame heights are composition references rather than fixed implementation heights. In Compact Narrow Short and Compact Content, the studio gallery has a 640 px height floor and may extend below a short viewport so portrait images remain legible.
 
 The studio map is progressive, non-essential content. It is shown in landscape compositions that are at least 900 px wide and 600 px tall, occupies the full width of the studio copy column, and reserves at least 240 px before its lazy-loaded iframe mounts. Once visible, it grows to absorb the column's remaining vertical space while preserving its 32 px top margin, 16 px bottom margin, and the section's outer spacing. Narrower, shorter, and portrait compositions do not render or reserve space for the map. The address and `Cómo llegar` link remain available as the location fallback in every mode.
+
+### Visual regression contract
+
+Playwright renders the production build with Chromium, the bundled Neue Montreal files, the `es-AR` locale, the Buenos Aires timezone, light color scheme, and reduced motion. Animations are disabled for screenshots. The external Google Maps rendering is masked, while its responsive presence is asserted independently.
+
+| Viewport | DPR | Composition and boundary |
+| --- | ---: | --- |
+| 320 x 568 | 1 | Mobile minimum and reflow |
+| 390 x 844 | 1 and 2 | Primary Mobile and high-density media |
+| 812 x 375 | 1 | Tablet landscape and short height |
+| 768 x 1024 | 1 | Inclusive Tablet boundary |
+| 1023 x 768 | 1 | Last width before Compact Narrow |
+| 1024 x 768 | 1 | Inclusive Compact Narrow boundary |
+| 1077 x 609 | 1 | Compact Narrow Short |
+| 1279 x 820 | 1 | Last width before Compact Content/Desktop width |
+| 1280 x 720 | 1 | Inclusive Compact Content width |
+| 1280 x 901 | 1 | Exact Desktop height boundary |
+| 1440 x 1000 | 1 | Desktop |
+
+Full-page snapshots cover the representative 320, 390, 768, 1077, 1280 x 720, 1280 x 901, and 1440 compositions. Structural tests cover the remaining boundaries, navigation mode, map eligibility, intrinsic section sizing, and horizontal overflow. Interaction tests cover menu focus transfer, exclusive class disclosures, reduced-motion gallery control, and the documented focus outline.
+
+Baseline updates require an intentional visual decision. Failure artifacts under `test-results/` are diagnostic only and must not be committed. Windows baselines are stored next to their spec files; CI on another operating system requires separately approved platform baselines.
 
 ### Composition values
 
