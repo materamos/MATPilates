@@ -355,6 +355,10 @@ a {
   object-position: 45% center;
 }
 
+.mat-studio-gallery__slide[data-studio-image-index="0"] .mat-studio__photo {
+  object-position: center 35%;
+}
+
 .mat-hero__logo {
   position: absolute;
   top: 50%;
@@ -1277,10 +1281,6 @@ a {
     grid-column: 1;
   }
 
-  .mat-studio-gallery__slide[data-studio-image-index="0"] .mat-studio__photo {
-    object-position: center 30%;
-  }
-
   .mat-studio {
     min-height: calc(100svh - var(--mat-header-height) + var(--mat-section-space-y));
     grid-template-rows: auto auto minmax(0, 1fr) auto auto;
@@ -1681,10 +1681,6 @@ a {
 
   .mat-studio__visual {
     aspect-ratio: auto;
-  }
-
-  .mat-studio__photo {
-    object-position: center top;
   }
 
   .mat-studio__copy {
