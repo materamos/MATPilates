@@ -127,6 +127,7 @@ export function StudioGallery({ images }: StudioGalleryProps) {
               alt={index === currentIndex ? image.alt : ""}
               className="mat-cropped-image mat-studio__photo"
               fill
+              quality={90}
               sizes="(min-width: 1440px) 622px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
               src={image.src}
             />

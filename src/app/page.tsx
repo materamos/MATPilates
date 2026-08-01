@@ -56,6 +56,7 @@ export default function HomePage() {
               className="mat-cropped-image mat-hero__photo"
               height={941}
               preload
+              quality={90}
               sizes="(min-width: 1280px) 1350px, (min-width: 768px) 900px, calc(156vw - 75px)"
               src="/hero/mat-studio-hero-purple-lighting.png"
               width={1672}
