@@ -307,11 +307,11 @@ test("class cards derive their schedule summaries from the published week", asyn
     );
 
   expect(scheduleDays).toEqual([
-    { day: "Lunes", shortDay: "L", times: ["08.00"] },
-    { day: "Martes", shortDay: "M", times: ["08.00", "09.00"] },
-    { day: "Miércoles", shortDay: "X", times: ["08.00"] },
-    { day: "Jueves", shortDay: "J", times: ["08.00"] },
-    { day: "Viernes", shortDay: "V", times: ["08.00", "16.00"] },
+    { day: "Lunes", shortDay: "Lun", times: ["08.00"] },
+    { day: "Martes", shortDay: "Mar", times: ["08.00", "09.00"] },
+    { day: "Miércoles", shortDay: "Mie", times: ["08.00"] },
+    { day: "Jueves", shortDay: "Jue", times: ["08.00"] },
+    { day: "Viernes", shortDay: "Vie", times: ["08.00", "16.00"] },
   ]);
   await expect(
     matPilatesCard.getByRole("link", {
@@ -321,7 +321,7 @@ test("class cards derive their schedule summaries from the published week", asyn
 
   const yogaCard = page.locator("#clase-yoga");
   await yogaCard.locator("summary").click();
-  await expect(yogaCard.getByText("Sin horarios publicados", { exact: true })).toBeVisible();
+  await expect(yogaCard.locator(".mat-class-card__schedule")).toHaveCount(0);
   await expect(yogaCard.locator(".mat-class-card__schedule-link")).toHaveCount(0);
 
   const occurrenceCounts = await page.evaluate(() => {

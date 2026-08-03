@@ -150,9 +150,9 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
       </summary>
       <div className="mat-class-card__details">
         <p className="mat-body-small">{classOffering.description}</p>
-        <div className="mat-class-card__schedule">
-          <p className="mat-label">{landingContent.classes.scheduleLabel}</p>
-          {scheduleDays.length > 0 ? (
+        {scheduleDays.length > 0 ? (
+          <div className="mat-class-card__schedule">
+            <p className="mat-label">{landingContent.classes.scheduleLabel}</p>
             <dl className="mat-class-card__schedule-days">
               {scheduleDays.map((day) => (
                 <div className="mat-class-card__schedule-day" key={day.id}>
@@ -170,12 +170,6 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
                 </div>
               ))}
             </dl>
-          ) : (
-            <p className="mat-body-small mat-class-card__schedule-empty">
-              {landingContent.classes.noScheduleLabel}
-            </p>
-          )}
-          {scheduleDays.length > 0 ? (
             <Button
               ariaLabel={`${landingContent.classes.viewScheduleLabel} de ${classOffering.name}`}
               className="mat-class-card__cta mat-class-card__schedule-link"
@@ -184,8 +178,8 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
             >
               {landingContent.classes.viewScheduleLabel}
             </Button>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
         <Button
           ariaLabel={`Quiero la experiencia ${classOffering.name}`}
           className="mat-class-card__cta"
