@@ -60,7 +60,12 @@ export function ClassCard({ classOffering }: ClassCardProps) {
   }, [classOffering.name]);
 
   return (
-    <details className="mat-class-card" name="mat-class-catalog" onToggle={closeOtherOpenCards}>
+    <details
+      className="mat-class-card"
+      id={`clase-${classOffering.id}`}
+      name="mat-class-catalog"
+      onToggle={closeOtherOpenCards}
+    >
       <summary className="mat-class-card__summary">
         <span className="mat-class-card__summary-copy">
           <h3

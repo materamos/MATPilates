@@ -130,8 +130,10 @@ test.describe("responsive contract", () => {
         const documentElement = document.documentElement;
         const sections = Array.from(document.querySelectorAll<HTMLElement>("main > section"));
         const classes = document.querySelector<HTMLElement>(".mat-classes")!;
+        const schedule = document.querySelector<HTMLElement>(".mat-schedule")!;
         const reservation = document.querySelector<HTMLElement>(".mat-reservation")!;
         const classesStyles = getComputedStyle(classes);
+        const scheduleStyles = getComputedStyle(schedule);
         const reservationStyles = getComputedStyle(reservation);
 
         return {
@@ -140,6 +142,10 @@ test.describe("responsive contract", () => {
           classesInset: {
             bottom: Number.parseFloat(classesStyles.paddingBottom),
             top: Number.parseFloat(classesStyles.paddingTop),
+          },
+          scheduleInset: {
+            bottom: Number.parseFloat(scheduleStyles.paddingBottom),
+            top: Number.parseFloat(scheduleStyles.paddingTop),
           },
           reservationInset: {
             bottom: Number.parseFloat(reservationStyles.paddingBottom),
@@ -160,6 +166,10 @@ test.describe("responsive contract", () => {
       const expectedSectionInset = viewportCase.width >= 1024 ? 60 : 32;
 
       expect(layout.classesInset).toEqual({
+        bottom: expectedSectionInset,
+        top: expectedSectionInset,
+      });
+      expect(layout.scheduleInset).toEqual({
         bottom: expectedSectionInset,
         top: expectedSectionInset,
       });
@@ -199,9 +209,13 @@ test.describe("responsive contract", () => {
       if (viewportCase.navigation === "mobile") {
         await expect(mobileMenuButton).toBeVisible();
         await expect(desktopNavigation).toBeHidden();
+        await expect(page.locator(".mat-schedule__mobile")).toBeVisible();
+        await expect(page.locator(".mat-schedule__desktop")).toBeHidden();
       } else {
         await expect(mobileMenuButton).toBeHidden();
         await expect(desktopNavigation).toBeVisible();
+        await expect(page.locator(".mat-schedule__mobile")).toBeHidden();
+        await expect(page.locator(".mat-schedule__desktop")).toBeVisible();
       }
 
       const map = page.locator(".mat-studio__map");
@@ -245,6 +259,59 @@ test("class cards keep a single disclosure open", async ({ page }) => {
   await cards.nth(1).locator("summary").click();
   await expect(cards.nth(0)).not.toHaveAttribute("open", "");
   await expect(cards.nth(1)).toHaveAttribute("open", "");
+});
+
+test("weekly schedule renders the confirmed data without duplicate day-time slots", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const mobileSchedule = page.locator(".mat-schedule__mobile");
+  const days = mobileSchedule.locator(".mat-schedule-day");
+  const dayLabels = await days.locator("summary .mat-h3").allTextContents();
+  const slotCounts = await days.evaluateAll((elements) =>
+    elements.map((element) => element.querySelectorAll(".mat-schedule-day__slot").length),
+  );
+
+  expect(dayLabels).toEqual(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]);
+  expect(slotCounts).toEqual([12, 9, 9, 9, 9, 4]);
+  await expect(mobileSchedule.locator(".mat-schedule__class-link")).toHaveCount(52);
+  await expect(mobileSchedule.getByText("Yoga", { exact: true })).toHaveCount(0);
+
+  await page.setViewportSize({ width: 1280, height: 720 });
+  const table = page.locator(".mat-schedule-table");
+  const coordinates = await table.locator("tbody td").evaluateAll((cells) =>
+    cells
+      .filter((cell) => cell.querySelector(".mat-schedule__class-link"))
+      .map((cell) => `${cell.getAttribute("data-schedule-day")}-${cell.getAttribute("data-schedule-time")}`),
+  );
+
+  await expect(table.locator("tbody tr")).toHaveCount(12);
+  await expect(table.locator(".mat-schedule__class-link")).toHaveCount(52);
+  expect(new Set(coordinates).size).toBe(52);
+});
+
+test("schedule accordions are exclusive and class links reveal their catalog card", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const days = page.locator(".mat-schedule__mobile .mat-schedule-day");
+  await expect(days.nth(0)).toHaveAttribute("open", "");
+  await expect(days.nth(1)).not.toHaveAttribute("open", "");
+
+  await days.nth(1).locator("summary").click();
+  await expect(days.nth(0)).not.toHaveAttribute("open", "");
+  await expect(days.nth(1)).toHaveAttribute("open", "");
+
+  await days.nth(1).locator(".mat-schedule__class-link").first().click();
+  const classCard = page.locator("#clase-mat-pilates");
+
+  await expect(page).toHaveURL(/#clase-mat-pilates$/);
+  await expect(classCard).toHaveAttribute("open", "");
+  await expect(classCard.locator("summary")).toBeFocused();
 });
 
 test("gallery starts paused for reduced motion and remains keyboard operable", async ({ page }) => {

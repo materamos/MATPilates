@@ -133,6 +133,10 @@ export const landingContent = {
     title: "Encontrá la clase que acompañe tu momento.",
     description: "Todas las clases están pensadas para trabajar con presencia y progresión.",
   },
+  schedule: {
+    eyebrow: "Semana",
+    title: "Horarios",
+  },
   studio: {
     eyebrow: "El estudio",
     title: "Cerca, cálido y pensado para vos.",
@@ -258,3 +262,5 @@ export const classCatalog = [
     environment: "room-temperature",
   },
 ] as const satisfies readonly ClassOffering[];
+
+export type ClassId = (typeof classCatalog)[number]["id"];

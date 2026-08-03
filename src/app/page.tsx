@@ -1,12 +1,14 @@
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { ClassCard } from "@/components/class-card";
+import { ScheduleSection } from "@/components/schedule-section";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StudioGallery } from "@/components/studio-gallery";
 import { StudioMap } from "@/components/studio-map";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { classCatalog, landingContent, landingCtas, siteContact } from "@/lib/site-content";
+import { weeklySchedule } from "@/lib/schedule-content";
 import { localBusinessStructuredData } from "@/lib/site-structured-data";
 
 const manifestoMarqueeGroup = [0, 1, 2, 3];
@@ -16,7 +18,7 @@ const localBusinessStructuredDataJson = JSON.stringify(localBusinessStructuredDa
 );
 
 export default function HomePage() {
-  const { hero, manifesto, hotMat, classes, studio, reservation } = landingContent;
+  const { hero, manifesto, hotMat, classes, schedule, studio, reservation } = landingContent;
 
   return (
     <>
@@ -147,6 +149,8 @@ export default function HomePage() {
             </Button>
           </div>
         </section>
+
+        <ScheduleSection content={schedule} schedule={weeklySchedule} />
 
         <section className="mat-studio mat-scroll-target" id="estudio">
           <div className="mat-studio__visual">
