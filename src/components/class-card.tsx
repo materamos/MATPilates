@@ -174,14 +174,6 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
                   </div>
                 ))}
               </dl>
-              <Button
-                ariaLabel={`${landingContent.classes.viewScheduleLabel} de ${classOffering.name}`}
-                className="mat-class-card__cta mat-class-card__schedule-link"
-                href="#horarios"
-                onClick={showClassSchedule}
-              >
-                {landingContent.classes.viewScheduleLabel}
-              </Button>
             </div>
           ) : null}
           <Button
@@ -193,6 +185,17 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
           >
             {landingCtas.selectExperience.label}
           </Button>
+          {scheduleDays.length > 0 ? (
+            <Button
+              ariaLabel={`${landingContent.classes.viewScheduleLabel} de ${classOffering.name}`}
+              className="mat-text-button mat-class-card__cta mat-class-card__schedule-link"
+              href="#horarios"
+              onClick={showClassSchedule}
+              variant="text"
+            >
+              {landingContent.classes.viewScheduleLabel}
+            </Button>
+          ) : null}
         </div>
       </div>
     </details>

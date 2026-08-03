@@ -75,9 +75,11 @@ Run `npm run test:visual:update` only when a visual change is intentional. Inspe
 
 ## SEO configuration
 
-- `SITE_URL` optionally defines the absolute canonical site URL. Until a custom domain is configured, the application uses Vercel's production URL or `https://mat-pilates.vercel.app` as a stable fallback.
+- The official production and canonical URL is `https://matpilatescn.com`. The `www` variant redirects permanently to the apex domain.
+- `SITE_URL` must remain set to `https://matpilatescn.com` in Vercel Production. If it is unavailable in another environment, the application uses Vercel's production URL or `https://mat-pilates.vercel.app` as a technical fallback.
 - `SITE_INDEXING_ENABLED` must be set to `true` in Vercel Production to allow search-engine indexing. The site remains `noindex` by default, and Preview deployments remain `noindex` even if the variable is present.
 - `/robots.txt` and `/sitemap.xml` are generated from the same canonical URL and indexing policy.
+- Cloudflare is the registrar and authoritative DNS provider. The apex and `www` records remain DNS-only because Vercel terminates HTTPS and serves production traffic.
 
 ## Repository structure
 
