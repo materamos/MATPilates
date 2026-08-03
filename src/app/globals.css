@@ -854,8 +854,10 @@ a {
 }
 
 .mat-class-card__cta {
-  width: min(100%, 230px);
+  width: min(100%, 256px);
   justify-self: center;
+  padding-inline: 16px;
+  white-space: nowrap;
 }
 
 .mat-classes {

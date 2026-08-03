@@ -322,12 +322,17 @@ test("class cards derive their schedule summaries from the published week", asyn
   const ctaLayout = await matPilatesCard.locator(".mat-class-card__cta").evaluateAll((ctas) =>
     ctas.map((cta) => {
       const styles = getComputedStyle(cta);
-      return { justifySelf: styles.justifySelf, width: styles.width };
+      return {
+        hasOverflow: cta.scrollWidth > cta.clientWidth,
+        justifySelf: styles.justifySelf,
+        whiteSpace: styles.whiteSpace,
+        width: styles.width,
+      };
     }),
   );
   expect(ctaLayout).toEqual([
-    { justifySelf: "center", width: "230px" },
-    { justifySelf: "center", width: "230px" },
+    { hasOverflow: false, justifySelf: "center", whiteSpace: "nowrap", width: "256px" },
+    { hasOverflow: false, justifySelf: "center", whiteSpace: "nowrap", width: "256px" },
   ]);
 
   const yogaCard = page.locator("#clase-yoga");
