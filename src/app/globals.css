@@ -1824,6 +1824,8 @@ a {
     gap: clamp(16px, 2.5vw, 36px);
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: minmax(0, 1fr);
+    max-height: 300px;
+    align-self: center;
   }
 
   .mat-hot-mat__card {
