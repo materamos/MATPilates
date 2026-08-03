@@ -23,7 +23,7 @@ Figma plugin UI
   │ validated postMessage
   ▼
 Figma plugin main sandbox
-  └─ local fonts, document reads, preview, manual patch approval
+  └─ local fonts, document reads, preview, automatic patch application
 ```
 
 The server and Figma plugin share protocol version `1`. Figma connects to the
@@ -53,29 +53,29 @@ The Figma plugin UI:
   networking API;
 - stores the issued token in `figma.clientStorage`;
 - explains what content can be sent to Codex;
-- displays the generated patch summary in Spanish;
+- displays automatic-apply progress and the generated patch summary in Spanish;
 - lists every exact operation, target ID, range, typography value, and bounded
   whitespace-normalized replacement-text preview, with an explicit truncation
-  marker when needed, in that approval;
+  marker when needed;
 - lists every affected layer with page, name, node type, and ID, up to the
   500-node protocol limit;
-- displays the required post-apply preview target before approval;
+- displays the required post-apply preview target;
 - reports apply-time warnings and exposes the ephemeral `Deshacer lote` action
-  only while it remains safe;
-- requires an explicit `Aplicar` or `Rechazar` decision for every batch.
+  only while it remains safe.
 
 The Figma plugin main sandbox:
 
 - is the only authority allowed to read or change the document;
-- verifies the active file, page, selection, node IDs, style IDs, fingerprints,
-  fonts, limits, and patch expiry;
+- verifies the open file plus exact target page/node IDs, style IDs,
+  fingerprints, fonts, limits, and patch expiry without consulting the active
+  page or visible selection;
 - supports only Neue Montreal `Regular`, `Medium`, and `Bold`;
 - enforces MAT semantic text-style roles for H1, H2, H3, Body, Button, and
   mobile/desktop/compact labels;
 - performs a complete preflight before the first write;
 - rechecks fingerprints after loading every required font;
 - verifies exact postconditions before completing the undo group;
-- applies an approved batch as one Figma undo step;
+- applies an explicitly authorized batch automatically as one Figma undo step;
 - exports the required bounded post-apply PNG;
 - maintains and verifies the short-lived safe undo window;
 - triggers immediate rollback when an operation fails.
@@ -90,9 +90,9 @@ The Figma plugin main sandbox:
 | `mat_figma_get_node` | Reads one exact node and fingerprint. |
 | `mat_figma_list_fonts` | Reads fonts visible to Figma Desktop. |
 | `mat_figma_list_text_styles` | Reads local text styles and fingerprints. |
-| `mat_figma_audit_typography` | Audits a selection, subtree, or current page. |
+| `mat_figma_audit_typography` | Audits a selection, the current page, or an exact node subtree on any page without changing the visible page. |
 | `mat_figma_export_preview` | Returns a bounded PNG for an exact `nodeId`, or for the current selection when it contains exactly one node. |
-| `mat_figma_propose_typography_patch` | Requires an exact post-apply preview target and opens a manual approval prompt; it does not write by itself. |
+| `mat_figma_propose_typography_patch` | Submits an authorized batch with an exact post-apply preview target and starts application automatically. The target page and nodes need not be active or selected. |
 | `mat_figma_get_patch_status` | Reads or briefly waits for the patch result; an applied result automatically includes the PNG as MCP image content while structured JSON carries metadata without base64 bytes. |
 | `mat_figma_cancel_patch` | Cancels a pending patch; it never undoes an applied patch. |
 
@@ -112,8 +112,8 @@ binding is supported; other writes remain rejected because their propagated
 impact cannot be enumerated safely.
 Full-text replacement uses Figma's style-preserving insertion/deletion APIs;
 it never assigns `TextNode.characters` on an existing layer. When Figma Auto
-Rename is active, the approval warns that the layer name will follow the new
-content.
+Rename is active, the batch summary warns that the layer name will follow the
+new content.
 
 ## Semantic text-style policy
 
@@ -139,43 +139,46 @@ including when the style is updated elsewhere in the same batch.
 
 ## Safety model
 
-Each proposed batch has a unique ID, exact file and page, exact selection,
-required preview target, five-minute expiry, immutable operations, and SHA-256
-preconditions. Its approval summary includes every layer computed as affected
-and identifies the target that will be captured after applying. Only one batch
-can be pending at a time. A batch is rejected before writing when the document
-changed, a font is missing, the file or selection differs, a target is locked
-or unsupported, any operation would be a no-op, or any limit is exceeded.
+Each submitted batch has a unique ID, exact file and page, optional explicit
+scope roots in `selectionIds`, a required preview target, five-minute expiry,
+immutable operations, and SHA-256 preconditions. `selectionIds` bounds the
+declared scope; it is not compared with the visible Figma selection. The batch
+summary includes every layer computed as affected and identifies the target
+that will be captured after applying. Only one batch can be in flight at a
+time. A batch is rejected before writing when the document changed, a font is
+missing, the file or exact target differs, a target is locked or unsupported,
+any operation would be a no-op, or any limit is exceeded.
 No-op checks cover style updates, whole-node bindings, exact ranges, and text
 replacement. A matching style ID alone is insufficient to call a binding a
 no-op: divergent controlled values or supported typography overrides make
 reapplying the style a valid normalization operation.
 
-Pending approval expiry is checked whenever status is read and again
-synchronously before approval, so an expired batch cannot enter the write
-path. The main sandbox also uses explicit timers to arm and expire the safe
-undo window. Main-sandbox and iframe typechecking use separate TypeScript
-configurations so browser globals cannot leak back into the document process.
+Patch expiry is checked during automatic preflight and again immediately before
+the write path, so an expired batch cannot be applied. The main sandbox also
+uses explicit timers to arm and expire the safe undo window. Main-sandbox and
+iframe typechecking use separate TypeScript configurations so browser globals
+cannot leak back into the document process.
 
 After a successful apply, the UI briefly moves from `settling` to an available
 `Deshacer lote` button for the latest batch, for at most five minutes from the
 apply. The action first verifies the post-apply fingerprints and style usages,
 invokes the single native Figma Undo step, then verifies the original state. It
 ignores only the plugin's exact local document events while settling. Once
-available, any document event makes it unavailable; page changes, loss of
-plugin focus, hiding the UI, a newer batch, expiry, or verification failure do
-the same. Ownership is rechecked immediately before native Undo so an
+available, any document event makes it unavailable; loss of plugin focus,
+hiding the UI, a newer batch, expiry, or verification failure do the same.
+Changing the active page alone does not invalidate the batch or its undo
+candidate. Ownership is rechecked immediately before native Undo so an
 invalidation that arrives during asynchronous verification cannot trigger a
 stale rollback.
 
 Apply-time document monitoring matches direct typography changes plus bounded
 Auto Layout reflow effects on affected ancestors and every descendant in their
 tracked subtrees, including descendants of siblings that use fill, hug, wrap,
-or grid sizing. Remote changes, unexpected local properties, page changes, and
-loss of plugin focus stop the batch. Before the first write this yields `stale`.
+or grid sizing. Remote changes, unexpected local properties, and loss of plugin
+focus stop the batch. Before the first write this yields `stale`.
 After a write it yields `indeterminate`, blocks later bridge writes, and
 deliberately avoids automatic Undo because that could revert the user's
-concurrent edit. Only the exact properties approved for existing nodes and
+concurrent edit. Only the exact properties declared for existing nodes and
 styles are accepted as plugin-owned; newly created objects do not receive a
 broad property exemption. The applying guard remains active while the bridge
 decides whether rollback is safe, so a late concurrent event cannot be lost
@@ -239,12 +242,16 @@ silently truncated or schema-invalid precondition. Explicit x/y placement for
 a new child of an Auto Layout container is rejected in v0.1. Creating a text
 node directly inside a Grid container is also rejected in v0.1.
 
+An exact-node typography audit resolves the node's owning page and leaves the
+visible page unchanged. Selection and current-page audit scopes remain explicit
+conveniences when that is the intended target.
+
 Text fingerprints include complete-style paragraph settings plus position and
 dimensions. The proposal also snapshots affected Auto Layout roots and each
 ancestor's full descendant subtree, including child order, geometry, padding,
 spacing, sizing, and alignment. The traversal includes descendants of siblings
 and is rejected if the context exceeds 500 nodes. A subtree insertion or layout
-edit while approval is pending therefore becomes `stale` before the first
+edit during automatic preflight therefore becomes `stale` before the first
 write, and rollback verification checks the same layout context.
 
 The model protects the bridge from external network access, unrelated web
@@ -257,8 +264,8 @@ document content.
 
 RPC cancellation is best-effort. The server stops waiting and ignores the
 late response, but a read-only audit or preview already executing in Figma may
-finish. Patch cancellation applies only while the batch is still awaiting
-approval. After `Aplicar`, the plugin may expose the separately verified,
+finish. Patch cancellation applies only during the brief interval before the
+automatic application starts. After a successful apply, the plugin may expose the separately verified,
 short-lived `Deshacer lote` action described above; ordinary Figma Undo remains
 the underlying document operation.
 
@@ -276,5 +283,6 @@ content, undo invalidations, and production bundles. The write path must also
 be exercised manually in a disposable copy of a Figma file before it is used
 on MAT Foundations.
 
-The first production operation on Foundations remains a separate, explicit
-user decision.
+Every production operation on Foundations still requires explicit task-level
+user authorization before the batch is submitted; submission itself is the
+effectful action.

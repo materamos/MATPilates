@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe("inspection scope", () => {
-  it("rejects a node audit whose node belongs to another page", async () => {
+  it("audits an exact node on another page without changing the active page", async () => {
     const currentPage = {
       id: "page-current",
       name: "Current",
@@ -33,6 +33,7 @@ describe("inspection scope", () => {
       visible: true,
       width: 320,
       height: 200,
+      findAllWithCriteria: () => [],
     };
 
     Object.defineProperty(globalThis, "figma", {
@@ -40,6 +41,7 @@ describe("inspection scope", () => {
       writable: true,
       value: {
         currentPage,
+        getLocalTextStylesAsync: async () => [],
         getNodeByIdAsync: async (id) =>
           id === otherNode.id ? otherNode : null,
       },
@@ -47,9 +49,11 @@ describe("inspection scope", () => {
 
     await expect(
       auditTypography({ scope: "node", nodeId: otherNode.id }),
-    ).rejects.toMatchObject({
-      code: "NODE_OUTSIDE_SCOPE",
+    ).resolves.toMatchObject({
+      page: { id: otherPage.id, name: otherPage.name },
+      totals: { textNodes: 0 },
     });
+    expect(globalThis.figma.currentPage).toBe(currentPage);
   });
 
   it("exposes the exact parent fingerprint needed to create a text node", async () => {

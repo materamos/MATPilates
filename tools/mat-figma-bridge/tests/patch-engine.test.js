@@ -50,7 +50,7 @@ describe("PatchEngine safety harness", () => {
     ).toBe(true);
   });
 
-  it("rejects a target on another page even when no selection scope is supplied", async () => {
+  it("accepts an exact target on a non-active page without a visible selection", async () => {
     const harness = installFigmaHarness();
     const engine = new PatchEngine(vi.fn());
     const otherPage = {
@@ -71,33 +71,50 @@ describe("PatchEngine safety harness", () => {
       width: 320,
       height: 200,
       children: [],
-      appendChild: vi.fn(),
+      exportAsync: vi.fn(async () => validPngBytes()),
+      appendChild: vi.fn((node) => {
+        node.parent = otherParent;
+        if (!otherParent.children.includes(node)) {
+          otherParent.children.push(node);
+        }
+      }),
     };
     otherPage.children.push(otherParent);
     harness.nodes.set(otherPage.id, otherPage);
     harness.nodes.set(otherParent.id, otherParent);
 
-    await expect(
-      engine.propose(
-        proposal([
-          {
-            op: "create_text_node",
-            parentId: otherParent.id,
-            expectedParentFingerprint: fingerprintParent(otherParent),
-            tempId: "cross-page-text",
-            characters: "Must stay on the active page",
-            typography: {
-              fontRole: "regular",
-            },
-          },
-        ]),
-      ),
-    ).rejects.toMatchObject({
-      code: "NODE_OUTSIDE_SCOPE",
+    const crossPageProposal = proposal([
+      {
+        op: "create_text_node",
+        parentId: otherParent.id,
+        expectedParentFingerprint: fingerprintParent(otherParent),
+        tempId: "cross-page-text",
+        characters: "Exact cross-page typography",
+        typography: {
+          fontRole: "regular",
+        },
+      },
+    ]);
+    crossPageProposal.pageId = otherPage.id;
+    crossPageProposal.selectionIds = [otherParent.id];
+    crossPageProposal.preview = {
+      nodeId: otherParent.id,
+      maxDimension: 1_280,
+    };
+
+    const pending = await engine.propose(crossPageProposal);
+    expect(pending).toMatchObject({
+      status: "pending_approval",
     });
-    expect(harness.createText).not.toHaveBeenCalled();
-    expect(harness.loadFontAsync).not.toHaveBeenCalled();
-    expect(harness.commitUndo).not.toHaveBeenCalled();
+    const applied = await engine.approve(
+      pending.patchId,
+      pending.approvalDigest,
+    );
+
+    expect(applied).toMatchObject({ status: "applied" });
+    expect(globalThis.figma.currentPage).toBe(harness.page);
+    expect(otherParent.appendChild).toHaveBeenCalledTimes(1);
+    expect(harness.createText).toHaveBeenCalledTimes(1);
   });
 
   it("rejects writes inside a main component because instance impact is not enumerated", async () => {

@@ -325,7 +325,6 @@ export class PatchEngine {
 
     const preconditionsInvalid =
       (figma.fileKey ?? null) !== candidate.prepared.patch.fileKey ||
-      figma.currentPage.id !== candidate.prepared.patch.pageId ||
       !(await fingerprintsMatch(candidate.postFingerprints)) ||
       !(await styleUsagesMatch(candidate.postStyleUsageIds)) ||
       !(await createdObjectsExist(candidate.context));
@@ -466,8 +465,7 @@ export class PatchEngine {
 
       const patch = parsed.data;
       this.assertPatchTiming(patch);
-      this.assertFileAndPage(patch);
-      this.assertSelection(patch);
+      await this.assertFileAndPage(patch);
 
       const prepared = await this.preparePatch(patch);
       this.pending = prepared;
@@ -873,7 +871,7 @@ export class PatchEngine {
     if (pageForNode(previewNode).id !== patch.pageId) {
       throw bridgeError(
         "PREVIEW_OUTSIDE_SCOPE",
-        "La vista previa debe pertenecer a la página activa del lote.",
+        "La vista previa debe pertenecer a la página indicada por el lote.",
       );
     }
     if (
@@ -1427,8 +1425,7 @@ export class PatchEngine {
 
   private async assertFresh(prepared: PreparedPatch): Promise<void> {
     this.assertPatchTiming(prepared.patch);
-    this.assertFileAndPage(prepared.patch);
-    this.assertSelection(prepared.patch);
+    await this.assertFileAndPage(prepared.patch);
 
     for (const [key, expected] of prepared.fingerprintsAtProposal) {
       const current = await currentFingerprintForKey(key);
@@ -1856,23 +1853,6 @@ export class PatchEngine {
     }
   }
 
-  private assertSelection(patch: TypographyPatch): void {
-    if (patch.selectionIds.length === 0) {
-      return;
-    }
-    const currentIds = figma.currentPage.selection.map((node) => node.id).sort();
-    const expectedIds = [...patch.selectionIds].sort();
-    if (
-      currentIds.length !== expectedIds.length ||
-      currentIds.some((id, index) => id !== expectedIds[index])
-    ) {
-      throw bridgeError(
-        "SELECTION_CHANGED",
-        "La selección actual ya no coincide con el alcance propuesto.",
-      );
-    }
-  }
-
   private assertNodeInScope(node: BaseNode, patch: TypographyPatch): void {
     if (pageForNode(node).id !== patch.pageId) {
       throw bridgeError(
@@ -1916,12 +1896,12 @@ export class PatchEngine {
     if (expiresAt - createdAt > PATCH_TTL_MS) {
       throw bridgeError(
         "PATCH_TTL_EXCEEDED",
-        "La aprobación no puede permanecer abierta más de cinco minutos.",
+        "El lote no puede permanecer válido más de cinco minutos.",
       );
     }
   }
 
-  private assertFileAndPage(patch: TypographyPatch): void {
+  private async assertFileAndPage(patch: TypographyPatch): Promise<void> {
     const currentFileKey = figma.fileKey ?? null;
     if (currentFileKey === null || patch.fileKey !== currentFileKey) {
       throw bridgeError(
@@ -1929,10 +1909,11 @@ export class PatchEngine {
         "El lote fue preparado para otro archivo de Figma.",
       );
     }
-    if (patch.pageId !== figma.currentPage.id) {
+    const page = await figma.getNodeByIdAsync(patch.pageId);
+    if (page?.type !== "PAGE") {
       throw bridgeError(
         "PAGE_MISMATCH",
-        "El lote fue preparado para otra página de Figma.",
+        "No existe la página de Figma indicada por el lote.",
       );
     }
   }
