@@ -813,33 +813,40 @@ a {
 }
 
 .mat-class-card__schedule-days {
-  display: grid;
+  display: flex;
   gap: 4px;
+  align-items: flex-start;
   margin: 0;
 }
 
 .mat-class-card__schedule-day {
   display: grid;
-  min-height: 28px;
-  grid-template-columns: minmax(72px, auto) minmax(0, 1fr);
-  gap: 8px;
-  align-items: baseline;
+  min-width: 0;
+  flex: 1 1 0;
+  gap: 4px;
+  justify-items: center;
   font-size: var(--mat-font-size-14);
   line-height: 20px;
+  text-align: center;
 }
 
 .mat-class-card__schedule-day dt {
   font-weight: var(--mat-font-weight-medium);
+  line-height: 16px;
   text-transform: uppercase;
 }
 
 .mat-class-card__schedule-day dd {
-  display: flex;
+  display: grid;
   min-width: 0;
-  flex-wrap: wrap;
-  gap: 4px 12px;
+  gap: 2px;
+  justify-items: center;
   margin: 0;
   font-variant-numeric: tabular-nums;
+}
+
+.mat-class-card__schedule-day time {
+  white-space: nowrap;
 }
 
 .mat-class-card__schedule-empty {

@@ -300,21 +300,22 @@ test("class cards derive their schedule summaries from the published week", asyn
     .locator(".mat-class-card__schedule-day")
     .evaluateAll((rows) =>
       rows.map((row) => ({
-        day: row.querySelector("dt")?.textContent,
+        day: row.querySelector("dt .sr-only")?.textContent,
+        shortDay: row.querySelector('dt [aria-hidden="true"]')?.textContent,
         times: Array.from(row.querySelectorAll("time"), (time) => time.textContent),
       })),
     );
 
   expect(scheduleDays).toEqual([
-    { day: "Lunes", times: ["08.00"] },
-    { day: "Martes", times: ["08.00", "09.00"] },
-    { day: "Miércoles", times: ["08.00"] },
-    { day: "Jueves", times: ["08.00"] },
-    { day: "Viernes", times: ["08.00", "16.00"] },
+    { day: "Lunes", shortDay: "L", times: ["08.00"] },
+    { day: "Martes", shortDay: "M", times: ["08.00", "09.00"] },
+    { day: "Miércoles", shortDay: "X", times: ["08.00"] },
+    { day: "Jueves", shortDay: "J", times: ["08.00"] },
+    { day: "Viernes", shortDay: "V", times: ["08.00", "16.00"] },
   ]);
   await expect(
     matPilatesCard.getByRole("link", {
-      name: "Ver en la grilla completa de MAT PILATES",
+      name: "Ver horarios de MAT PILATES",
     }),
   ).toHaveAttribute("href", "#horarios");
 
@@ -370,7 +371,7 @@ test("mobile class-to-schedule navigation opens, announces, and clears the selec
     };
   });
   await hotSculptCard
-    .getByRole("link", { name: "Ver en la grilla completa de HOT SCULPT" })
+    .getByRole("link", { name: "Ver horarios de HOT SCULPT" })
     .click();
 
   await expect(page).toHaveURL(/#horarios$/);
@@ -524,7 +525,7 @@ test("desktop class-to-schedule selection preserves the reverse catalog link", a
   const matPilatesCard = page.locator("#clase-mat-pilates");
   await matPilatesCard.locator("summary").click();
   await matPilatesCard
-    .getByRole("link", { name: "Ver en la grilla completa de MAT PILATES" })
+    .getByRole("link", { name: "Ver horarios de MAT PILATES" })
     .click();
 
   const selectedLinks = page.locator(

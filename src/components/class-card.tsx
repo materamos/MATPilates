@@ -156,7 +156,10 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
             <dl className="mat-class-card__schedule-days">
               {scheduleDays.map((day) => (
                 <div className="mat-class-card__schedule-day" key={day.id}>
-                  <dt>{day.label}</dt>
+                  <dt>
+                    <span aria-hidden="true">{day.shortLabel}</span>
+                    <span className="sr-only">{day.label}</span>
+                  </dt>
                   <dd>
                     {day.times.map((time) => (
                       <time dateTime={time} key={time}>

@@ -31,8 +31,18 @@ export interface WeeklySchedule {
 export interface ClassScheduleDay {
   readonly id: WeekdayId;
   readonly label: string;
+  readonly shortLabel: string;
   readonly times: readonly ScheduleTime[];
 }
+
+const scheduleDayInitials: Record<WeekdayId, string> = {
+  monday: "L",
+  tuesday: "M",
+  wednesday: "X",
+  thursday: "J",
+  friday: "V",
+  saturday: "S",
+};
 
 export const weeklySchedule = {
   status: "published",
@@ -155,6 +165,7 @@ export function getClassScheduleDays(classId: ClassId): readonly ClassScheduleDa
           {
             id: day.id,
             label: day.label,
+            shortLabel: scheduleDayInitials[day.id],
             times,
           },
         ]
