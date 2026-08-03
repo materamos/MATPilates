@@ -2467,7 +2467,7 @@ a {
     text-wrap: balance;
   }
 
-  .mat-schedule-table__slot--high .mat-schedule__class-link {
+  .mat-schedule-table__slot--high .mat-schedule__class-link:not(:hover, :active) {
     box-shadow: inset 0 0 0 1px
       color-mix(in srgb, var(--mat-color-pale-pink) 48%, transparent);
   }

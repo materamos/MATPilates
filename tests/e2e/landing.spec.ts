@@ -369,6 +369,20 @@ test("schedule reuses the catalog intensity colors and accessible labels", async
   );
 });
 
+test("intense desktop schedule links retain their hover cue", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await openLanding(page);
+
+  const intenseLink = page.locator(".mat-schedule__desktop .mat-schedule__class-link--high").first();
+  const restingBoxShadow = await intenseLink.evaluate((link) => getComputedStyle(link).boxShadow);
+
+  await intenseLink.hover();
+  await expect
+    .poll(() => intenseLink.evaluate((link) => getComputedStyle(link).boxShadow))
+    .toContain("2px");
+  await expect(intenseLink).not.toHaveCSS("box-shadow", restingBoxShadow);
+});
+
 test("schedule accordions are exclusive and class links reveal their catalog card", async ({
   page,
 }) => {
