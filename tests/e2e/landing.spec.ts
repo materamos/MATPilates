@@ -295,6 +295,7 @@ test("weekly schedule renders the confirmed data without duplicate day-time slot
 test("schedule accordions are exclusive and class links reveal their catalog card", async ({
   page,
 }) => {
+  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
 

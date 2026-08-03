@@ -1,3 +1,4 @@
+import { ScheduleAccordion } from "@/components/schedule-accordion";
 import { ScheduleClassLink } from "@/components/schedule-class-link";
 import {
   getScheduledClassOffering,
@@ -54,12 +55,13 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
       </div>
 
       <div aria-label="Horarios semanales por día" className="mat-schedule__mobile">
-        {schedule.days.map((day, index) => (
+        <ScheduleAccordion timezone={schedule.timezone} />
+        {schedule.days.map((day) => (
           <details
             className="mat-schedule-day"
+            data-schedule-day={day.id}
             key={day.id}
             name="mat-weekly-schedule"
-            open={index === 0}
           >
             <summary className="mat-schedule-day__summary">
               <span className="mat-h3">{day.label}</span>
