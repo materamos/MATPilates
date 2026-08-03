@@ -48,8 +48,8 @@
   --mat-radius-lg: 24px;
   --mat-radius-full: 9999px;
   --mat-shadow-mobile: 0 4px 4px rgb(0 0 0 / 18%);
-  --mat-motion-disclosure-open-duration: 220ms;
-  --mat-motion-disclosure-close-duration: 160ms;
+  --mat-motion-disclosure-open-duration: 320ms;
+  --mat-motion-disclosure-close-duration: 240ms;
   --mat-motion-disclosure-easing: cubic-bezier(0.16, 1, 0.3, 1);
   --mat-header-height: 80px;
 }
