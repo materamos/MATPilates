@@ -813,16 +813,16 @@ a {
 }
 
 .mat-class-card__schedule-days {
-  display: flex;
+  display: grid;
   gap: 4px;
   align-items: flex-start;
   margin: 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .mat-class-card__schedule-day {
   display: grid;
   min-width: 0;
-  flex: 1 1 0;
   gap: 4px;
   justify-items: center;
   font-size: var(--mat-font-size-14);
