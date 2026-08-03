@@ -50,4 +50,16 @@ test.describe("@visual landing snapshots", () => {
       });
     });
   }
+
+  test("mobile class schedule disclosure", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await prepareVisualPage(page);
+
+    const classCard = page.locator("#clase-mat-pilates");
+    await classCard.locator("summary").click();
+
+    await expect(classCard).toHaveScreenshot("mobile-class-schedule-disclosure.png", {
+      animations: "disabled",
+    });
+  });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { type MouseEvent, type ReactNode } from "react";
+import { useClassScheduleNavigation } from "@/components/class-schedule-navigation";
 import type { ClassId, ClassOffering } from "@/lib/site-content";
 
 interface ScheduleClassLinkProps {
@@ -16,8 +17,10 @@ export function ScheduleClassLink({
   classId,
   intensity,
 }: ScheduleClassLinkProps) {
+  const { clearSelection, selectedClass } = useClassScheduleNavigation();
   const cardId = `clase-${classId}`;
   const href = `#${cardId}`;
+  const isSelected = selectedClass?.id === classId;
 
   const openClassCard = (event: MouseEvent<HTMLAnchorElement>) => {
     const classCard = document.getElementById(cardId);
@@ -33,6 +36,7 @@ export function ScheduleClassLink({
     }
 
     event.preventDefault();
+    clearSelection();
     document
       .querySelectorAll<HTMLDetailsElement>(".mat-class-card[open]")
       .forEach((openCard) => {
@@ -56,7 +60,9 @@ export function ScheduleClassLink({
   return (
     <a
       aria-label={ariaLabel}
-      className={`mat-schedule__class-link mat-schedule__class-link--${intensity}`}
+      className={`mat-schedule__class-link mat-schedule__class-link--${intensity}${isSelected ? " mat-schedule__class-link--selected" : ""}`}
+      data-schedule-class={classId}
+      data-schedule-selected={isSelected ? "true" : undefined}
       href={href}
       onClick={openClassCard}
     >

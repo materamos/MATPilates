@@ -1,17 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { type SyntheticEvent, useEffect, useRef, useState } from "react";
+import { type MouseEvent, type SyntheticEvent, useEffect, useRef, useState } from "react";
+import { useClassScheduleNavigation } from "@/components/class-schedule-navigation";
 import {
   classIntensityLabels,
   getClassWhatsappUrl,
+  landingContent,
   landingCtas,
+  type ClassId,
   type ClassOffering,
 } from "@/lib/site-content";
+import {
+  type ClassScheduleDay,
+  formatScheduleTime,
+} from "@/lib/schedule-content";
 import { Button } from "./button";
 
 interface ClassCardProps {
-  classOffering: ClassOffering;
+  classOffering: ClassOffering & { readonly id: ClassId };
+  scheduleDays: readonly ClassScheduleDay[];
 }
 
 function closeOtherOpenCards(event: SyntheticEvent<HTMLDetailsElement>) {
@@ -31,7 +39,8 @@ function closeOtherOpenCards(event: SyntheticEvent<HTMLDetailsElement>) {
     });
 }
 
-export function ClassCard({ classOffering }: ClassCardProps) {
+export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
+  const { showSchedule } = useClassScheduleNavigation();
   const isHot = classOffering.environment === "hot";
   const titleLabel = isHot ? `${classOffering.name}, con calor` : classOffering.name;
   const titleViewportRef = useRef<HTMLSpanElement>(null);
@@ -57,6 +66,11 @@ export function ClassCard({ classOffering }: ClassCardProps) {
 
     return () => resizeObserver.disconnect();
   }, [classOffering.name]);
+
+  const showClassSchedule = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    showSchedule(classOffering.id, classOffering.name);
+  };
 
   return (
     <details
@@ -136,6 +150,36 @@ export function ClassCard({ classOffering }: ClassCardProps) {
       </summary>
       <div className="mat-class-card__details">
         <p className="mat-body-small">{classOffering.description}</p>
+        {scheduleDays.length > 0 ? (
+          <div className="mat-class-card__schedule">
+            <p className="mat-label">{landingContent.classes.scheduleLabel}</p>
+            <dl className="mat-class-card__schedule-days">
+              {scheduleDays.map((day) => (
+                <div className="mat-class-card__schedule-day" key={day.id}>
+                  <dt>
+                    <span aria-hidden="true">{day.shortLabel}</span>
+                    <span className="sr-only">{day.label}</span>
+                  </dt>
+                  <dd>
+                    {day.times.map((time) => (
+                      <time dateTime={time} key={time}>
+                        {formatScheduleTime(time)}
+                      </time>
+                    ))}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <Button
+              ariaLabel={`${landingContent.classes.viewScheduleLabel} de ${classOffering.name}`}
+              className="mat-class-card__cta mat-class-card__schedule-link"
+              href="#horarios"
+              onClick={showClassSchedule}
+            >
+              {landingContent.classes.viewScheduleLabel}
+            </Button>
+          </div>
+        ) : null}
         <Button
           ariaLabel={`Quiero la experiencia ${classOffering.name}`}
           className="mat-class-card__cta"
