@@ -272,6 +272,39 @@ describe("typography patch protocol", () => {
     expect(PatchProposalInputSchema.safeParse(proposal).success).toBe(false);
   });
 
+  it("accepts a fingerprinted text-box width operation", () => {
+    const proposal = patchInput({
+      operations: [
+        {
+          op: "set_text_box_width",
+          nodeId: "860:142",
+          expectedFingerprint: FINGERPRINT,
+          width: 680,
+        },
+      ],
+    });
+
+    expect(PatchProposalInputSchema.safeParse(proposal).success).toBe(true);
+  });
+
+  it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY])(
+    "rejects an invalid text-box width of %s",
+    (width) => {
+      const proposal = patchInput({
+        operations: [
+          {
+            op: "set_text_box_width",
+            nodeId: "860:142",
+            expectedFingerprint: FINGERPRINT,
+            width,
+          },
+        ],
+      });
+
+      expect(PatchProposalInputSchema.safeParse(proposal).success).toBe(false);
+    },
+  );
+
   it("rejects overlapping ranges on the same text node", () => {
     const proposal = patchInput({
       operations: [

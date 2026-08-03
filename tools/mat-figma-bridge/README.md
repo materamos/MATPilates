@@ -161,9 +161,14 @@ required release gate rather than an optional demo.
 Pending text writes snapshot their Auto Layout roots and each ancestor's full
 descendant subtree, including sibling descendants that can reflow through
 fill, hug, wrap, or grid sizing. Child order, geometry, padding, spacing,
-sizing, and alignment are covered, with the whole context bounded by the
-500-node patch limit. Concurrent subtree or layout changes therefore invalidate
+sizing, and alignment are covered, with the whole context bounded by a
+1,200-node layout limit. Concurrent subtree or layout changes therefore invalidate
 the patch before it writes, and the same context is checked after rollback.
+
+Existing text boxes may be resized through `set_text_box_width`. The operation
+uses the exact text-node fingerprint, loads its installed fonts, forces vertical
+auto-resize, verifies the resulting width, and remains subject to the same
+layout-context and rollback checks as other text mutations.
 
 ## Semantic text-style policy
 

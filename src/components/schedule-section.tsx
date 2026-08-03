@@ -64,29 +64,37 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
         <ScheduleAccordion timezone={schedule.timezone} />
         {schedule.days.map((day) => (
           <details
-            className="mat-schedule-day"
+            className="mat-disclosure mat-schedule-day"
             data-schedule-day={day.id}
             key={day.id}
             name="mat-weekly-schedule"
           >
-            <summary className="mat-schedule-day__summary">
+            <summary className="mat-disclosure__summary mat-schedule-day__summary">
               <span className="mat-h3">{day.label}</span>
-              <span aria-hidden="true" className="mat-schedule-day__indicator" />
+              <span
+                aria-hidden="true"
+                className="mat-disclosure__indicator mat-schedule-day__indicator"
+              />
             </summary>
-            <ol aria-label={`Clases del ${day.label}`} className="mat-schedule-day__slots">
-              {day.slots.map((slot) => (
-                <li className="mat-schedule-day__slot" key={`${day.id}-${slot.startTime}`}>
-                  <time className="mat-schedule__time" dateTime={slot.startTime}>
-                    {formatScheduleTime(slot.startTime)}
-                  </time>
-                  <ScheduleClassName
-                    classId={slot.classId}
-                    day={day.label}
-                    time={slot.startTime}
-                  />
-                </li>
-              ))}
-            </ol>
+            <div className="mat-disclosure__expansion">
+              <ol
+                aria-label={`Clases del ${day.label}`}
+                className="mat-disclosure__body mat-schedule-day__slots"
+              >
+                {day.slots.map((slot) => (
+                  <li className="mat-schedule-day__slot" key={`${day.id}-${slot.startTime}`}>
+                    <time className="mat-schedule__time" dateTime={slot.startTime}>
+                      {formatScheduleTime(slot.startTime)}
+                    </time>
+                    <ScheduleClassName
+                      classId={slot.classId}
+                      day={day.label}
+                      time={slot.startTime}
+                    />
+                  </li>
+                ))}
+              </ol>
+            </div>
           </details>
         ))}
       </div>

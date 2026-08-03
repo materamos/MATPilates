@@ -74,12 +74,12 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
 
   return (
     <details
-      className="mat-class-card"
+      className="mat-disclosure mat-class-card"
       id={`clase-${classOffering.id}`}
       name="mat-class-catalog"
       onToggle={closeOtherOpenCards}
     >
-      <summary className="mat-class-card__summary">
+      <summary className="mat-disclosure__summary mat-class-card__summary">
         <span className="mat-class-card__summary-copy">
           <h3
             aria-label={isTitleOverflowing ? titleLabel : undefined}
@@ -146,49 +146,54 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
             Intensidad {classIntensityLabels[classOffering.intensity]}
           </span>
         </span>
-        <span aria-hidden="true" className="mat-class-card__indicator" />
+        <span
+          aria-hidden="true"
+          className="mat-disclosure__indicator mat-class-card__indicator"
+        />
       </summary>
-      <div className="mat-class-card__details">
-        <p className="mat-body-small">{classOffering.description}</p>
-        {scheduleDays.length > 0 ? (
-          <div className="mat-class-card__schedule">
-            <p className="mat-label">{landingContent.classes.scheduleLabel}</p>
-            <dl className="mat-class-card__schedule-days">
-              {scheduleDays.map((day) => (
-                <div className="mat-class-card__schedule-day" key={day.id}>
-                  <dt>
-                    <span aria-hidden="true">{day.shortLabel}</span>
-                    <span className="sr-only">{day.label}</span>
-                  </dt>
-                  <dd>
-                    {day.times.map((time) => (
-                      <time dateTime={time} key={time}>
-                        {formatScheduleTime(time)}
-                      </time>
-                    ))}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <Button
-              ariaLabel={`${landingContent.classes.viewScheduleLabel} de ${classOffering.name}`}
-              className="mat-class-card__cta mat-class-card__schedule-link"
-              href="#horarios"
-              onClick={showClassSchedule}
-            >
-              {landingContent.classes.viewScheduleLabel}
-            </Button>
-          </div>
-        ) : null}
-        <Button
-          ariaLabel={`Quiero la experiencia ${classOffering.name}`}
-          className="mat-class-card__cta"
-          href={getClassWhatsappUrl(classOffering.name)}
-          rel="noreferrer"
-          target="_blank"
-        >
-          {landingCtas.selectExperience.label}
-        </Button>
+      <div className="mat-disclosure__expansion">
+        <div className="mat-disclosure__body mat-class-card__details">
+          <p className="mat-body-small">{classOffering.description}</p>
+          {scheduleDays.length > 0 ? (
+            <div className="mat-class-card__schedule">
+              <p className="mat-label">{landingContent.classes.scheduleLabel}</p>
+              <dl className="mat-class-card__schedule-days">
+                {scheduleDays.map((day) => (
+                  <div className="mat-class-card__schedule-day" key={day.id}>
+                    <dt>
+                      <span aria-hidden="true">{day.shortLabel}</span>
+                      <span className="sr-only">{day.label}</span>
+                    </dt>
+                    <dd>
+                      {day.times.map((time) => (
+                        <time dateTime={time} key={time}>
+                          {formatScheduleTime(time)}
+                        </time>
+                      ))}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <Button
+                ariaLabel={`${landingContent.classes.viewScheduleLabel} de ${classOffering.name}`}
+                className="mat-class-card__cta mat-class-card__schedule-link"
+                href="#horarios"
+                onClick={showClassSchedule}
+              >
+                {landingContent.classes.viewScheduleLabel}
+              </Button>
+            </div>
+          ) : null}
+          <Button
+            ariaLabel={`Quiero la experiencia ${classOffering.name}`}
+            className="mat-class-card__cta"
+            href={getClassWhatsappUrl(classOffering.name)}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {landingCtas.selectExperience.label}
+          </Button>
+        </div>
       </div>
     </details>
   );

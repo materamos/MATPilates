@@ -1,5 +1,6 @@
 import {
   MAX_PATCH_NODES,
+  MAX_PATCH_LAYOUT_NODES,
   PATCH_TTL_MS,
   type BridgeTechnicalError,
   type FontRole,
@@ -1232,6 +1233,29 @@ export class PatchEngine {
           break;
         }
 
+        case "set_text_box_width": {
+          const node = await getTextNodeById(operation.nodeId);
+          this.assertNodeInScope(node, patch);
+          prepareWritableTextNode(node, currentFonts);
+          assertFingerprint(
+            nodeKey(node.id),
+            operation.expectedFingerprint,
+            fingerprintTextNode(node),
+            fingerprints,
+          );
+          if (
+            Math.abs(node.width - operation.width) <= 0.01 &&
+            node.textAutoResize === "HEIGHT"
+          ) {
+            throw bridgeError(
+              "NO_OP_OPERATION",
+              `La caja de texto ${node.id} ya mide ${operation.width}px de ancho y usa autoajuste vertical.`,
+            );
+          }
+          affectedNodeIds.add(node.id);
+          break;
+        }
+
         case "create_text_node": {
           const parent = await getParentById(operation.parentId);
           this.assertNodeInScope(parent, patch);
@@ -1544,6 +1568,15 @@ export class PatchEngine {
         return;
       }
 
+      case "set_text_box_width": {
+        const node = await getTextNodeById(operation.nodeId);
+        context.mutated = true;
+        node.textAutoResize = "HEIGHT";
+        node.resize(operation.width, node.height);
+        context.affectedNodeIds.add(node.id);
+        return;
+      }
+
       case "create_text_node": {
         const parent = await getParentById(operation.parentId);
         const node = figma.createText();
@@ -1675,6 +1708,21 @@ export class PatchEngine {
             "contenido de la capa",
             node.characters,
             operation.characters,
+          );
+          break;
+        }
+
+        case "set_text_box_width": {
+          const node = await getTextNodeById(operation.nodeId);
+          assertCloseValue(
+            "ancho de la caja de texto",
+            node.width,
+            operation.width,
+          );
+          assertExactValue(
+            "autoajuste de texto",
+            node.textAutoResize,
+            "HEIGHT",
           );
           break;
         }
@@ -2508,6 +2556,8 @@ function describeOperation(
     }
     case "set_characters":
       return `${prefix} Reemplazar el contenido de ${operation.nodeId} por ${quotedPreview(operation.characters)} (${operation.characters.length} unidades UTF-16).`;
+    case "set_text_box_width":
+      return `${prefix} Ajustar la caja de texto ${operation.nodeId} a ${operation.width}px de ancho con autoajuste vertical.`;
     case "create_text_node": {
       const placement = [
         operation.name === undefined ? null : `nombre → “${operation.name}”`,
@@ -2904,6 +2954,14 @@ async function buildExpectedDocumentChangeRules(
           "autoRename",
         ]);
         break;
+
+      case "set_text_box_width":
+        addExpectedNodeProperties(rules, operation.nodeId, [
+          "width",
+          "height",
+          "textAutoResize",
+        ]);
+        break;
     }
   }
 
@@ -3021,10 +3079,10 @@ async function addExpectedLayoutChangeRules(
       return;
     }
     trackedLayoutNodeIds.add(node.id);
-    if (trackedLayoutNodeIds.size > MAX_PATCH_NODES) {
+    if (trackedLayoutNodeIds.size > MAX_PATCH_LAYOUT_NODES) {
       throw bridgeError(
         "PATCH_SCOPE_TOO_LARGE",
-        `El contexto de layout supera el límite de ${MAX_PATCH_NODES} nodos.`,
+        `El contexto de layout supera el límite de ${MAX_PATCH_LAYOUT_NODES} nodos.`,
       );
     }
     fingerprints.set(layoutNodeKey(node.id), fingerprintLayoutNode(node));

@@ -18,6 +18,7 @@ export const PATCH_TTL_MS = 5 * 60 * 1_000;
 
 export const MAX_PATCH_OPERATIONS = 100;
 export const MAX_PATCH_NODES = 500;
+export const MAX_PATCH_LAYOUT_NODES = 1_200;
 export const MAX_PATCH_CHARACTERS = 100_000;
 export const MAX_AUDIT_TEXT_NODES = 1_000;
 export const MAX_JSON_MESSAGE_BYTES = 512 * 1_024;
