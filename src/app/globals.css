@@ -48,6 +48,9 @@
   --mat-radius-lg: 24px;
   --mat-radius-full: 9999px;
   --mat-shadow-mobile: 0 4px 4px rgb(0 0 0 / 18%);
+  --mat-motion-disclosure-open-duration: 220ms;
+  --mat-motion-disclosure-close-duration: 160ms;
+  --mat-motion-disclosure-easing: cubic-bezier(0.16, 1, 0.3, 1);
   --mat-header-height: 80px;
 }
 
@@ -178,6 +181,11 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    --mat-motion-disclosure-open-duration: 0ms;
+    --mat-motion-disclosure-close-duration: 0ms;
+  }
+
   .mat-origin-button {
     transition-duration: 0.01ms;
   }
@@ -584,7 +592,7 @@ a {
 .mat-class-card {
   --mat-focus-ring: var(--mat-focus-ring-on-light);
 
-  height: 100%;
+  height: auto;
   scroll-margin-top: calc(var(--mat-header-height) + 24px);
   border-radius: var(--mat-radius-sm);
   background: var(--mat-color-pearl-neutral);
@@ -605,7 +613,8 @@ a {
   align-content: start;
   padding: 12px 16px;
   border-radius: var(--mat-radius-sm);
-  transition: background-color 200ms ease-out;
+  transition: background-color var(--mat-motion-disclosure-close-duration)
+    var(--mat-motion-disclosure-easing);
   touch-action: manipulation;
 }
 
@@ -770,7 +779,8 @@ a {
 }
 
 .mat-class-card__indicator::before {
-  transition: transform 180ms ease-out;
+  transition: transform var(--mat-motion-disclosure-close-duration)
+    var(--mat-motion-disclosure-easing);
   transform-origin: center;
 }
 
@@ -779,10 +789,6 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mat-class-card__indicator::before {
-    transition: none;
-  }
-
   .mat-class-card__title-track {
     animation: none;
   }
@@ -957,7 +963,8 @@ a {
   padding: 12px 16px;
   border-radius: var(--mat-radius-sm);
   touch-action: manipulation;
-  transition: background-color 200ms ease-out;
+  transition: background-color var(--mat-motion-disclosure-close-duration)
+    var(--mat-motion-disclosure-easing);
 }
 
 .mat-schedule-day__summary::-webkit-details-marker {
@@ -990,7 +997,8 @@ a {
   mask: url("/icons/chevron.svg") center / contain no-repeat;
   transform: translateY(-50%);
   transform-origin: center;
-  transition: transform 180ms ease-out;
+  transition: transform var(--mat-motion-disclosure-close-duration)
+    var(--mat-motion-disclosure-easing);
 }
 
 .mat-schedule-day[open] .mat-schedule-day__indicator::before {
@@ -1078,9 +1086,70 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mat-schedule-day__summary,
-  .mat-schedule-day__indicator::before,
   .mat-schedule__class-link {
+    transition: none;
+  }
+}
+
+.mat-disclosure__summary {
+  transition: background-color var(--mat-motion-disclosure-close-duration)
+    var(--mat-motion-disclosure-easing);
+}
+
+.mat-disclosure__indicator::before {
+  transition: transform var(--mat-motion-disclosure-close-duration)
+    var(--mat-motion-disclosure-easing);
+}
+
+.mat-disclosure__expansion {
+  display: grid;
+  min-height: 0;
+  grid-template-rows: minmax(0, 0fr);
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--mat-motion-disclosure-close-duration) var(--mat-motion-disclosure-easing),
+    visibility 0s linear var(--mat-motion-disclosure-close-duration);
+}
+
+.mat-disclosure__body {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--mat-motion-disclosure-close-duration) var(--mat-motion-disclosure-easing),
+    transform var(--mat-motion-disclosure-close-duration) var(--mat-motion-disclosure-easing);
+}
+
+.mat-disclosure[open] > .mat-disclosure__summary {
+  transition-duration: var(--mat-motion-disclosure-open-duration);
+}
+
+.mat-disclosure[open] > .mat-disclosure__summary .mat-disclosure__indicator::before {
+  transition-duration: var(--mat-motion-disclosure-open-duration);
+}
+
+.mat-disclosure[open] > .mat-disclosure__expansion {
+  grid-template-rows: minmax(0, 1fr);
+  pointer-events: auto;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--mat-motion-disclosure-open-duration) var(--mat-motion-disclosure-easing),
+    visibility 0s linear;
+}
+
+.mat-disclosure[open] > .mat-disclosure__expansion > .mat-disclosure__body {
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: var(--mat-motion-disclosure-open-duration);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mat-disclosure__summary,
+  .mat-disclosure__indicator::before,
+  .mat-disclosure__expansion,
+  .mat-disclosure__body {
     transition: none;
   }
 }
@@ -1240,6 +1309,13 @@ a {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .mat-disclosure__summary,
+  .mat-disclosure__indicator::before,
+  .mat-disclosure__expansion,
+  .mat-disclosure__body {
+    transition-duration: 0s !important;
   }
 
   html {

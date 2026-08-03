@@ -67,6 +67,14 @@ function moveToSchedule(classId: ClassId) {
     window.requestAnimationFrame(() => {
       target.scrollIntoView({ behavior, block: "center" });
       target.focus({ preventScroll: true });
+
+      window.requestAnimationFrame(() => {
+        target.focus({ preventScroll: true });
+
+        window.setTimeout(() => {
+          target.focus({ preventScroll: true });
+        }, 0);
+      });
     });
   });
 }

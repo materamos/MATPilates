@@ -1,4 +1,4 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 
 type ViewportCase = {
   height: number;
@@ -69,6 +69,72 @@ async function openLanding(page: Page) {
   });
 
   return runtimeErrors;
+}
+
+async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
+  await expect
+    .poll(
+      () =>
+        disclosure.evaluate((element) => {
+          const expansion = element.querySelector<HTMLElement>(".mat-disclosure__expansion");
+          const body = element.querySelector<HTMLElement>(".mat-disclosure__body");
+
+          if (!expansion || !body) {
+            return null;
+          }
+
+          const bodyStyles = getComputedStyle(body);
+          const expansionStyles = getComputedStyle(expansion);
+          const translateY =
+            bodyStyles.transform === "none"
+              ? 0
+              : new DOMMatrixReadOnly(bodyStyles.transform).m42;
+
+          return {
+            hasHeight: expansion.getBoundingClientRect().height > 1,
+            isOpen: element.hasAttribute("open"),
+            opacity: bodyStyles.opacity,
+            pointerEvents: expansionStyles.pointerEvents,
+            translateY: Math.round(translateY),
+            visibility: expansionStyles.visibility,
+          };
+        }),
+      { timeout: 2500 },
+    )
+    .toEqual({
+      hasHeight: open,
+      isOpen: open,
+      opacity: open ? "1" : "0",
+      pointerEvents: open ? "auto" : "none",
+      translateY: open ? 0 : -4,
+      visibility: open ? "visible" : "hidden",
+    });
+}
+
+async function readDisclosureMotion(disclosure: Locator) {
+  return disclosure.evaluate((element) => {
+    const summary = element.querySelector<HTMLElement>(".mat-disclosure__summary")!;
+    const indicator = element.querySelector<HTMLElement>(".mat-disclosure__indicator")!;
+    const expansion = element.querySelector<HTMLElement>(".mat-disclosure__expansion")!;
+    const body = element.querySelector<HTMLElement>(".mat-disclosure__body")!;
+
+    return {
+      bodyDuration: getComputedStyle(body).transitionDuration,
+      expansionDuration: getComputedStyle(expansion).transitionDuration,
+      indicatorDuration: getComputedStyle(indicator, "::before").transitionDuration,
+      summaryDuration: getComputedStyle(summary).transitionDuration,
+    };
+  });
+}
+
+function expectDisclosureDuration(
+  motion: Awaited<ReturnType<typeof readDisclosureMotion>>,
+  duration: string,
+) {
+  expect(motion.bodyDuration.split(",").every((value) => value.trim() === duration)).toBe(true);
+  expect(motion.expansionDuration.split(",")[0].trim()).toBe(duration);
+  expect(motion.indicatorDuration).toBe(duration);
+  expect(motion.summaryDuration).toBe(duration);
 }
 
 async function loadVisualContent(page: Page) {
@@ -287,6 +353,157 @@ test("class cards keep a single disclosure open", async ({ page }) => {
   await cards.nth(1).locator("summary").click();
   await expect(cards.nth(0)).not.toHaveAttribute("open", "");
   await expect(cards.nth(1)).toHaveAttribute("open", "");
+});
+
+test("class and schedule disclosures use intrinsic motion without clipping", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+
+  for (const viewport of [
+    { height: 844, width: 390 },
+    { height: 1024, width: 768 },
+    { height: 768, width: 1023 },
+  ]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    const runtimeErrors = await openLanding(page);
+    expect(runtimeErrors).toEqual([]);
+
+    const classCard = page.locator("#clase-mat-pilates");
+    const scheduleDay = page.locator(".mat-schedule__mobile .mat-schedule-day").last();
+    const classSummary = classCard.locator("summary");
+    const scheduleSummary = scheduleDay.locator("summary");
+
+    await expectDisclosureSettled(classCard, false);
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.16s");
+    await classSummary.press("Enter");
+    await expectDisclosureSettled(classCard, true);
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.22s");
+
+    const classGeometry = await classCard.locator(".mat-disclosure__body").evaluate((body) => ({
+      horizontalOverflow: body.scrollWidth - body.clientWidth,
+      verticalOverflow: body.scrollHeight - body.clientHeight,
+    }));
+    expect(classGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
+    expect(classGeometry.verticalOverflow).toBeLessThanOrEqual(1);
+
+    await classSummary.press("Space");
+    await expectDisclosureSettled(classCard, false);
+
+    await scheduleSummary.press("Enter");
+    await expectDisclosureSettled(scheduleDay, true);
+    expectDisclosureDuration(await readDisclosureMotion(scheduleDay), "0.22s");
+
+    const scheduleGeometry = await scheduleDay
+      .locator(".mat-disclosure__body")
+      .evaluate((body) => ({
+        horizontalOverflow: body.scrollWidth - body.clientWidth,
+        verticalOverflow: body.scrollHeight - body.clientHeight,
+      }));
+    expect(scheduleGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
+    expect(scheduleGeometry.verticalOverflow).toBeLessThanOrEqual(1);
+
+    await scheduleSummary.press("Space");
+    await expectDisclosureSettled(scheduleDay, false);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      ),
+    ).toBeLessThanOrEqual(1);
+  }
+});
+
+test("reduced motion makes class and schedule disclosure changes instant", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+
+  for (const viewport of [
+    { height: 844, width: 390 },
+    { height: 1024, width: 768 },
+    { height: 768, width: 1023 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const runtimeErrors = await openLanding(page);
+    expect(runtimeErrors).toEqual([]);
+
+    const classCard = page.locator("#clase-mat-pilates");
+    const scheduleDay = page.locator(".mat-schedule__mobile .mat-schedule-day").last();
+
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0s");
+    await classCard.locator("summary").click();
+    await expectDisclosureSettled(classCard, true);
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0s");
+    await classCard.locator("summary").click();
+    await expectDisclosureSettled(classCard, false);
+
+    await scheduleDay.locator("summary").click();
+    await expectDisclosureSettled(scheduleDay, true);
+    expectDisclosureDuration(await readDisclosureMotion(scheduleDay), "0s");
+    await scheduleDay.locator("summary").click();
+    await expectDisclosureSettled(scheduleDay, false);
+  }
+});
+
+test("rapid disclosure changes preserve exclusivity and hide closed content", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const cards = page.locator(".mat-class-card");
+  await cards.nth(0).locator("summary").click();
+  await cards.nth(1).locator("summary").click();
+  await expect(cards.nth(0)).not.toHaveAttribute("open", "");
+  await expect(cards.nth(1)).toHaveAttribute("open", "");
+  await expectDisclosureSettled(cards.nth(0), false);
+  await expectDisclosureSettled(cards.nth(1), true);
+
+  const closedCardFocusResults = await cards
+    .nth(0)
+    .locator(".mat-disclosure__body a, .mat-disclosure__body button")
+    .evaluateAll((elements) =>
+      elements.map((element) => {
+        (element as HTMLElement).focus();
+        return document.activeElement === element;
+      }),
+    );
+  expect(closedCardFocusResults.every((isFocused) => !isFocused)).toBe(true);
+
+  const days = page.locator(".mat-schedule__mobile .mat-schedule-day");
+  await days.nth(1).locator("summary").click();
+  await days.nth(2).locator("summary").click();
+  await expect(days.nth(1)).not.toHaveAttribute("open", "");
+  await expect(days.nth(2)).toHaveAttribute("open", "");
+  await expectDisclosureSettled(days.nth(1), false);
+  await expectDisclosureSettled(days.nth(2), true);
+
+  const closedDayFocusResults = await days
+    .nth(1)
+    .locator(".mat-disclosure__body a, .mat-disclosure__body button")
+    .evaluateAll((elements) =>
+      elements.map((element) => {
+        (element as HTMLElement).focus();
+        return document.activeElement === element;
+      }),
+    );
+  expect(closedDayFocusResults.every((isFocused) => !isFocused)).toBe(true);
+});
+
+test("class and schedule links remain usable during disclosure transitions", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const classCard = page.locator("#clase-mat-pilates");
+  await classCard.locator("summary").click();
+  await classCard.getByRole("link", { name: "Ver horarios de MAT PILATES" }).click();
+
+  await expect(page).toHaveURL(/#horarios$/);
+  const scheduleLink = page.locator(
+    '.mat-schedule__mobile [data-schedule-class="mat-pilates"]',
+  ).first();
+  await scheduleLink.click();
+
+  await expect(page).toHaveURL(/#clase-mat-pilates$/);
+  await expect(classCard).toHaveAttribute("open", "");
+  await expect(classCard.locator("summary")).toBeFocused();
 });
 
 test("class cards derive their schedule summaries from the published week", async ({ page }) => {

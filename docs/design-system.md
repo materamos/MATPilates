@@ -171,6 +171,9 @@ Distances produced by `Space Between` are local mathematical results and are not
 - Class names animate only when they overflow their available title viewport. With reduced motion, the title animation is removed.
 - The studio gallery advances automatically every five seconds when it has multiple images and is not paused. Clicking the gallery or pressing Enter or Space toggles pause and resume.
 - The gallery starts paused when the user prefers reduced motion. Its accessible name reports the available action and current image, and `aria-pressed` exposes the paused state.
+- Native class-catalog and mobile schedule disclosures use the shared `.mat-disclosure__expansion` pattern. Opening uses 220 ms and closing uses 160 ms with `cubic-bezier(0.16, 1, 0.3, 1)`; the expansion interpolates intrinsic grid rows, while its body moves from `opacity: 0` and `translateY(-4px)` to `opacity: 1` and `translateY(0)`.
+- The disclosure summary background and chevron use the same direction-specific duration. The pattern adds no scale, bounce, new shadow, or color change. A closed body has zero expansion height, `visibility: hidden`, and `pointer-events: none`, so its links and buttons are not interactive or keyboard reachable while preserving native `<details>/<summary>` semantics.
+- With `prefers-reduced-motion: reduce`, both disclosure durations resolve to 0 ms. The weekly schedule disclosure pattern is rendered only below 1024 px; the desktop table is unchanged.
 
 ## Effects
 
