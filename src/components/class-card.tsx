@@ -178,10 +178,9 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
           {scheduleDays.length > 0 ? (
             <Button
               ariaLabel={`${landingContent.classes.viewScheduleLabel} de ${classOffering.name}`}
-              className="mat-text-button mat-class-card__schedule-link"
+              className="mat-class-card__cta mat-class-card__schedule-link"
               href="#horarios"
               onClick={showClassSchedule}
-              variant="text"
             >
               {landingContent.classes.viewScheduleLabel}
             </Button>
