@@ -4,17 +4,18 @@ Responsive public landing page for MAT Pilates in Canning. It is a static discov
 
 ## Current scope
 
-The application presents the studio identity, Hot Mat method, class catalog, studio, location, and contact paths in a single responsive landing page.
+The application presents the studio identity, Hot Mat method, class catalog, confirmed weekly schedule, studio, location, and contact paths in a single responsive landing page.
 
 It includes:
 
 - the Hot Mat method and a catalog of 11 classes with intensity and environment information;
+- a responsive weekly schedule linked to the confirmed class catalog;
 - a studio gallery, location details, progressive map, and external directions;
 - internal navigation, Instagram integration, and direct WhatsApp calls to action;
 - a reusable visual system with tokens, components, and Neue Montreal typography;
 - SVG brand assets and an adaptive favicon for light and dark schemes.
 
-Schedules, instructors, prices, packs, promotions, reservations, and other operational or commercial data are not part of the current implementation. They must remain undefined until they are incorporated into the canonical documentary source with confirmed status.
+The weekly schedule is confirmed from August 3, 2026. Instructors, prices, packs, promotions, reservations, and other operational or commercial data remain undefined until they are incorporated into the canonical documentary source with confirmed status.
 
 ## Content authority
 

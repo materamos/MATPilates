@@ -85,6 +85,7 @@ a {
 .site-menu,
 .mat-manifesto,
 .mat-classes,
+.mat-schedule,
 .mat-reservation,
 .mat-whatsapp-button {
   --mat-focus-ring: var(--mat-focus-ring-on-dark);
@@ -584,6 +585,7 @@ a {
   --mat-focus-ring: var(--mat-focus-ring-on-light);
 
   height: 100%;
+  scroll-margin-top: calc(var(--mat-header-height) + 24px);
   border-radius: var(--mat-radius-sm);
   background: var(--mat-color-pearl-neutral);
   color: var(--mat-color-charcoal);
@@ -830,6 +832,160 @@ a {
 
 .mat-classes__button {
   width: 100%;
+}
+
+.mat-schedule {
+  width: 100%;
+  padding: 32px max(24px, calc((100% - 720px) / 2));
+  display: grid;
+  gap: 24px;
+  background: var(--mat-color-deep-burgundy);
+  color: var(--mat-color-pearl-neutral);
+}
+
+.mat-schedule__heading,
+.mat-schedule__heading .mat-section-heading__title {
+  gap: 10px;
+}
+
+.mat-schedule__mobile {
+  display: grid;
+  gap: 8px;
+}
+
+.mat-schedule-day {
+  --mat-focus-ring: var(--mat-focus-ring-on-light);
+
+  border-radius: var(--mat-radius-sm);
+  background: var(--mat-color-pearl-neutral);
+  color: var(--mat-color-charcoal);
+  box-shadow: var(--mat-shadow-mobile);
+}
+
+.mat-schedule-day__summary {
+  display: grid;
+  min-height: 56px;
+  cursor: pointer;
+  list-style: none;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: var(--mat-radius-sm);
+  touch-action: manipulation;
+  transition: background-color 200ms ease-out;
+}
+
+.mat-schedule-day__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mat-schedule-day__summary:focus-visible {
+  outline-offset: -4px;
+}
+
+.mat-schedule-day__summary:hover,
+.mat-schedule-day[open] .mat-schedule-day__summary {
+  background: var(--mat-color-desaturated-beige);
+}
+
+.mat-schedule-day__indicator {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.mat-schedule-day__indicator::before {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  width: 8px;
+  height: 12px;
+  background: currentcolor;
+  content: "";
+  mask: url("/icons/chevron.svg") center / contain no-repeat;
+  transform: translateY(-50%);
+  transform-origin: center;
+  transition: transform 180ms ease-out;
+}
+
+.mat-schedule-day[open] .mat-schedule-day__indicator::before {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.mat-schedule-day__slots {
+  margin: 0;
+  padding: 0 16px 12px;
+  list-style: none;
+}
+
+.mat-schedule-day__slots::before {
+  display: block;
+  height: 1px;
+  background: var(--mat-color-desaturated-beige);
+  content: "";
+}
+
+.mat-schedule-day__slot {
+  display: grid;
+  min-height: 48px;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid var(--mat-color-desaturated-beige);
+}
+
+.mat-schedule-day__slot:last-child {
+  border-bottom: 0;
+}
+
+.mat-schedule__time {
+  font-size: var(--mat-font-size-14);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--mat-font-weight-medium);
+  line-height: 20px;
+}
+
+.mat-schedule__class-link {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: var(--mat-radius-sm);
+  font-size: var(--mat-font-size-14);
+  font-weight: var(--mat-font-weight-medium);
+  line-height: 18px;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+  touch-action: manipulation;
+  transition: background-color 200ms ease-out;
+}
+
+.mat-schedule__class-link:hover {
+  background: var(--mat-color-pale-pink);
+}
+
+.mat-schedule__class-fire {
+  display: inline-block;
+  flex: none;
+  width: 12px;
+  height: 15px;
+  background: currentcolor;
+  mask: url("/icons/hot-class-fire.svg") center / contain no-repeat;
+}
+
+.mat-schedule__desktop {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mat-schedule-day__summary,
+  .mat-schedule-day__indicator::before,
+  .mat-schedule__class-link {
+    transition: none;
+  }
 }
 
 .mat-studio__visual {
@@ -2215,6 +2371,115 @@ a {
     line-height: 38px;
   }
 
+}
+
+/* Weekly schedule wide composition */
+
+@media (min-width: 1024px) {
+  .mat-schedule {
+    padding: 60px max(60px, calc((100% - 1160px) / 2));
+    gap: 36px;
+  }
+
+  .mat-schedule__heading,
+  .mat-schedule__heading .mat-section-heading__title {
+    gap: var(--mat-space-4);
+  }
+
+  .mat-schedule__mobile {
+    display: none;
+  }
+
+  .mat-schedule__desktop {
+    display: block;
+    min-width: 0;
+  }
+
+  .mat-schedule-table {
+    width: 100%;
+    border-spacing: 8px;
+    border-collapse: separate;
+    table-layout: fixed;
+  }
+
+  .mat-schedule-table__time-column {
+    width: 72px;
+  }
+
+  .mat-schedule-table__corner {
+    background: transparent;
+  }
+
+  .mat-schedule-table__day,
+  .mat-schedule-table__time {
+    height: 48px;
+    padding: 8px;
+    border-radius: var(--mat-radius-sm);
+    background: var(--mat-color-pale-pink);
+    color: var(--mat-color-deep-burgundy);
+    font-size: var(--mat-font-size-14);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--mat-font-weight-medium);
+    line-height: 16px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .mat-schedule-table__slot {
+    --mat-focus-ring: var(--mat-focus-ring-on-light);
+
+    min-width: 0;
+    height: 56px;
+    padding: 0;
+    border-radius: var(--mat-radius-sm);
+    background: var(--mat-color-pearl-neutral);
+    color: var(--mat-color-charcoal);
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .mat-schedule-table__slot--empty {
+    background: color-mix(in srgb, var(--mat-color-desaturated-beige) 24%, transparent);
+    color: var(--mat-color-desaturated-beige);
+    font-size: var(--mat-font-size-16);
+  }
+
+  .mat-schedule-table__slot .mat-schedule__class-link {
+    width: 100%;
+    min-height: 56px;
+    justify-content: center;
+    padding: 8px;
+    font-size: var(--mat-font-size-12);
+    line-height: 16px;
+    text-wrap: balance;
+  }
+}
+
+@media (min-width: 1280px) {
+  .mat-schedule {
+    padding-inline: max(60px, calc((100% - 1320px) / 2));
+  }
+
+  .mat-schedule-table__time-column {
+    width: 80px;
+  }
+
+  .mat-schedule-table__day,
+  .mat-schedule-table__time {
+    font-size: var(--mat-font-size-16);
+    line-height: 20px;
+  }
+
+  .mat-schedule-table__slot,
+  .mat-schedule-table__slot .mat-schedule__class-link {
+    min-height: 64px;
+  }
+
+  .mat-schedule-table__slot .mat-schedule__class-link {
+    padding: 10px;
+    font-size: var(--mat-font-size-14);
+    line-height: 18px;
+  }
 }
 
 /* Progressive studio map eligibility */
