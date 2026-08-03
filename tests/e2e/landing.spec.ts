@@ -277,6 +277,9 @@ test("weekly schedule renders the confirmed data without duplicate day-time slot
   expect(dayLabels).toEqual(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]);
   expect(slotCounts).toEqual([12, 9, 9, 9, 9, 4]);
   await expect(mobileSchedule.locator(".mat-schedule__class-link")).toHaveCount(52);
+  await expect(
+    mobileSchedule.locator('.mat-schedule__class-link[class*="mat-schedule__class-link--"]'),
+  ).toHaveCount(52);
   await expect(mobileSchedule.getByText("Yoga", { exact: true })).toHaveCount(0);
 
   await page.setViewportSize({ width: 1280, height: 720 });
@@ -290,6 +293,52 @@ test("weekly schedule renders the confirmed data without duplicate day-time slot
   await expect(table.locator("tbody tr")).toHaveCount(12);
   await expect(table.locator(".mat-schedule__class-link")).toHaveCount(52);
   expect(new Set(coordinates).size).toBe(52);
+});
+
+test("schedule reuses the catalog intensity colors and accessible labels", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await openLanding(page);
+
+  const intensityStyles = await page.evaluate(() =>
+    (["low", "moderate", "high"] as const).map((intensity) => {
+      const chip = document.querySelector<HTMLElement>(
+        `.mat-class-card__intensity--${intensity}`,
+      )!;
+      const scheduleLink = document.querySelector<HTMLElement>(
+        `.mat-schedule__class-link--${intensity}`,
+      )!;
+      const chipStyles = getComputedStyle(chip);
+      const scheduleStyles = getComputedStyle(scheduleLink);
+
+      return {
+        chip: {
+          background: chipStyles.backgroundColor,
+          color: chipStyles.color,
+        },
+        schedule: {
+          background: scheduleStyles.backgroundColor,
+          color: scheduleStyles.color,
+        },
+      };
+    }),
+  );
+
+  for (const styles of intensityStyles) {
+    expect(styles.schedule).toEqual(styles.chip);
+  }
+
+  await expect(page.locator(".mat-schedule__class-link--low").first()).toHaveAttribute(
+    "aria-label",
+    /intensidad baja/i,
+  );
+  await expect(page.locator(".mat-schedule__class-link--moderate").first()).toHaveAttribute(
+    "aria-label",
+    /intensidad moderada/i,
+  );
+  await expect(page.locator(".mat-schedule__class-link--high").first()).toHaveAttribute(
+    "aria-label",
+    /intensidad alta/i,
+  );
 });
 
 test("schedule accordions are exclusive and class links reveal their catalog card", async ({

@@ -2,18 +2,17 @@
 
 import Image from "next/image";
 import { type SyntheticEvent, useEffect, useRef, useState } from "react";
-import { getClassWhatsappUrl, landingCtas, type ClassOffering } from "@/lib/site-content";
+import {
+  classIntensityLabels,
+  getClassWhatsappUrl,
+  landingCtas,
+  type ClassOffering,
+} from "@/lib/site-content";
 import { Button } from "./button";
 
 interface ClassCardProps {
   classOffering: ClassOffering;
 }
-
-const intensityLabels = {
-  low: "Baja",
-  moderate: "Moderada",
-  high: "Alta",
-} as const satisfies Record<ClassOffering["intensity"], string>;
 
 function closeOtherOpenCards(event: SyntheticEvent<HTMLDetailsElement>) {
   const currentCard = event.currentTarget;
@@ -130,7 +129,7 @@ export function ClassCard({ classOffering }: ClassCardProps) {
           <span
             className={`mat-class-card__intensity mat-class-card__intensity--${classOffering.intensity}`}
           >
-            Intensidad {intensityLabels[classOffering.intensity]}
+            Intensidad {classIntensityLabels[classOffering.intensity]}
           </span>
         </span>
         <span aria-hidden="true" className="mat-class-card__indicator" />

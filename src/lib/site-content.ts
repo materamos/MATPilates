@@ -54,6 +54,12 @@ export interface ClassOffering {
   environment: "hot" | "room-temperature";
 }
 
+export const classIntensityLabels = {
+  low: "Baja",
+  moderate: "Moderada",
+  high: "Alta",
+} as const satisfies Record<ClassOffering["intensity"], string>;
+
 export const siteContact = {
   instagram: {
     url: "https://www.instagram.com/matpilatescn/",

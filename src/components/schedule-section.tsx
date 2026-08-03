@@ -1,5 +1,6 @@
 import { ScheduleAccordion } from "@/components/schedule-accordion";
 import { ScheduleClassLink } from "@/components/schedule-class-link";
+import { classIntensityLabels } from "@/lib/site-content";
 import {
   getScheduledClassOffering,
   type ScheduleTime,
@@ -33,8 +34,9 @@ function ScheduleClassName({
 
   return (
     <ScheduleClassLink
-      ariaLabel={`Ver detalles de ${classOffering.name}, ${day} a las ${time}${isHot ? ", clase con calor" : ""}`}
+      ariaLabel={`Ver detalles de ${classOffering.name}, ${day} a las ${time}, intensidad ${classIntensityLabels[classOffering.intensity].toLowerCase()}${isHot ? ", clase con calor" : ""}`}
       classId={classId}
+      intensity={classOffering.intensity}
     >
       <span>{classOffering.name}</span>
       {isHot ? <span aria-hidden="true" className="mat-schedule__class-fire" /> : null}
@@ -114,12 +116,15 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
                 </th>
                 {schedule.days.map((day) => {
                   const slot = day.slots.find((candidate) => candidate.startTime === time);
+                  const slotIntensity = slot
+                    ? getScheduledClassOffering(slot.classId).intensity
+                    : null;
 
                   return (
                     <td
                       className={
-                        slot
-                          ? "mat-schedule-table__slot"
+                        slotIntensity
+                          ? `mat-schedule-table__slot mat-schedule-table__slot--${slotIntensity}`
                           : "mat-schedule-table__slot mat-schedule-table__slot--empty"
                       }
                       data-schedule-day={day.id}
