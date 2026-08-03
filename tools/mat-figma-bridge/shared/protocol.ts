@@ -138,6 +138,15 @@ const SetCharactersOperationSchema = z
   })
   .strict();
 
+const SetTextBoxWidthOperationSchema = z
+  .object({
+    op: z.literal("set_text_box_width"),
+    nodeId: IdSchema,
+    expectedFingerprint: FingerprintSchema,
+    width: FiniteNumberSchema.min(1).max(100_000),
+  })
+  .strict();
+
 const CreateTextNodeOperationSchema = z
   .object({
     op: z.literal("create_text_node"),
@@ -160,6 +169,7 @@ export const PatchOperationSchema = z.discriminatedUnion("op", [
   BindTextStyleOperationSchema,
   SetTextRangeOperationSchema,
   SetCharactersOperationSchema,
+  SetTextBoxWidthOperationSchema,
   CreateTextNodeOperationSchema,
 ]);
 

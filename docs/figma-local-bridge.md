@@ -103,6 +103,7 @@ The Figma plugin main sandbox:
 - bind a text node or exact text range to an existing or newly created style;
 - change font role, size, line height, tracking, case, or decoration;
 - replace characters only on a non-mixed text node;
+- resize an existing text box with vertical auto-resize;
 - create a text node under an exact parent.
 
 The bridge does not delete styles or nodes, detach components, upload font
@@ -217,7 +218,7 @@ setters that do not rebind a style remain supported.
 Limits:
 
 - 100 operations;
-- 500 affected or Auto Layout context nodes;
+- 500 direct targets and 1,200 Auto Layout context nodes;
 - 100,000 UTF-16 code units supplied by one patch;
 - 1,000 text nodes per audit;
 - 512 KiB per JSON message;
@@ -250,7 +251,7 @@ Text fingerprints include complete-style paragraph settings plus position and
 dimensions. The proposal also snapshots affected Auto Layout roots and each
 ancestor's full descendant subtree, including child order, geometry, padding,
 spacing, sizing, and alignment. The traversal includes descendants of siblings
-and is rejected if the context exceeds 500 nodes. A subtree insertion or layout
+and is rejected if the context exceeds 1,200 nodes. A subtree insertion or layout
 edit during automatic preflight therefore becomes `stale` before the first
 write, and rollback verification checks the same layout context.
 
