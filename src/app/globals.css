@@ -1824,7 +1824,6 @@ a {
     gap: clamp(16px, 2.5vw, 36px);
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: minmax(0, 1fr);
-    max-height: 300px;
     align-self: center;
   }
 
@@ -1971,6 +1970,7 @@ a {
   }
 
   .mat-hot-mat__cards {
+    max-height: 300px;
     height: auto;
     align-self: center;
   }
@@ -2171,6 +2171,26 @@ a {
 
   .site-header__bar {
     padding-block: 12px;
+  }
+
+  .mat-hot-mat {
+    gap: 16px;
+  }
+
+  .mat-hot-mat__card {
+    min-height: 0;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .mat-hot-mat__card .mat-h3 {
+    font-size: var(--mat-font-size-24);
+    line-height: 31px;
+  }
+
+  .mat-hot-mat__card .mat-body-small {
+    font-size: var(--mat-font-size-16);
+    line-height: 22px;
   }
 
   .mat-hero {
@@ -2461,6 +2481,7 @@ a {
 
   .mat-hot-mat__cards {
     height: min(clamp(379px, calc(1008px - 43.68vw), 448px), 100%);
+    max-height: none;
     align-self: center;
   }
 
