@@ -105,8 +105,6 @@ const elements = {
   pendingPreview: requiredElement("pending-preview"),
   pendingWarnings: requiredElement("pending-warnings"),
   pendingExpiry: requiredElement("pending-expiry"),
-  rejectButton: requiredButton("reject-button"),
-  applyButton: requiredButton("apply-button"),
   latestEmpty: requiredElement("latest-empty"),
   latestCard: requiredElement("latest-card"),
   latestStatus: requiredElement("latest-status"),
@@ -178,27 +176,6 @@ elements.forgetButton.addEventListener("click", () => {
     connect();
   }, 150);
   render();
-});
-
-elements.rejectButton.addEventListener("click", () => {
-  if (state.pendingPatch !== null) {
-    postToMain({
-      type: "reject_patch",
-      patchId: state.pendingPatch.patchId,
-    });
-  }
-});
-
-elements.applyButton.addEventListener("click", () => {
-  if (state.pendingPatch !== null) {
-    elements.applyButton.disabled = true;
-    elements.rejectButton.disabled = true;
-    postToMain({
-      type: "approve_patch",
-      patchId: state.pendingPatch.patchId,
-      approvalDigest: state.pendingPatch.approvalDigest,
-    });
-  }
 });
 
 elements.undoButton.addEventListener("click", () => {
@@ -643,11 +620,7 @@ function renderPendingPatch(): void {
   elements.pendingExpiry.textContent =
     patch.status === "applying"
       ? "Aplicando y validando…"
-      : `Vence ${relativeExpiry(patch.summary.expiresAt)}`;
-  elements.rejectButton.disabled = patch.status === "applying";
-  elements.applyButton.disabled = patch.status === "applying";
-  elements.applyButton.textContent =
-    patch.status === "applying" ? "Aplicando…" : "Aplicar";
+      : "Validando precondiciones antes de aplicar…";
 }
 
 function renderLatestPatch(): void {

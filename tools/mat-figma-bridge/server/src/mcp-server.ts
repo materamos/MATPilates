@@ -159,7 +159,7 @@ export function createMcpServer(gateway: PluginGateway): McpServer {
     },
     {
       instructions:
-        "Use this local bridge only for font-sensitive Figma typography. Inspect status and local fonts first. Reads are safe. A proposed patch never writes by itself: the user must review and press Aplicar in Figma Desktop. Use exact IDs and fresh fingerprints, poll patch status, then re-audit the exact scope. Never substitute Neue Montreal weights; only Regular, Medium, and Bold are supported.",
+        "Use this local bridge only for font-sensitive Figma typography. Inspect status and local fonts first. Reads are safe. Submitting a patch starts its application automatically, so do so only for an explicitly authorized scope. Target exact page and node IDs with fresh fingerprints; the target page does not need to be active and selectionIds are explicit scope roots, not the visible Figma selection. Poll patch status, then re-audit the exact scope. Never substitute Neue Montreal weights; only Regular, Medium, and Bold are supported.",
     },
   );
 
@@ -269,7 +269,7 @@ export function createMcpServer(gateway: PluginGateway): McpServer {
     {
       title: "Audit Figma typography",
       description:
-        "Audit typography in the current selection, one node subtree, or current page. Returns local-style links, font usage, mixed ranges, and fingerprints without writing.",
+        "Audit typography in the current selection, current page, or one exact node subtree on any page without changing the visible page. Returns local-style links, font usage, mixed ranges, and fingerprints without writing.",
       inputSchema: ToolInputs.auditTypography,
       outputSchema: ToolOutputSchemas.auditTypography,
       annotations: readOnlyAnnotations,
@@ -330,9 +330,9 @@ export function createMcpServer(gateway: PluginGateway): McpServer {
   server.registerTool(
     "mat_figma_propose_typography_patch",
     {
-      title: "Propose an approved typography patch",
+      title: "Apply an authorized typography patch",
       description:
-        "Send an exact, fingerprint-protected typography batch and its required post-apply preview target to the local Figma plugin. This only opens a Spanish review prompt; Figma changes occur only after the user presses Aplicar.",
+        "Send an authorized, fingerprint-protected typography batch and its required post-apply preview target to the local Figma plugin. Application starts automatically and does not require the target page or nodes to be selected in Figma.",
       inputSchema: ToolInputs.proposePatch,
       outputSchema: ToolOutputSchemas.proposePatch,
       annotations: internalWriteAnnotations,
@@ -357,7 +357,7 @@ export function createMcpServer(gateway: PluginGateway): McpServer {
     {
       title: "Get typography patch status",
       description:
-        "Poll or briefly wait for the user's manual decision and the resulting apply/rollback status. An applied result includes the post-apply PNG as MCP image content.",
+        "Poll or briefly wait for the automatic apply/rollback result. An applied result includes the post-apply PNG as MCP image content.",
       inputSchema: ToolInputs.getPatchStatus,
       outputSchema: ToolOutputSchemas.getPatchStatus,
       annotations: readOnlyAnnotations,
