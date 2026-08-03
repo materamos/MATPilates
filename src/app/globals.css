@@ -1972,7 +1972,7 @@ a {
 
   .mat-hot-mat__cards {
     height: auto;
-    align-self: auto;
+    align-self: center;
   }
 
   .mat-hot-mat__card {
