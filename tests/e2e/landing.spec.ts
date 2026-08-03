@@ -248,6 +248,34 @@ test("mobile menu restores and transfers focus correctly", async ({ page }) => {
   await expect(page.locator("#hotmat h2")).toBeFocused();
 });
 
+test("navigation includes Horarios in the desktop bar, mobile menu, and footer", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openLanding(page);
+
+  const expectedLinks = [
+    ["Hot Mat", "#hotmat"],
+    ["Clases", "#clases"],
+    ["Horarios", "#horarios"],
+    ["El estudio", "#estudio"],
+  ] as const;
+  const desktopNavigation = page.getByRole("navigation", { name: "Navegación principal" });
+  const footerNavigation = page.getByRole("navigation", { name: "Enlaces del pie de página" });
+
+  for (const [name, href] of expectedLinks) {
+    await expect(desktopNavigation.getByRole("link", { name })).toHaveAttribute("href", href);
+    await expect(footerNavigation.getByRole("link", { name })).toHaveAttribute("href", href);
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "Abrir menú" }).click();
+
+  const mobileNavigation = page.getByRole("navigation", { name: "Navegación móvil" });
+  await expect(mobileNavigation.getByRole("link", { name: "Horarios" })).toHaveAttribute(
+    "href",
+    "#horarios",
+  );
+});
+
 test("class cards keep a single disclosure open", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
