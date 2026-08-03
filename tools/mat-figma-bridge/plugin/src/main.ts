@@ -32,9 +32,6 @@ let uiMessageQueue: Promise<void> = Promise.resolve();
 let documentChangeMonitoringReady = false;
 
 const patchEngine = new PatchEngine((patch) => {
-  if (patch.status === "pending_approval") {
-    figma.ui.show();
-  }
   postToUi({ type: "patch_status", patch });
 });
 
@@ -78,9 +75,6 @@ function registerDocumentEvent(
 ): void {
   try {
     figma.on(event, () => {
-      if (event === "currentpagechange") {
-        patchEngine.invalidateUndo("page_changed");
-      }
       void publishPluginStatus();
     });
   } catch (error) {
@@ -279,7 +273,17 @@ async function dispatchBridgeRequest(request: BridgeRequest): Promise<unknown> {
 
     case "propose_patch": {
       const patch = typographyPatchSchema.parse(request.payload);
-      return patchEngine.propose(patch);
+      await ensureDocumentChangeMonitoring();
+      const pending = await patchEngine.propose(patch);
+      void patchEngine
+        .approve(pending.patchId, pending.approvalDigest)
+        .catch((error) => {
+          postToUi({
+            type: "ui_error",
+            error: toBridgeError(error, "PATCH_APPLY_FAILED"),
+          });
+        });
+      return pending;
     }
 
     case "get_patch_status": {

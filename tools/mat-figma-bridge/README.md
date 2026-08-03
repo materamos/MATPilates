@@ -91,23 +91,23 @@ three steps are required for complete revocation.
 
 1. Inspect with `get_selection`, `get_node`, `list_fonts`,
    `list_text_styles`, or `audit_typography`.
-2. Export a preview by exact `nodeId`, or omit it when the current selection
-   contains exactly one node.
-3. Ask Codex for one exact proposed patch with the required post-apply preview
-   target.
-4. Review every exact style, operation, affected layer, range, typography
-   value, bounded whitespace-normalized text preview (including its truncation
-   marker), and preview target listed in the Spanish Figma prompt.
-5. Press `Aplicar` or `Rechazar`.
-6. Ask Codex for the patch status. An applied result automatically includes
+   Exact `nodeId` reads and audits work on any page without changing the
+   visible page; selection and current-page scopes remain optional conveniences.
+2. Export a preview by exact `nodeId`; selection is only a convenience for
+   read-only inspection.
+3. Submit one exact, explicitly authorized patch with the required post-apply
+   preview target. Submission starts application automatically. The target
+   `pageId` and node IDs need not be active or selected in Figma.
+4. Ask Codex for the patch status. An applied result automatically includes
    the post-apply PNG as MCP image content; structured JSON contains its
    metadata, not base64 image bytes.
-7. Re-audit the exact scope. If the latest applied batch is not wanted, use
+5. Re-audit the exact scope. If the latest applied batch is not wanted, use
    `Deshacer lote` while the plugin still marks that action as available.
 
-The proposal tool never writes without the manual Figma confirmation. Mutating
-requests are serialized in FIFO order; patch-status reads and apply-time safety
-signals bypass that queue so a long apply cannot hide its current state.
+The proposal tool is effectful: once the plugin accepts the fingerprint-protected
+batch, it starts applying without a manual Figma confirmation. Mutating requests
+are serialized in FIFO order; patch-status reads and apply-time safety signals
+bypass that queue so a long apply cannot hide its current state.
 Cancelling a Codex tool call is best-effort: it stops waiting locally, but an
 audit or preview already running inside Figma may finish and have its result
 discarded. A pending patch can be cancelled through MCP; an applying or applied
@@ -116,8 +116,8 @@ ephemeral: it verifies the latest post-apply state, invokes the single native
 Figma Undo step, and verifies the restored pre-patch state. It is armed only
 after the plugin's exact local document events settle and remains available for
 at most five minutes. Once available, any subsequent document event disables
-it; page changes, loss of plugin focus, hiding the UI, a newer batch, expiry,
-or failed verification also disable it.
+it; loss of plugin focus, hiding the UI, a newer batch, expiry, or failed
+verification also disable it. Changing the active page alone does not.
 
 Direct writes anywhere inside `COMPONENT`, `COMPONENT_SET`, or `INSTANCE` are
 rejected in v0.1 because the bridge cannot enumerate their propagation safely.
@@ -198,7 +198,7 @@ be the explicit parent of a new text layer. A single `get_node` scope above
 1,000 descendant text nodes is rejected instead of returning an invalid,
 silently truncated precondition.
 
-## Manual write validation
+## Write-path validation
 
 Use a disposable file copy and verify:
 
@@ -206,13 +206,14 @@ Use a disposable file copy and verify:
 - unsupported Semibold/600 input is rejected;
 - semantic H1/H2/H3/Body/Button/Label mappings reject a mismatched role;
 - a proposal without an exact preview target is rejected;
-- the approval summary lists every affected layer and the preview target;
+- the batch summary lists every affected layer and the preview target;
 - `export_preview` accepts an exact node ID or the current single-node
   selection;
-- rejecting a proposal changes nothing;
-- editing a target between proposal and approval yields `stale`;
+- exact targets on a non-active page apply without changing the visible page;
+- visible selection differences do not invalidate declared `selectionIds` scope;
+- editing a target between inspection and automatic apply yields `stale`;
 - inserting a sibling or changing any tracked descendant in its bounded Auto
-  Layout context before approval yields `stale`;
+  Layout context before the first write yields `stale`;
 - creating text directly inside Grid is rejected;
 - exact no-op style, binding, range, and content operations are rejected
   without creating or consuming an Undo entry, while same-style bindings with

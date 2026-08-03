@@ -99,11 +99,11 @@
       <section class="panel">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Revisión obligatoria</span>
-            <h2>Lote pendiente</h2>
+            <span class="eyebrow">Aplicación automática</span>
+            <h2>Lote en curso</h2>
           </div>
         </div>
-        <div id="pending-empty" class="empty-state">No hay cambios esperando aprobación.</div>
+        <div id="pending-empty" class="empty-state">No hay cambios en proceso.</div>
         <article id="pending-card" class="patch-card" hidden>
           <h3 id="pending-title"></h3>
           <p id="pending-detail"></p>
@@ -131,10 +131,6 @@
           <p id="pending-warnings" class="warning-text" hidden></p>
           <div class="patch-footer">
             <span id="pending-expiry" class="expiry-label"></span>
-            <div class="button-row">
-              <button id="reject-button" class="button button-secondary" type="button">Rechazar</button>
-              <button id="apply-button" class="button button-primary" type="button">Aplicar</button>
-            </div>
           </div>
         </article>
       </section>
@@ -189,7 +185,7 @@
       <footer class="privacy-note">
         <p>
           <span aria-hidden="true">◉</span>
-          Conexión limitada al loopback local. Cada lote requiere tu aprobación.
+          Conexión limitada al loopback local. Cada lote se aplica automáticamente al enviarse.
         </p>
         <p>
           El puente puede enviar a Codex texto, propiedades tipográficas y vistas previas solicitadas.

@@ -158,7 +158,7 @@ export async function listLocalTextStyles(): Promise<unknown[]> {
 }
 
 export async function auditTypography(input: AuditInput): Promise<unknown> {
-  const textNodes = await resolveAuditTextNodes(input);
+  const { page, textNodes } = await resolveAuditScope(input);
   if (textNodes.length > MAX_AUDIT_TEXT_NODES) {
     throw bridgeError(
       "AUDIT_SCOPE_TOO_LARGE",
@@ -256,7 +256,7 @@ export async function auditTypography(input: AuditInput): Promise<unknown> {
   const anomalyLimit = 200;
   return {
     fileKey: figma.fileKey ?? null,
-    page: { id: figma.currentPage.id, name: figma.currentPage.name },
+    page: { id: page.id, name: page.name },
     scope: input,
     totals: {
       textNodes: textNodes.length,
@@ -602,12 +602,23 @@ function parentFingerprint(node: BaseNode): { fingerprint?: string } {
     : {};
 }
 
-async function resolveAuditTextNodes(input: AuditInput): Promise<TextNode[]> {
+async function resolveAuditScope(
+  input: AuditInput,
+): Promise<{ page: PageNode; textNodes: TextNode[] }> {
   switch (input.scope) {
     case "selection":
-      return collectTextNodes(figma.currentPage.selection, MAX_AUDIT_TEXT_NODES);
+      return {
+        page: figma.currentPage,
+        textNodes: collectTextNodes(
+          figma.currentPage.selection,
+          MAX_AUDIT_TEXT_NODES,
+        ),
+      };
     case "current_page":
-      return figma.currentPage.findAllWithCriteria({ types: ["TEXT"] });
+      return {
+        page: figma.currentPage,
+        textNodes: figma.currentPage.findAllWithCriteria({ types: ["TEXT"] }),
+      };
     case "node": {
       if (input.nodeId === undefined) {
         throw bridgeError(
@@ -622,13 +633,17 @@ async function resolveAuditTextNodes(input: AuditInput): Promise<TextNode[]> {
           `No se encontró el nodo ${input.nodeId}.`,
         );
       }
-      if (pageForNode(node)?.id !== figma.currentPage.id) {
+      const page = pageForNode(node);
+      if (page === null) {
         throw bridgeError(
-          "NODE_OUTSIDE_SCOPE",
-          `El nodo ${input.nodeId} pertenece a otra página.`,
+          "NODE_NOT_FOUND",
+          `No se pudo resolver la página del nodo ${input.nodeId}.`,
         );
       }
-      return collectTextNodes([node], MAX_AUDIT_TEXT_NODES);
+      return {
+        page,
+        textNodes: collectTextNodes([node], MAX_AUDIT_TEXT_NODES),
+      };
     }
   }
 }
