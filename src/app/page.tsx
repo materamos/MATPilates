@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Button } from "@/components/button";
 import { ClassCard } from "@/components/class-card";
+import { ClassScheduleNavigationProvider } from "@/components/class-schedule-navigation";
 import { ScheduleSection } from "@/components/schedule-section";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -8,7 +9,7 @@ import { StudioGallery } from "@/components/studio-gallery";
 import { StudioMap } from "@/components/studio-map";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { classCatalog, landingContent, landingCtas, siteContact } from "@/lib/site-content";
-import { weeklySchedule } from "@/lib/schedule-content";
+import { getClassScheduleDays, weeklySchedule } from "@/lib/schedule-content";
 import { localBusinessStructuredData } from "@/lib/site-structured-data";
 
 const manifestoMarqueeGroup = [0, 1, 2, 3];
@@ -122,35 +123,40 @@ export default function HomePage() {
           <p className="mat-body-small mat-hot-mat__closing">{hotMat.closing}</p>
         </section>
 
-        <section className="mat-classes mat-scroll-target" id="clases">
-          <div className="mat-section-heading mat-classes__heading">
-            <div className="mat-section-heading__title">
-              <p className="mat-label">{classes.eyebrow}</p>
-              <h2 className="mat-h2" tabIndex={-1}>
-                {classes.title}
-              </h2>
+        <ClassScheduleNavigationProvider>
+          <section className="mat-classes mat-scroll-target" id="clases">
+            <div className="mat-section-heading mat-classes__heading">
+              <div className="mat-section-heading__title">
+                <p className="mat-label">{classes.eyebrow}</p>
+                <h2 className="mat-h2" tabIndex={-1}>
+                  {classes.title}
+                </h2>
+              </div>
+              <p className="mat-body mat-section-heading__description">{classes.description}</p>
             </div>
-            <p className="mat-body mat-section-heading__description">{classes.description}</p>
-          </div>
-          <ul aria-label="Catálogo de clases" className="mat-class-catalog">
-            {classCatalog.map((classOffering) => (
-              <li className="mat-class-catalog__item" key={classOffering.id}>
-                <ClassCard classOffering={classOffering} />
-              </li>
-            ))}
-          </ul>
-          <div className="mat-classes__actions">
-            <Button
-              className="mat-desktop-button mat-classes__button"
-              href={landingCtas.learnHowToJoin.href}
-              variant="light"
-            >
-              {landingCtas.learnHowToJoin.label}
-            </Button>
-          </div>
-        </section>
+            <ul aria-label="Catálogo de clases" className="mat-class-catalog">
+              {classCatalog.map((classOffering) => (
+                <li className="mat-class-catalog__item" key={classOffering.id}>
+                  <ClassCard
+                    classOffering={classOffering}
+                    scheduleDays={getClassScheduleDays(classOffering.id)}
+                  />
+                </li>
+              ))}
+            </ul>
+            <div className="mat-classes__actions">
+              <Button
+                className="mat-desktop-button mat-classes__button"
+                href={landingCtas.learnHowToJoin.href}
+                variant="light"
+              >
+                {landingCtas.learnHowToJoin.label}
+              </Button>
+            </div>
+          </section>
 
-        <ScheduleSection content={schedule} schedule={weeklySchedule} />
+          <ScheduleSection content={schedule} schedule={weeklySchedule} />
+        </ClassScheduleNavigationProvider>
 
         <section className="mat-studio mat-scroll-target" id="estudio">
           <div className="mat-studio__visual">

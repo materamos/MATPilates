@@ -807,6 +807,50 @@ a {
   content: "";
 }
 
+.mat-class-card__schedule {
+  display: grid;
+  gap: 8px;
+}
+
+.mat-class-card__schedule-days {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.mat-class-card__schedule-day {
+  display: grid;
+  min-height: 28px;
+  grid-template-columns: minmax(72px, auto) minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  font-size: var(--mat-font-size-14);
+  line-height: 20px;
+}
+
+.mat-class-card__schedule-day dt {
+  font-weight: var(--mat-font-weight-medium);
+  text-transform: uppercase;
+}
+
+.mat-class-card__schedule-day dd {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.mat-class-card__schedule-empty {
+  margin: 0;
+}
+
+.mat-class-card__schedule-link {
+  width: fit-content;
+  justify-self: start;
+}
+
 .mat-class-card__cta {
   justify-self: start;
   width: fit-content;
@@ -852,6 +896,36 @@ a {
 .mat-schedule__heading,
 .mat-schedule__heading .mat-section-heading__title {
   gap: 10px;
+}
+
+.mat-schedule-selection {
+  display: flex;
+  min-height: 44px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+}
+
+.mat-schedule-selection p {
+  margin: 0;
+}
+
+.mat-schedule-selection strong {
+  font-weight: var(--mat-font-weight-medium);
+  text-transform: uppercase;
+}
+
+.mat-schedule-selection__clear {
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: var(--mat-color-pale-pink);
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  touch-action: manipulation;
 }
 
 .mat-schedule__mobile {
@@ -974,6 +1048,12 @@ a {
 .mat-schedule__class-link:hover,
 .mat-schedule__class-link:active {
   box-shadow: inset 0 0 0 2px currentcolor;
+}
+
+.mat-schedule__class-link--selected,
+.mat-schedule__class-link--selected:hover,
+.mat-schedule__class-link--selected:active {
+  box-shadow: inset 0 0 0 3px currentcolor;
 }
 
 .mat-schedule__class-link--high {
@@ -2467,7 +2547,12 @@ a {
     text-wrap: balance;
   }
 
-  .mat-schedule-table__slot--high .mat-schedule__class-link:not(:hover, :active) {
+  .mat-schedule-table__slot--high
+    .mat-schedule__class-link:not(
+      :hover,
+      :active,
+      .mat-schedule__class-link--selected
+    ) {
     box-shadow: inset 0 0 0 1px
       color-mix(in srgb, var(--mat-color-pale-pink) 48%, transparent);
   }

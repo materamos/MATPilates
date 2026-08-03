@@ -9,7 +9,7 @@ The application presents the studio identity, Hot Mat method, class catalog, con
 It includes:
 
 - the Hot Mat method and a catalog of 11 classes with intensity and environment information;
-- a responsive weekly schedule linked to the confirmed class catalog;
+- a responsive weekly schedule linked bidirectionally to the confirmed class catalog;
 - a studio gallery, location details, progressive map, and external directions;
 - internal navigation, Instagram integration, and direct WhatsApp calls to action;
 - a reusable visual system with tokens, components, and Neue Montreal typography;

@@ -28,6 +28,12 @@ export interface WeeklySchedule {
   readonly timezone: "America/Argentina/Buenos_Aires";
 }
 
+export interface ClassScheduleDay {
+  readonly id: WeekdayId;
+  readonly label: string;
+  readonly times: readonly ScheduleTime[];
+}
+
 export const weeklySchedule = {
   status: "published",
   timezone: "America/Argentina/Buenos_Aires",
@@ -136,6 +142,28 @@ export function getScheduledClassOffering(classId: ClassId) {
   }
 
   return classOffering;
+}
+
+export function getClassScheduleDays(classId: ClassId): readonly ClassScheduleDay[] {
+  return weeklySchedule.days.flatMap((day) => {
+    const times = day.slots
+      .filter((slot) => slot.classId === classId)
+      .map((slot) => slot.startTime);
+
+    return times.length > 0
+      ? [
+          {
+            id: day.id,
+            label: day.label,
+            times,
+          },
+        ]
+      : [];
+  });
+}
+
+export function formatScheduleTime(time: ScheduleTime) {
+  return time.replace(":", ".");
 }
 
 export const weeklyScheduleStartTimes = Array.from(

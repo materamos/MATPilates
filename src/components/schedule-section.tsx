@@ -1,7 +1,9 @@
 import { ScheduleAccordion } from "@/components/schedule-accordion";
 import { ScheduleClassLink } from "@/components/schedule-class-link";
+import { ScheduleSelectionStatus } from "@/components/class-schedule-navigation";
 import { classIntensityLabels } from "@/lib/site-content";
 import {
+  formatScheduleTime,
   getScheduledClassOffering,
   type ScheduleTime,
   type WeeklySchedule,
@@ -10,14 +12,12 @@ import {
 
 interface ScheduleSectionProps {
   content: {
+    clearSelectionLabel: string;
     eyebrow: string;
+    selectionPrefix: string;
     title: string;
   };
   schedule: WeeklySchedule;
-}
-
-function formatScheduleTime(time: ScheduleTime) {
-  return time.replace(":", ".");
 }
 
 function ScheduleClassName({
@@ -54,6 +54,10 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
             {content.title}
           </h2>
         </div>
+        <ScheduleSelectionStatus
+          clearLabel={content.clearSelectionLabel}
+          selectionPrefix={content.selectionPrefix}
+        />
       </div>
 
       <div aria-label="Horarios semanales por día" className="mat-schedule__mobile">
