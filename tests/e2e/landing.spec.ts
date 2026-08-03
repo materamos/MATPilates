@@ -313,11 +313,22 @@ test("class cards derive their schedule summaries from the published week", asyn
     { day: "Jueves", shortDay: "Jue", times: ["08.00"] },
     { day: "Viernes", shortDay: "Vie", times: ["08.00", "16.00"] },
   ]);
+  await expect(matPilatesCard.getByText("Horarios", { exact: true })).toBeVisible();
   await expect(
     matPilatesCard.getByRole("link", {
       name: "Ver horarios de MAT PILATES",
     }),
   ).toHaveAttribute("href", "#horarios");
+  const ctaLayout = await matPilatesCard.locator(".mat-class-card__cta").evaluateAll((ctas) =>
+    ctas.map((cta) => {
+      const styles = getComputedStyle(cta);
+      return { justifySelf: styles.justifySelf, width: styles.width };
+    }),
+  );
+  expect(ctaLayout).toEqual([
+    { justifySelf: "center", width: "230px" },
+    { justifySelf: "center", width: "230px" },
+  ]);
 
   const yogaCard = page.locator("#clase-yoga");
   await yogaCard.locator("summary").click();

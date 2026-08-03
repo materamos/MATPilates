@@ -139,7 +139,7 @@ export const landingContent = {
     eyebrow: "Clases",
     title: "Encontrá la clase que acompañe tu momento.",
     description: "Todas las clases están pensadas para trabajar con presencia y progresión.",
-    scheduleLabel: "Horarios de esta clase",
+    scheduleLabel: "Horarios",
     viewScheduleLabel: "Ver horarios",
     noScheduleLabel: "Sin horarios publicados",
   },

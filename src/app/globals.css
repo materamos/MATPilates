@@ -853,14 +853,9 @@ a {
   margin: 0;
 }
 
-.mat-class-card__schedule-link {
-  width: fit-content;
-  justify-self: start;
-}
-
 .mat-class-card__cta {
-  justify-self: start;
-  width: fit-content;
+  width: min(100%, 230px);
+  justify-self: center;
 }
 
 .mat-classes {
