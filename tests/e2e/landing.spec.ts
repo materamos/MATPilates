@@ -248,6 +248,34 @@ test("mobile menu restores and transfers focus correctly", async ({ page }) => {
   await expect(page.locator("#hotmat h2")).toBeFocused();
 });
 
+test("navigation includes Horarios in the desktop bar, mobile menu, and footer", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openLanding(page);
+
+  const expectedLinks = [
+    ["Hot Mat", "#hotmat"],
+    ["Clases", "#clases"],
+    ["Horarios", "#horarios"],
+    ["El estudio", "#estudio"],
+  ] as const;
+  const desktopNavigation = page.getByRole("navigation", { name: "Navegación principal" });
+  const footerNavigation = page.getByRole("navigation", { name: "Enlaces del pie de página" });
+
+  for (const [name, href] of expectedLinks) {
+    await expect(desktopNavigation.getByRole("link", { name })).toHaveAttribute("href", href);
+    await expect(footerNavigation.getByRole("link", { name })).toHaveAttribute("href", href);
+  }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "Abrir menú" }).click();
+
+  const mobileNavigation = page.getByRole("navigation", { name: "Navegación móvil" });
+  await expect(mobileNavigation.getByRole("link", { name: "Horarios" })).toHaveAttribute(
+    "href",
+    "#horarios",
+  );
+});
+
 test("class cards keep a single disclosure open", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
@@ -277,6 +305,9 @@ test("weekly schedule renders the confirmed data without duplicate day-time slot
   expect(dayLabels).toEqual(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]);
   expect(slotCounts).toEqual([12, 9, 9, 9, 9, 4]);
   await expect(mobileSchedule.locator(".mat-schedule__class-link")).toHaveCount(52);
+  await expect(
+    mobileSchedule.locator('.mat-schedule__class-link[class*="mat-schedule__class-link--"]'),
+  ).toHaveCount(52);
   await expect(mobileSchedule.getByText("Yoga", { exact: true })).toHaveCount(0);
 
   await page.setViewportSize({ width: 1280, height: 720 });
@@ -292,9 +323,56 @@ test("weekly schedule renders the confirmed data without duplicate day-time slot
   expect(new Set(coordinates).size).toBe(52);
 });
 
+test("schedule reuses the catalog intensity colors and accessible labels", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await openLanding(page);
+
+  const intensityStyles = await page.evaluate(() =>
+    (["low", "moderate", "high"] as const).map((intensity) => {
+      const chip = document.querySelector<HTMLElement>(
+        `.mat-class-card__intensity--${intensity}`,
+      )!;
+      const scheduleLink = document.querySelector<HTMLElement>(
+        `.mat-schedule__class-link--${intensity}`,
+      )!;
+      const chipStyles = getComputedStyle(chip);
+      const scheduleStyles = getComputedStyle(scheduleLink);
+
+      return {
+        chip: {
+          background: chipStyles.backgroundColor,
+          color: chipStyles.color,
+        },
+        schedule: {
+          background: scheduleStyles.backgroundColor,
+          color: scheduleStyles.color,
+        },
+      };
+    }),
+  );
+
+  for (const styles of intensityStyles) {
+    expect(styles.schedule).toEqual(styles.chip);
+  }
+
+  await expect(page.locator(".mat-schedule__class-link--low").first()).toHaveAttribute(
+    "aria-label",
+    /intensidad baja/i,
+  );
+  await expect(page.locator(".mat-schedule__class-link--moderate").first()).toHaveAttribute(
+    "aria-label",
+    /intensidad moderada/i,
+  );
+  await expect(page.locator(".mat-schedule__class-link--high").first()).toHaveAttribute(
+    "aria-label",
+    /intensidad alta/i,
+  );
+});
+
 test("schedule accordions are exclusive and class links reveal their catalog card", async ({
   page,
 }) => {
+  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
 

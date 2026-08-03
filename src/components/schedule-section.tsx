@@ -1,4 +1,6 @@
+import { ScheduleAccordion } from "@/components/schedule-accordion";
 import { ScheduleClassLink } from "@/components/schedule-class-link";
+import { classIntensityLabels } from "@/lib/site-content";
 import {
   getScheduledClassOffering,
   type ScheduleTime,
@@ -32,8 +34,9 @@ function ScheduleClassName({
 
   return (
     <ScheduleClassLink
-      ariaLabel={`Ver detalles de ${classOffering.name}, ${day} a las ${time}${isHot ? ", clase con calor" : ""}`}
+      ariaLabel={`Ver detalles de ${classOffering.name}, ${day} a las ${time}, intensidad ${classIntensityLabels[classOffering.intensity].toLowerCase()}${isHot ? ", clase con calor" : ""}`}
       classId={classId}
+      intensity={classOffering.intensity}
     >
       <span>{classOffering.name}</span>
       {isHot ? <span aria-hidden="true" className="mat-schedule__class-fire" /> : null}
@@ -54,12 +57,13 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
       </div>
 
       <div aria-label="Horarios semanales por día" className="mat-schedule__mobile">
-        {schedule.days.map((day, index) => (
+        <ScheduleAccordion timezone={schedule.timezone} />
+        {schedule.days.map((day) => (
           <details
             className="mat-schedule-day"
+            data-schedule-day={day.id}
             key={day.id}
             name="mat-weekly-schedule"
-            open={index === 0}
           >
             <summary className="mat-schedule-day__summary">
               <span className="mat-h3">{day.label}</span>
@@ -112,12 +116,15 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
                 </th>
                 {schedule.days.map((day) => {
                   const slot = day.slots.find((candidate) => candidate.startTime === time);
+                  const slotIntensity = slot
+                    ? getScheduledClassOffering(slot.classId).intensity
+                    : null;
 
                   return (
                     <td
                       className={
-                        slot
-                          ? "mat-schedule-table__slot"
+                        slotIntensity
+                          ? `mat-schedule-table__slot mat-schedule-table__slot--${slotIntensity}`
                           : "mat-schedule-table__slot mat-schedule-table__slot--empty"
                       }
                       data-schedule-day={day.id}

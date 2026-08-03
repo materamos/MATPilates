@@ -1,15 +1,21 @@
 "use client";
 
 import { type MouseEvent, type ReactNode } from "react";
-import type { ClassId } from "@/lib/site-content";
+import type { ClassId, ClassOffering } from "@/lib/site-content";
 
 interface ScheduleClassLinkProps {
   ariaLabel: string;
   children: ReactNode;
   classId: ClassId;
+  intensity: ClassOffering["intensity"];
 }
 
-export function ScheduleClassLink({ ariaLabel, children, classId }: ScheduleClassLinkProps) {
+export function ScheduleClassLink({
+  ariaLabel,
+  children,
+  classId,
+  intensity,
+}: ScheduleClassLinkProps) {
   const cardId = `clase-${classId}`;
   const href = `#${cardId}`;
 
@@ -50,7 +56,7 @@ export function ScheduleClassLink({ ariaLabel, children, classId }: ScheduleClas
   return (
     <a
       aria-label={ariaLabel}
-      className="mat-schedule__class-link"
+      className={`mat-schedule__class-link mat-schedule__class-link--${intensity}`}
       href={href}
       onClick={openClassCard}
     >

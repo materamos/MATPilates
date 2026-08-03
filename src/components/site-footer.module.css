@@ -103,7 +103,7 @@
   opacity: 0.6;
 }
 
-@container footer-navigation (max-width: 225px) {
+@container footer-navigation (max-width: 300px) {
   .site-footer__navigation {
     flex-direction: column;
     align-items: flex-start;
