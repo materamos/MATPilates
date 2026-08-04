@@ -109,13 +109,18 @@ export function ClassScheduleNavigationProvider({ children }: { children: ReactN
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedClass) {
+      moveToSchedule(selectedClass.id);
+    }
+  }, [selectedClass]);
+
   const clearSelection = useCallback(() => {
     setSelectedClass(null);
   }, []);
 
   const showSchedule = useCallback((classId: ClassId, className: string) => {
     setSelectedClass({ id: classId, name: className });
-    moveToSchedule(classId);
   }, []);
 
   const value = useMemo(
