@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, m } from "motion/react";
 import {
   createContext,
   type ReactNode,
@@ -10,6 +11,12 @@ import {
   useState,
 } from "react";
 import { openAnimatedDisclosure } from "@/components/animated-disclosure";
+import {
+  getMatMotionTransition,
+  MAT_MOTION_DISTANCE,
+  MAT_MOTION_DURATION,
+} from "@/components/ui/motion-tokens";
+import { useMatReducedMotion } from "@/components/ui/use-mat-reduced-motion";
 import type { ClassId } from "@/lib/site-content";
 
 interface SelectedScheduleClass {
@@ -128,6 +135,7 @@ export function ScheduleSelectionStatus({
   selectionPrefix: string;
 }) {
   const { clearSelection, selectedClass } = useClassScheduleNavigation();
+  const prefersReducedMotion = useMatReducedMotion();
 
   const clearAndFocusHeading = () => {
     clearSelection();
@@ -142,20 +150,32 @@ export function ScheduleSelectionStatus({
       <span aria-atomic="true" aria-live="polite" className="sr-only">
         {selectedClass ? `${selectionPrefix} ${selectedClass.name}` : ""}
       </span>
-      {selectedClass ? (
-        <div className="mat-schedule-selection">
-          <p className="mat-body-small">
-            {selectionPrefix} <strong>{selectedClass.name}</strong>
-          </p>
-          <button
-            className="mat-text-button mat-schedule-selection__clear"
-            onClick={clearAndFocusHeading}
-            type="button"
+      <AnimatePresence initial={false}>
+        {selectedClass ? (
+          <m.div
+            animate={{ opacity: 1, y: 0 }}
+            className="mat-schedule-selection"
+            exit={{ opacity: 0, y: -MAT_MOTION_DISTANCE.selection }}
+            initial={{ opacity: 0, y: -MAT_MOTION_DISTANCE.selection }}
+            key="schedule-selection"
+            transition={getMatMotionTransition(
+              MAT_MOTION_DURATION.fast,
+              prefersReducedMotion,
+            )}
           >
-            {clearLabel}
-          </button>
-        </div>
-      ) : null}
+            <p className="mat-body-small">
+              {selectionPrefix} <strong>{selectedClass.name}</strong>
+            </p>
+            <button
+              className="mat-text-button mat-schedule-selection__clear"
+              onClick={clearAndFocusHeading}
+              type="button"
+            >
+              {clearLabel}
+            </button>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

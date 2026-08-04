@@ -1,12 +1,15 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { m } from "motion/react";
 import * as React from "react";
 
+import {
+  getMatMotionTransition,
+  MAT_MOTION_DURATION,
+  MAT_MOTION_SCALE,
+} from "@/components/ui/motion-tokens";
+import { useMatReducedMotion } from "@/components/ui/use-mat-reduced-motion";
 import { cn } from "@/lib/utils";
-
-const FILL_DURATION = 0.5;
-const FILL_EASE = [0.16, 1, 0.3, 1] as const;
 
 function getCoverDiameter(width: number, height: number, x: number, y: number) {
   return Math.ceil(
@@ -48,7 +51,7 @@ function hasTextContent(node: React.ReactNode): boolean {
 }
 
 type OriginButtonProps = Omit<
-  React.ComponentPropsWithoutRef<typeof motion.a>,
+  React.ComponentPropsWithoutRef<typeof m.a>,
   "children" | "onAnimationEnd" | "onAnimationStart" | "onDrag" | "onDragEnd" | "onDragStart"
 > & {
   children?: React.ReactNode;
@@ -79,7 +82,7 @@ const OriginButton = React.forwardRef<HTMLAnchorElement, OriginButtonProps>(
     ref,
   ) => {
     const anchorRef = React.useRef<HTMLAnchorElement>(null);
-    const prefersReducedMotion = useReducedMotion();
+    const prefersReducedMotion = useMatReducedMotion();
     const isDisabled = Boolean(disabled || loading);
     const [hovered, setHovered] = React.useState(false);
     const [isPressed, setIsPressed] = React.useState(false);
@@ -161,7 +164,7 @@ const OriginButton = React.forwardRef<HTMLAnchorElement, OriginButtonProps>(
     );
 
     return (
-      <motion.a
+      <m.a
         {...props}
         aria-busy={loading || undefined}
         aria-disabled={isDisabled || undefined}
@@ -244,9 +247,11 @@ const OriginButton = React.forwardRef<HTMLAnchorElement, OriginButtonProps>(
         }}
         ref={setMergedRef}
         tabIndex={isDisabled ? -1 : tabIndex}
-        whileTap={isDisabled || prefersReducedMotion ? undefined : { scale: 0.985 }}
+        whileTap={
+          isDisabled || prefersReducedMotion ? undefined : { scale: MAT_MOTION_SCALE.press }
+        }
       >
-        <motion.span
+        <m.span
           animate={{ scale: showFill && coverSize > 0 ? 1 : 0 }}
           aria-hidden="true"
           className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--mat-origin-fill)]"
@@ -257,15 +262,15 @@ const OriginButton = React.forwardRef<HTMLAnchorElement, OriginButtonProps>(
             top: origin.y,
             width: coverSize,
           }}
-          transition={{
-            duration: prefersReducedMotion ? 0 : FILL_DURATION,
-            ease: FILL_EASE,
-          }}
+          transition={getMatMotionTransition(
+            MAT_MOTION_DURATION.originFill,
+            prefersReducedMotion,
+          )}
         />
         <span className="relative z-10 inline-flex items-center justify-center gap-2">
           {children}
         </span>
-      </motion.a>
+      </m.a>
     );
   },
 );

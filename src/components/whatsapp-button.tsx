@@ -1,9 +1,17 @@
 "use client";
 
+import { AnimatePresence, m } from "motion/react";
 import { useEffect, useState } from "react";
+import {
+  getMatMotionTransition,
+  MAT_MOTION_DURATION,
+  MAT_MOTION_SCALE,
+} from "@/components/ui/motion-tokens";
+import { useMatReducedMotion } from "@/components/ui/use-mat-reduced-motion";
 import { siteContact } from "@/lib/site-content";
 
 export function WhatsAppButton() {
+  const prefersReducedMotion = useMatReducedMotion();
   const [isClassCatalogVisible, setIsClassCatalogVisible] = useState(false);
 
   useEffect(() => {
@@ -22,25 +30,42 @@ export function WhatsAppButton() {
     return () => observer.disconnect();
   }, []);
 
-  if (isClassCatalogVisible) {
-    return null;
-  }
-
   return (
-    <a
-      aria-label="Ir a contacto por WhatsApp"
-      className="mat-whatsapp-button fixed right-6 bottom-6 z-20 grid size-[54px] place-items-center rounded-full transition-transform hover:scale-105 lg:hidden"
-      href={siteContact.whatsapp.joinUrl}
-      rel="noreferrer"
-      target="_blank"
-      style={{
-        backgroundColor: "#25D366",
-        color: "#FFFFFF",
-      }}
-    >
-      <svg aria-hidden="true" fill="currentColor" viewBox="0 0 448 512" className="size-6">
-        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-26.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.6-138.2c-5.6-2.8-33.2-16.4-38.3-18.3-5.1-1.9-8.8-2.8-12.5 2.8s-14.4 18.3-17.7 22.1c-3.2 3.7-6.4 4.2-11.9 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.9-3.7 1-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.7 23.5 9.1 31.5 11.6 13.2 4.2 25.2 3.6 34.7 2.2 10.6-1.6 33.2-13.6 37.9-26.8 4.7-13.2 4.7-24.5 3.3-26.8-1.4-2.5-5.1-3.9-10.7-6.6z" />
-      </svg>
-    </a>
+    <AnimatePresence initial={false}>
+      {!isClassCatalogVisible ? (
+        <m.a
+          animate={{ opacity: 1, scale: 1 }}
+          aria-label="Ir a contacto por WhatsApp"
+          className="mat-whatsapp-button fixed right-6 bottom-6 z-20 grid size-[54px] place-items-center rounded-full lg:hidden"
+          exit={{ opacity: 0, scale: 0.94 }}
+          href={siteContact.whatsapp.joinUrl}
+          initial={{ opacity: 0, scale: 0.94 }}
+          key="whatsapp-button"
+          rel="noreferrer"
+          target="_blank"
+          transition={getMatMotionTransition(
+            MAT_MOTION_DURATION.fast,
+            prefersReducedMotion,
+          )}
+          whileHover={
+            prefersReducedMotion ? undefined : { scale: MAT_MOTION_SCALE.whatsappHover }
+          }
+          whileTap={prefersReducedMotion ? undefined : { scale: MAT_MOTION_SCALE.press }}
+          style={{
+            backgroundColor: "#25D366",
+            color: "#FFFFFF",
+          }}
+        >
+          <svg
+            aria-hidden="true"
+            className="size-6"
+            fill="currentColor"
+            viewBox="0 0 448 512"
+          >
+            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-26.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.6-138.2c-5.6-2.8-33.2-16.4-38.3-18.3-5.1-1.9-8.8-2.8-12.5 2.8s-14.4 18.3-17.7 22.1c-3.2 3.7-6.4 4.2-11.9 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.9-3.7 1-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.7 23.5 9.1 31.5 11.6 13.2 4.2 25.2 3.6 34.7 2.2 10.6-1.6 33.2-13.6 37.9-26.8 4.7-13.2 4.7-24.5 3.3-26.8-1.4-2.5-5.1-3.9-10.7-6.6z" />
+          </svg>
+        </m.a>
+      ) : null}
+    </AnimatePresence>
   );
 }

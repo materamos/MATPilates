@@ -149,10 +149,12 @@ async function expectDisclosureTransition(
       (expansion) =>
         new Promise<boolean>((resolve) => {
           const timeout = window.setTimeout(() => resolve(false), 1000);
-          const handleTransitionRun = (event: TransitionEvent) => {
+          const handleTransitionRun: EventListener = (event) => {
+            const transitionEvent = event as TransitionEvent;
+
             if (
-              event.target === expansion &&
-              event.propertyName === "grid-template-rows"
+              transitionEvent.target === expansion &&
+              transitionEvent.propertyName === "grid-template-rows"
             ) {
               window.clearTimeout(timeout);
               expansion.removeEventListener("transitionrun", handleTransitionRun);
@@ -343,6 +345,27 @@ test("mobile menu restores and transfers focus correctly", async ({ page }) => {
   }).click();
   await expect(page).toHaveURL(/#hotmat$/);
   await expect(page.locator("#hotmat h2")).toBeFocused();
+});
+
+test("mobile menu keeps the background inert through its Motion exit", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const main = page.locator("main");
+  const menu = page.locator("#mobile-navigation");
+  const menuButton = page.getByRole("button", { name: "Abrir menú" });
+
+  await menuButton.click();
+  await expect(menu).toHaveCSS("opacity", "1");
+  await expect(main).toHaveAttribute("inert", "");
+
+  await page.keyboard.press("Escape");
+  await expect(menu).toHaveCount(1);
+  await expect(main).toHaveAttribute("inert", "");
+  await expect(menu).toHaveCount(0);
+  await expect(main).not.toHaveAttribute("inert", "");
+  await expect(menuButton).toBeFocused();
 });
 
 test("@smoke navigation includes Horarios in the desktop bar, mobile menu, and footer", async ({
@@ -825,6 +848,47 @@ test("gallery starts paused for reduced motion and remains keyboard operable", a
   await expect(gallery).toHaveAttribute("aria-pressed", "false");
   await gallery.press(" ");
   await expect(gallery).toHaveAttribute("aria-pressed", "true");
+});
+
+test("gallery supports swipe navigation without changing its pause state", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const gallery = page.getByRole("button", { name: /galería del estudio/i });
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery).toHaveAttribute("data-studio-active-index", "0");
+  await expect(gallery).toHaveAttribute("aria-pressed", "true");
+
+  const box = await gallery.boundingBox();
+  expect(box).not.toBeNull();
+
+  await page.mouse.move(box!.x + box!.width * 0.75, box!.y + box!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box!.x + box!.width * 0.25, box!.y + box!.height / 2, { steps: 6 });
+  await page.mouse.up();
+
+  await expect(gallery).toHaveAttribute("data-studio-active-index", "1");
+  await expect(gallery).toHaveAttribute("aria-pressed", "true");
+});
+
+test("gallery auto rotation keeps its leftward transform", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const gallery = page.getByRole("button", { name: /galería del estudio/i });
+  const track = gallery.locator(".mat-studio-gallery__track");
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery).toHaveAttribute("aria-pressed", "false");
+  await expect(gallery).toHaveAttribute("data-studio-active-index", "1", { timeout: 7000 });
+  await expect(gallery).toHaveAttribute("data-studio-animating", "false");
+
+  const translateX = await track.evaluate((element) => {
+    const transform = getComputedStyle(element).transform;
+    return transform === "none" ? 0 : new DOMMatrixReadOnly(transform).m41;
+  });
+
+  expect(translateX).toBeLessThan(0);
 });
 
 test("focus outline follows the documented token", async ({ page }) => {

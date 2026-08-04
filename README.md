@@ -26,6 +26,7 @@ The project's documentary library is the canonical source for approved business 
 - Next.js 16 with the App Router
 - React 19 and TypeScript
 - Tailwind CSS 4
+- Motion 12 for stateful interaction, presence, and gestures
 - ESLint and Stylelint
 
 ## Requirements

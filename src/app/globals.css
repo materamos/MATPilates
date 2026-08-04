@@ -1171,16 +1171,16 @@ a {
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: grab;
   will-change: transform;
+}
+
+.mat-studio-gallery__track:active {
+  cursor: grabbing;
 }
 
 .mat-studio-gallery[role="button"] {
   cursor: pointer;
-}
-
-.mat-studio-gallery__track--instant {
-  transition: none;
 }
 
 .mat-studio-gallery__slide {
@@ -1188,12 +1188,6 @@ a {
   width: 100%;
   height: 100%;
   flex: 0 0 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mat-studio-gallery__track {
-    transition: none;
-  }
 }
 
 .mat-studio__copy {
