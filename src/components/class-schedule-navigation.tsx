@@ -31,7 +31,7 @@ interface ClassScheduleNavigationValue {
 }
 
 const ClassScheduleNavigationContext = createContext<ClassScheduleNavigationValue | null>(null);
-const scheduleFocusFrameLimit = 8;
+const scheduleFocusTimeout = 1000;
 
 function findVisibleScheduleLink(classId: ClassId) {
   const schedule = document.getElementById("horarios");
@@ -69,43 +69,43 @@ function moveToSchedule(classId: ClassId) {
       ? "auto"
       : "smooth";
 
-    const scrollAndFocusTarget = () => {
-      window.requestAnimationFrame(() => {
-        target.scrollIntoView({ behavior, block: "center" });
-        let remainingFrames = scheduleFocusFrameLimit;
-        const focusTarget = () => {
-          target.focus({ preventScroll: true });
-
-          if (document.activeElement !== target && remainingFrames > 0) {
-            remainingFrames -= 1;
-            window.requestAnimationFrame(focusTarget);
-          }
-        };
-
-        focusTarget();
-      });
-    };
-
-    if (dayDisclosure && !dayDisclosure.open) {
-      const focusAfterOpen = () => {
-        if (!dayDisclosure.open) {
-          return;
-        }
-
-        dayDisclosure.removeEventListener("toggle", focusAfterOpen);
-        scrollAndFocusTarget();
-      };
-
-      dayDisclosure.addEventListener("toggle", focusAfterOpen);
-      openAnimatedDisclosure(dayDisclosure);
-      return;
-    }
-
     if (dayDisclosure) {
       openAnimatedDisclosure(dayDisclosure);
     }
 
-    scrollAndFocusTarget();
+    const focusDeadline = performance.now() + scheduleFocusTimeout;
+    let scrolledTarget: HTMLAnchorElement | null = null;
+    const focusWhenInteractive = () => {
+      const currentTarget = findVisibleScheduleLink(classId);
+      const currentDisclosure = currentTarget?.closest<HTMLDetailsElement>(".mat-schedule-day");
+      const currentExpansion = currentTarget?.closest<HTMLElement>(
+        ".mat-disclosure__expansion",
+      );
+      const isInteractive =
+        currentTarget?.isConnected &&
+        (!currentDisclosure || currentDisclosure.open) &&
+        !currentExpansion?.inert &&
+        currentTarget.getClientRects().length > 0;
+
+      if (currentTarget && isInteractive) {
+        if (scrolledTarget !== currentTarget) {
+          currentTarget.scrollIntoView({ behavior, block: "center" });
+          scrolledTarget = currentTarget;
+        }
+
+        currentTarget.focus({ preventScroll: true });
+
+        if (document.activeElement === currentTarget) {
+          return;
+        }
+      }
+
+      if (performance.now() < focusDeadline) {
+        window.requestAnimationFrame(focusWhenInteractive);
+      }
+    };
+
+    window.requestAnimationFrame(focusWhenInteractive);
   });
 }
 
