@@ -11,6 +11,7 @@ const visualViewports = [
 ] as const;
 
 async function prepareVisualPage(page: Page) {
+  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
   await page.route(/https:\/\/www\.google\.com\/maps\/embed.*/, (route) => route.abort());
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.evaluate(async () => {
