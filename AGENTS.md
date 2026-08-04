@@ -37,14 +37,15 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 ## Workflow and branches
 
 - Every versioned change, including code, documentation, and configuration, must be linked to an open GitHub Issue.
-- Move the related GitHub Project item to `Doing` when implementation starts.
-- Create feature branches from an updated `dev` branch using `feature/<short-description>`.
+- Use your own authenticated GitHub account and confirm that it has the repository and Project permissions required for the requested external actions.
+- Move the related GitHub Project item to `Doing` when implementation starts and keep it there until the change is verified in production.
+- Before branching, inspect the worktree, fetch and prune the remote, and fast-forward the local `dev` branch. Create feature branches from that updated `dev` branch using `feature/<short-description>`.
 - Do not commit or push directly to `dev` or `main`.
-- Open Pull Requests from `feature/*` into `dev`.
-- Include `Closes #<issue-number>` in the Pull Request description when the change completes an Issue.
-- Before opening a Pull Request, run the validation relevant to the change.
-- After merging into `dev`, move the Project item to `Done` and delete the merged `feature/*` branch.
-- Promote changes from `dev` to `main` through a separate Pull Request only.
+- Open Pull Requests from `feature/*` into `dev`, reference the related Issue, and run the relevant validation before requesting review.
+- Verify required checks against the Pull Request's current head commit before merging. Do not bypass protection after a deterministic failure; diagnose it and deliver the correction through an Issue-linked feature branch before continuing the promotion.
+- After merging into `dev`, delete the merged feature branch locally and remotely only after confirming that its commit is reachable from `dev`.
+- Promote changes from `dev` to `main` through a separate Pull Request. Include `Closes #<issue-number>` for each completed Issue so GitHub closes it when the default branch is updated.
+- Mark the Project item as `Done` only after the `main` deployment is verified. Then fast-forward the local `dev` and `main` branches from their remotes, compare the local and remote tips, and confirm that the worktree is clean.
 
 ## Tooling and validation
 
@@ -52,6 +53,7 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 - Use the npm commands documented in `README.md` for installation, development, linting, and production builds.
 - For documentation-only changes, run `git diff --check`.
 - For UI or application-code changes, run `npm run lint` and `npm run build`.
+- For browser or CI failures, reproduce the affected test and browser first, then run the complete CI-equivalent suite documented in `README.md` before publishing the correction.
 - If a change combines documentation with UI or application code, run all applicable checks.
 - Do not assume environment variables or generated configuration exist before they are introduced.
 - When adding application tooling, document its supported commands and required local configuration in `README.md`.

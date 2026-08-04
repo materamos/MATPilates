@@ -76,6 +76,26 @@ For changes to UI, CSS, typography, content, or geometry, also run:
 npm run test:visual
 ```
 
+To mirror CI's full cross-browser functional job with a single worker, set `CI` for the command in a POSIX shell:
+
+```bash
+CI=true npm run test:e2e:cross-browser -- --reporter=line
+```
+
+In PowerShell, set and remove the variable explicitly:
+
+```powershell
+$env:CI = "true"
+npm run test:e2e:cross-browser -- --reporter=line
+Remove-Item Env:CI
+```
+
+When investigating an intermittent browser failure, reproduce the affected test before rerunning the complete suite:
+
+```bash
+npx playwright test path/to/spec.ts --project=webkit --grep "test title" --workers=1 --repeat-each=10
+```
+
 ## Visual regression
 
 Playwright starts an isolated production server on `127.0.0.1:3218`. Chromium covers the documented responsive families, exact breakpoint boundaries, mobile navigation focus and exit locking, class disclosure behavior, gallery reduced motion and swipe navigation, keyboard focus, document overflow, and representative DPR 1 and DPR 2 renders. Firefox and WebKit run functional tests only; visual snapshots remain restricted to Chromium on Windows.
@@ -84,7 +104,11 @@ Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`.
 
 Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. CI compares the existing Windows baselines on a Windows runner and uploads failure artifacts without replacing them.
 
-GitHub Actions runs lint and build, the full Chromium functional suite, cross-browser smoke coverage, and the Windows visual suite for pull requests into `dev` or `main` and pushes to `dev`. Pull requests into `main` and manual workflow runs also execute the full functional suite in Chromium, Firefox, and WebKit. Reports and failure artifacts are retained for seven days.
+GitHub Actions runs lint and build, the full Chromium functional suite, cross-browser smoke coverage, and the Windows visual suite for pull requests into `dev` or `main` and pushes to `dev`. Pull requests into `main` and manual workflow runs also execute the full functional suite in Chromium, Firefox, and WebKit. The full cross-browser job is expected to be skipped on pull requests into `dev`; a skipped job is not evidence that the suite passed. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
+
+The Linux Chromium functional job intentionally installs Chromium with Playwright's `--only-shell` option. Smoke and full cross-browser jobs install Chromium, Firefox, and WebKit with their system dependencies, while Windows visual regression keeps the Chromium installation that produces the approved baselines. Keep these browser boundaries unchanged unless a separate, measured CI change explicitly revises them.
+
+A production promotion is complete only after the deployment status for the exact `main` merge commit succeeds and the canonical URL responds with the expected public content.
 
 After a Playwright run, `npm run lint` must continue to pass even when local reports, traces, screenshots, or videos exist. The suite starts an isolated production server on port 3218; do not reuse a development server for acceptance runs.
 
