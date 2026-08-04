@@ -9,7 +9,7 @@ export default defineConfig({
   snapshotPathTemplate:
     "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}-{platform}{ext}",
   fullyParallel: false,
-  workers: 1,
+  workers: process.env.CI ? 1 : 4,
   reporter: [
     ["list"],
     ["html", { open: "never", outputFolder: "playwright-report" }],

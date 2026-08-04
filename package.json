@@ -15,8 +15,8 @@
     "test:e2e:cross-browser": "playwright test --project=chromium --project=firefox --project=webkit --grep-invert @visual",
     "test:e2e:report": "playwright show-report",
     "test:e2e:serve": "npm run build && npm run start -- --hostname 127.0.0.1 -p 3218",
-    "test:visual": "playwright test --project=chromium --project=chromium-dpr2 --grep @visual",
-    "test:visual:update": "playwright test --project=chromium --project=chromium-dpr2 --grep @visual --update-snapshots",
+    "test:visual": "playwright test --project=chromium --project=chromium-dpr2 --grep @visual --workers=1",
+    "test:visual:update": "playwright test --project=chromium --project=chromium-dpr2 --grep @visual --update-snapshots --workers=1",
     "figma:bridge:build": "npm --prefix tools/mat-figma-bridge run build",
     "figma:bridge:check": "npm --prefix tools/mat-figma-bridge run check",
     "figma:bridge:start": "npm --prefix tools/mat-figma-bridge run start"
