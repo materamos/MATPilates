@@ -345,7 +345,9 @@ test("mobile menu restores and transfers focus correctly", async ({ page }) => {
   await expect(page.locator("#hotmat h2")).toBeFocused();
 });
 
-test("navigation includes Horarios in the desktop bar, mobile menu, and footer", async ({ page }) => {
+test("@smoke navigation includes Horarios in the desktop bar, mobile menu, and footer", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openLanding(page);
 
@@ -672,7 +674,7 @@ test("mobile class-to-schedule navigation opens, announces, and clears the selec
   await expect(page.locator("#horarios h2")).toBeFocused();
 });
 
-test("weekly schedule renders the confirmed data without duplicate day-time slots", async ({
+test("@smoke weekly schedule renders the confirmed data without duplicate day-time slots", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });

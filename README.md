@@ -51,27 +51,38 @@ npx playwright install chromium
 | `npm run build` | Creates the production build and validates TypeScript. |
 | `npm run start` | Starts the compiled application; requires `npm run build` first. |
 | `npm run test:e2e` | Builds the production application and runs the complete Playwright suite. |
+| `npm run test:e2e:functional` | Runs structural and interaction tests without visual snapshots. |
+| `npm run test:e2e:smoke` | Runs the minimum public navigation and schedule checks tagged with `@smoke`. |
+| `npm run test:e2e:report` | Opens the latest local Playwright HTML report. |
 | `npm run test:visual` | Compares the landing against the approved visual baselines. |
 | `npm run test:visual:update` | Replaces visual baselines after an intentional, reviewed visual change. |
 | `npm run figma:bridge:build` | Builds the local Codex–Figma typography bridge. |
 | `npm run figma:bridge:check` | Type-checks, tests, and builds the local bridge. |
 | `npm run figma:bridge:start` | Starts the built bridge over MCP STDIO. |
 
-To validate the main changes:
+Before delivering any change:
 
 ```bash
 npm run lint
 npm run build
-npm run test:e2e
+npm run test:e2e:functional
+```
+
+For changes to UI, CSS, typography, content, or geometry, also run:
+
+```bash
+npm run test:visual
 ```
 
 ## Visual regression
 
 Playwright starts an isolated production server on `127.0.0.1:3218`. The suite covers the documented responsive families, exact breakpoint boundaries, mobile navigation focus, class disclosure behavior, gallery reduced motion, keyboard focus, document overflow, and representative DPR 1 and DPR 2 renders.
 
-Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`. The Google Maps iframe is masked because its external rendering is nondeterministic; its eligibility and container geometry are tested separately. Playwright reports, traces, failure screenshots, and videos are transient and ignored by Git.
+Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`. Functional and structural tests remain separate from tests tagged with `@visual`; the minimum public navigation and schedule checks use `@smoke`. The Google Maps iframe is masked because its external rendering is nondeterministic; its eligibility and container geometry are tested separately. Playwright reports, traces, failure screenshots, and videos under `playwright-report/` and `test-results/` are transient, ignored by Git and excluded from linting.
 
-Run `npm run test:visual:update` only when a visual change is intentional. Inspect the generated diff first, update the snapshots, and then rerun `npm run test:visual` without the update flag. A future CI integration must generate or approve baselines for its own operating system instead of silently replacing the Windows references.
+Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. A future CI integration must generate or approve baselines for its own operating system instead of silently replacing the Windows references.
+
+After a Playwright run, `npm run lint` must continue to pass even when local reports, traces, screenshots, or videos exist. The suite starts an isolated production server on port 3218; do not reuse a development server for acceptance runs.
 
 ## SEO configuration
 
