@@ -866,6 +866,10 @@ a {
   white-space: nowrap;
 }
 
+.mat-class-card__cta.mat-class-card__schedule-link {
+  font-size: var(--mat-font-size-14);
+}
+
 .mat-classes {
   width: 100%;
   padding: 32px max(24px, calc((100% - 720px) / 2));
