@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { type MouseEvent, type SyntheticEvent, useEffect, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { AnimatedDisclosure } from "@/components/animated-disclosure";
 import { useClassScheduleNavigation } from "@/components/class-schedule-navigation";
 import {
   classIntensityLabels,
@@ -20,23 +21,6 @@ import { Button } from "./button";
 interface ClassCardProps {
   classOffering: ClassOffering & { readonly id: ClassId };
   scheduleDays: readonly ClassScheduleDay[];
-}
-
-function closeOtherOpenCards(event: SyntheticEvent<HTMLDetailsElement>) {
-  const currentCard = event.currentTarget;
-
-  if (!currentCard.open) {
-    return;
-  }
-
-  currentCard
-    .closest(".mat-class-catalog")
-    ?.querySelectorAll<HTMLDetailsElement>(".mat-class-card[open]")
-    .forEach((card) => {
-      if (card !== currentCard) {
-        card.open = false;
-      }
-    });
 }
 
 export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
@@ -73,11 +57,10 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
   };
 
   return (
-    <details
+    <AnimatedDisclosure
       className="mat-disclosure mat-class-card"
+      group="mat-class-catalog"
       id={`clase-${classOffering.id}`}
-      name="mat-class-catalog"
-      onToggle={closeOtherOpenCards}
     >
       <summary className="mat-disclosure__summary mat-class-card__summary">
         <span className="mat-class-card__summary-copy">
@@ -198,6 +181,6 @@ export function ClassCard({ classOffering, scheduleDays }: ClassCardProps) {
           ) : null}
         </div>
       </div>
-    </details>
+    </AnimatedDisclosure>
   );
 }

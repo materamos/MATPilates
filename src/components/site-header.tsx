@@ -1,17 +1,26 @@
 "use client";
 
 import Image from "next/image";
+import { AnimatePresence, m } from "motion/react";
 import { type MouseEvent, useEffect, useRef, useState } from "react";
+import {
+  getMatMotionTransition,
+  MAT_MOTION_DISTANCE,
+  MAT_MOTION_DURATION,
+} from "@/components/ui/motion-tokens";
+import { useMatReducedMotion } from "@/components/ui/use-mat-reduced-motion";
 import { landingCtas, navigationItems, siteContact } from "@/lib/site-content";
 import { Button } from "./button";
 
 export function SiteHeader() {
+  const prefersReducedMotion = useMatReducedMotion();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuPresent, setIsMenuPresent] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuDestinationRef = useRef<{ element: HTMLElement; href: string } | null>(null);
 
   useEffect(() => {
-    if (!isMenuOpen) {
+    if (!isMenuPresent) {
       return;
     }
 
@@ -19,7 +28,6 @@ export function SiteHeader() {
     const backgroundElements = Array.from(
       document.querySelectorAll<HTMLElement>("main, footer, body > a"),
     );
-    const menuButton = menuButtonRef.current;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsMenuOpen(false);
@@ -37,24 +45,8 @@ export function SiteHeader() {
         element.inert = false;
       });
       document.removeEventListener("keydown", closeOnEscape);
-      if (!menuDestinationRef.current) {
-        menuButton?.focus();
-      }
     };
-  }, [isMenuOpen]);
-
-  useEffect(() => {
-    if (isMenuOpen || !menuDestinationRef.current) {
-      return;
-    }
-
-    const destination = menuDestinationRef.current;
-    menuDestinationRef.current = null;
-    window.location.hash = destination.href;
-    window.requestAnimationFrame(() => {
-      destination.element.focus({ preventScroll: true });
-    });
-  }, [isMenuOpen]);
+  }, [isMenuPresent]);
 
   useEffect(() => {
     const desktopQuery = window.matchMedia("(min-width: 1024px)");
@@ -72,6 +64,35 @@ export function SiteHeader() {
   }, []);
 
   const closeMenu = () => setIsMenuOpen(false);
+  const toggleMenu = () => {
+    if (isMenuOpen) {
+      closeMenu();
+      return;
+    }
+
+    setIsMenuPresent(true);
+    setIsMenuOpen(true);
+  };
+
+  const completeMenuExit = () => {
+    setIsMenuPresent(false);
+
+    const destination = menuDestinationRef.current;
+    menuDestinationRef.current = null;
+
+    if (destination) {
+      window.history.pushState(null, "", destination.href);
+      window.requestAnimationFrame(() => {
+        destination.element.focus({ preventScroll: true });
+      });
+      return;
+    }
+
+    if (!window.matchMedia("(min-width: 1024px)").matches) {
+      menuButtonRef.current?.focus();
+    }
+  };
+
   const navigateFromMenu = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     const destination = document.querySelector<HTMLElement>(`${href} h2`);
 
@@ -87,7 +108,7 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <div className={`site-header__bar${isMenuOpen ? " site-header__bar--menu-open" : ""}`}>
+      <div className={`site-header__bar${isMenuPresent ? " site-header__bar--menu-open" : ""}`}>
         <a
           aria-label="MAT Pilates, inicio"
           className="site-header__logo"
@@ -137,10 +158,10 @@ export function SiteHeader() {
         </nav>
         <button
           aria-controls="mobile-navigation"
-          aria-expanded={isMenuOpen}
-          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
-          className={`site-header__menu-toggle${isMenuOpen ? " site-header__menu-toggle--open" : ""}`}
-          onClick={() => setIsMenuOpen((currentValue) => !currentValue)}
+          aria-expanded={isMenuPresent}
+          aria-label={isMenuPresent ? "Cerrar menú" : "Abrir menú"}
+          className={`site-header__menu-toggle${isMenuPresent ? " site-header__menu-toggle--open" : ""}`}
+          onClick={toggleMenu}
           ref={menuButtonRef}
           type="button"
         >
@@ -151,45 +172,60 @@ export function SiteHeader() {
           </span>
         </button>
       </div>
-      {isMenuOpen ? (
-        <div className="site-menu" id="mobile-navigation">
-          <nav aria-label="Navegación móvil" className="site-menu__links">
-            <ul>
-              {navigationItems.map((item) => (
-                <li key={item.href}>
-                  <a
-                    className="site-menu__link"
-                    href={item.href}
-                    onClick={(event) => navigateFromMenu(event, item.href)}
-                  >
-                    <span>{item.label}</span>
-                    <span aria-hidden="true" className="site-menu__arrow" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div aria-hidden="true" className="site-menu__spacer" />
-          <Button
-            className="site-menu__cta"
-            href={landingCtas.join.href}
-            onClick={(event) => navigateFromMenu(event, landingCtas.join.href)}
-            variant="light"
+      <AnimatePresence initial={false} onExitComplete={completeMenuExit}>
+        {isMenuOpen ? (
+          <m.div
+            animate={{ opacity: 1, y: 0 }}
+            className="site-menu"
+            exit={{ opacity: 0, y: -MAT_MOTION_DISTANCE.menu }}
+            id="mobile-navigation"
+            initial={{ opacity: 0, y: -MAT_MOTION_DISTANCE.menu }}
+            key="mobile-navigation"
+            transition={getMatMotionTransition(
+              MAT_MOTION_DURATION.standard,
+              prefersReducedMotion,
+            )}
           >
-            {landingCtas.learnHowToJoin.label}
-          </Button>
-          <a
-            className="site-menu__location"
-            href={siteContact.location.mapsUrl}
-            onClick={closeMenu}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <p className="site-menu__venue">{siteContact.location.venue}</p>
-            <p className="site-menu__address">{siteContact.location.address.replace(",", " ·")}</p>
-          </a>
-        </div>
-      ) : null}
+            <nav aria-label="Navegación móvil" className="site-menu__links">
+              <ul>
+                {navigationItems.map((item) => (
+                  <li key={item.href}>
+                    <a
+                      className="site-menu__link"
+                      href={item.href}
+                      onClick={(event) => navigateFromMenu(event, item.href)}
+                    >
+                      <span>{item.label}</span>
+                      <span aria-hidden="true" className="site-menu__arrow" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div aria-hidden="true" className="site-menu__spacer" />
+            <Button
+              className="site-menu__cta"
+              href={landingCtas.join.href}
+              onClick={(event) => navigateFromMenu(event, landingCtas.join.href)}
+              variant="light"
+            >
+              {landingCtas.learnHowToJoin.label}
+            </Button>
+            <a
+              className="site-menu__location"
+              href={siteContact.location.mapsUrl}
+              onClick={closeMenu}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <p className="site-menu__venue">{siteContact.location.venue}</p>
+              <p className="site-menu__address">
+                {siteContact.location.address.replace(",", " ·")}
+              </p>
+            </a>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </header>
   );
 }

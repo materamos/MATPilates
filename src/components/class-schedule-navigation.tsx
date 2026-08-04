@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, m } from "motion/react";
 import {
   createContext,
   type ReactNode,
@@ -9,6 +10,13 @@ import {
   useMemo,
   useState,
 } from "react";
+import { openAnimatedDisclosure } from "@/components/animated-disclosure";
+import {
+  getMatMotionTransition,
+  MAT_MOTION_DISTANCE,
+  MAT_MOTION_DURATION,
+} from "@/components/ui/motion-tokens";
+import { useMatReducedMotion } from "@/components/ui/use-mat-reduced-motion";
 import type { ClassId } from "@/lib/site-content";
 
 interface SelectedScheduleClass {
@@ -23,6 +31,7 @@ interface ClassScheduleNavigationValue {
 }
 
 const ClassScheduleNavigationContext = createContext<ClassScheduleNavigationValue | null>(null);
+const scheduleFocusFrameLimit = 8;
 
 function findVisibleScheduleLink(classId: ClassId) {
   const schedule = document.getElementById("horarios");
@@ -57,7 +66,7 @@ function moveToSchedule(classId: ClassId) {
     const dayDisclosure = target.closest<HTMLDetailsElement>(".mat-schedule-day");
 
     if (dayDisclosure) {
-      dayDisclosure.open = true;
+      openAnimatedDisclosure(dayDisclosure);
     }
 
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -66,15 +75,17 @@ function moveToSchedule(classId: ClassId) {
 
     window.requestAnimationFrame(() => {
       target.scrollIntoView({ behavior, block: "center" });
-      target.focus({ preventScroll: true });
-
-      window.requestAnimationFrame(() => {
+      let remainingFrames = scheduleFocusFrameLimit;
+      const focusTarget = () => {
         target.focus({ preventScroll: true });
 
-        window.setTimeout(() => {
-          target.focus({ preventScroll: true });
-        }, 0);
-      });
+        if (document.activeElement !== target && remainingFrames > 0) {
+          remainingFrames -= 1;
+          window.requestAnimationFrame(focusTarget);
+        }
+      };
+
+      focusTarget();
     });
   });
 }
@@ -98,13 +109,18 @@ export function ClassScheduleNavigationProvider({ children }: { children: ReactN
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedClass) {
+      moveToSchedule(selectedClass.id);
+    }
+  }, [selectedClass]);
+
   const clearSelection = useCallback(() => {
     setSelectedClass(null);
   }, []);
 
   const showSchedule = useCallback((classId: ClassId, className: string) => {
     setSelectedClass({ id: classId, name: className });
-    moveToSchedule(classId);
   }, []);
 
   const value = useMemo(
@@ -127,6 +143,7 @@ export function ScheduleSelectionStatus({
   selectionPrefix: string;
 }) {
   const { clearSelection, selectedClass } = useClassScheduleNavigation();
+  const prefersReducedMotion = useMatReducedMotion();
 
   const clearAndFocusHeading = () => {
     clearSelection();
@@ -141,20 +158,32 @@ export function ScheduleSelectionStatus({
       <span aria-atomic="true" aria-live="polite" className="sr-only">
         {selectedClass ? `${selectionPrefix} ${selectedClass.name}` : ""}
       </span>
-      {selectedClass ? (
-        <div className="mat-schedule-selection">
-          <p className="mat-body-small">
-            {selectionPrefix} <strong>{selectedClass.name}</strong>
-          </p>
-          <button
-            className="mat-text-button mat-schedule-selection__clear"
-            onClick={clearAndFocusHeading}
-            type="button"
+      <AnimatePresence initial={false}>
+        {selectedClass ? (
+          <m.div
+            animate={{ opacity: 1, y: 0 }}
+            className="mat-schedule-selection"
+            exit={{ opacity: 0, y: -MAT_MOTION_DISTANCE.selection }}
+            initial={{ opacity: 0, y: -MAT_MOTION_DISTANCE.selection }}
+            key="schedule-selection"
+            transition={getMatMotionTransition(
+              MAT_MOTION_DURATION.fast,
+              prefersReducedMotion,
+            )}
           >
-            {clearLabel}
-          </button>
-        </div>
-      ) : null}
+            <p className="mat-body-small">
+              {selectionPrefix} <strong>{selectedClass.name}</strong>
+            </p>
+            <button
+              className="mat-text-button mat-schedule-selection__clear"
+              onClick={clearAndFocusHeading}
+              type="button"
+            >
+              {clearLabel}
+            </button>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

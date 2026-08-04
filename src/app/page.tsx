@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StudioGallery } from "@/components/studio-gallery";
 import { StudioMap } from "@/components/studio-map";
+import { MatMotionProvider } from "@/components/ui/motion-provider";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { classCatalog, landingContent, landingCtas, siteContact } from "@/lib/site-content";
 import { getClassScheduleDays, weeklySchedule } from "@/lib/schedule-content";
@@ -22,7 +23,7 @@ export default function HomePage() {
   const { hero, manifesto, hotMat, classes, schedule, studio, reservation } = landingContent;
 
   return (
-    <>
+    <MatMotionProvider>
       <script
         dangerouslySetInnerHTML={{ __html: localBusinessStructuredDataJson }}
         id="mat-pilates-structured-data"
@@ -213,6 +214,6 @@ export default function HomePage() {
       </main>
       <SiteFooter />
       <WhatsAppButton />
-    </>
+    </MatMotionProvider>
   );
 }

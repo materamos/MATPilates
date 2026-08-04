@@ -62,5 +62,23 @@ export default defineConfig({
         viewport: { width: 390, height: 844 },
       },
     },
+    {
+      name: "firefox",
+      grepInvert: /@visual/,
+      testIgnore: /\.dpr2\.spec\.ts/,
+      use: {
+        ...devices["Desktop Firefox"],
+        viewport: { width: 1280, height: 720 },
+      },
+    },
+    {
+      name: "webkit",
+      grepInvert: /@visual/,
+      testIgnore: /\.dpr2\.spec\.ts/,
+      use: {
+        ...devices["Desktop Safari"],
+        viewport: { width: 1280, height: 720 },
+      },
+    },
   ],
 });

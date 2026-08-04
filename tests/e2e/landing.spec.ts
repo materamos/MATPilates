@@ -92,22 +92,25 @@ async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
 
           return {
             hasHeight: expansion.getBoundingClientRect().height > 1,
+            isClosing: element.getAttribute("data-closing") === "true",
+            isContentVisible:
+              element.hasAttribute("open") && expansionStyles.visibility === "visible",
+            isOpaque: Number.parseFloat(bodyStyles.opacity) >= 0.999,
             isOpen: element.hasAttribute("open"),
-            opacity: bodyStyles.opacity,
             pointerEvents: expansionStyles.pointerEvents,
             translateY: Math.round(translateY),
-            visibility: expansionStyles.visibility,
           };
         }),
       { timeout: 2500 },
     )
     .toEqual({
       hasHeight: open,
+      isClosing: false,
+      isContentVisible: open,
+      isOpaque: open,
       isOpen: open,
-      opacity: open ? "1" : "0",
       pointerEvents: open ? "auto" : "none",
       translateY: open ? 0 : -4,
-      visibility: open ? "visible" : "hidden",
     });
 }
 
@@ -137,6 +140,46 @@ function expectDisclosureDuration(
   expect(motion.summaryDuration).toBe(duration);
 }
 
+async function expectDisclosureTransition(
+  disclosure: Locator,
+  action: () => Promise<void>,
+  closing: boolean,
+) {
+  const transitionStarted = disclosure.evaluate(
+    (element, expectedClosing) =>
+      new Promise<{ isClosing: boolean; isOpen: boolean } | null>((resolve) => {
+        const readState = () => ({
+          isClosing: element.dataset.closing === "true",
+          isOpen: element.open,
+        });
+        const finish = (state: { isClosing: boolean; isOpen: boolean } | null) => {
+          window.clearTimeout(timeout);
+          observer.disconnect();
+          resolve(state);
+        };
+        const observeState = () => {
+          const state = readState();
+
+          if (state.isOpen && state.isClosing === expectedClosing) {
+            finish(state);
+          }
+        };
+        const observer = new MutationObserver(observeState);
+        const timeout = window.setTimeout(() => finish(null), 1000);
+
+        observer.observe(element, {
+          attributeFilter: ["data-closing", "open"],
+          attributes: true,
+        });
+        observeState();
+      }),
+    closing,
+  );
+
+  await action();
+  expect(await transitionStarted).toEqual({ isClosing: closing, isOpen: true });
+}
+
 async function loadVisualContent(page: Page) {
   const sections = page.locator("main section");
 
@@ -144,19 +187,11 @@ async function loadVisualContent(page: Page) {
     await sections.nth(index).scrollIntoViewIfNeeded();
   }
 
-  await page.waitForFunction(() =>
-    Array.from(document.images)
-      .filter((image) => {
-        const styles = getComputedStyle(image);
-        return (
-          styles.display !== "none" &&
-          styles.visibility !== "hidden" &&
-          image.getClientRects().length > 0
-        );
-      })
-      .every((image) => image.complete && image.naturalWidth > 0),
-  );
   await page.locator("#inicio").scrollIntoViewIfNeeded();
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  });
 }
 
 test.describe("responsive contract", () => {
@@ -314,7 +349,30 @@ test("mobile menu restores and transfers focus correctly", async ({ page }) => {
   await expect(page.locator("#hotmat h2")).toBeFocused();
 });
 
-test("navigation includes Horarios in the desktop bar, mobile menu, and footer", async ({ page }) => {
+test("mobile menu keeps the background inert through its Motion exit", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const main = page.locator("main");
+  const menu = page.locator("#mobile-navigation");
+  const menuButton = page.getByRole("button", { name: "Abrir menú" });
+
+  await menuButton.click();
+  await expect(menu).toHaveCSS("opacity", "1");
+  await expect(main).toHaveAttribute("inert", "");
+
+  await page.keyboard.press("Escape");
+  await expect(menu).toHaveCount(1);
+  await expect(main).toHaveAttribute("inert", "");
+  await expect(menu).toHaveCount(0);
+  await expect(main).not.toHaveAttribute("inert", "");
+  await expect(menuButton).toBeFocused();
+});
+
+test("@smoke navigation includes Horarios in the desktop bar, mobile menu, and footer", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openLanding(page);
 
@@ -372,11 +430,11 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     const classSummary = classCard.locator("summary");
     const scheduleSummary = scheduleDay.locator("summary");
 
-    await expectDisclosureSettled(classCard, false);
-    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.16s");
-    await classSummary.press("Enter");
+    await expect(classCard).not.toHaveAttribute("open", "");
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.24s");
+    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"), false);
     await expectDisclosureSettled(classCard, true);
-    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.22s");
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.32s");
 
     const classGeometry = await classCard.locator(".mat-disclosure__body").evaluate((body) => ({
       horizontalOverflow: body.scrollWidth - body.clientWidth,
@@ -385,12 +443,17 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     expect(classGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
     expect(classGeometry.verticalOverflow).toBeLessThanOrEqual(1);
 
-    await classSummary.press("Space");
+    await expectDisclosureTransition(classCard, () => classSummary.press("Space"), true);
     await expectDisclosureSettled(classCard, false);
 
-    await scheduleSummary.press("Enter");
+    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"), false);
+    await expectDisclosureSettled(classCard, true);
+    await expectDisclosureTransition(classCard, () => classSummary.press("Space"), true);
+    await expectDisclosureSettled(classCard, false);
+
+    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Enter"), false);
     await expectDisclosureSettled(scheduleDay, true);
-    expectDisclosureDuration(await readDisclosureMotion(scheduleDay), "0.22s");
+    expectDisclosureDuration(await readDisclosureMotion(scheduleDay), "0.32s");
 
     const scheduleGeometry = await scheduleDay
       .locator(".mat-disclosure__body")
@@ -401,7 +464,7 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     expect(scheduleGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
     expect(scheduleGeometry.verticalOverflow).toBeLessThanOrEqual(1);
 
-    await scheduleSummary.press("Space");
+    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Space"), true);
     await expectDisclosureSettled(scheduleDay, false);
     expect(
       await page.evaluate(
@@ -486,7 +549,7 @@ test("rapid disclosure changes preserve exclusivity and hide closed content", as
 });
 
 test("class and schedule links remain usable during disclosure transitions", async ({ page }) => {
-  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
+  await page.clock.setFixedTime(new Date("2026-08-03T12:00:00-03:00"));
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
@@ -587,7 +650,7 @@ test("class cards derive their schedule summaries from the published week", asyn
 test("mobile class-to-schedule navigation opens, announces, and clears the selection", async ({
   page,
 }) => {
-  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
+  await page.clock.setFixedTime(new Date("2026-08-03T12:00:00-03:00"));
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
@@ -634,7 +697,7 @@ test("mobile class-to-schedule navigation opens, announces, and clears the selec
   await expect(page.locator("#horarios h2")).toBeFocused();
 });
 
-test("weekly schedule renders the confirmed data without duplicate day-time slots", async ({
+test("@smoke weekly schedule renders the confirmed data without duplicate day-time slots", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -731,7 +794,7 @@ test("intense desktop schedule links retain their hover cue", async ({ page }) =
 test("schedule accordions are exclusive and class links reveal their catalog card", async ({
   page,
 }) => {
-  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
+  await page.clock.setFixedTime(new Date("2026-08-03T12:00:00-03:00"));
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
 
@@ -785,6 +848,59 @@ test("gallery starts paused for reduced motion and remains keyboard operable", a
   await expect(gallery).toHaveAttribute("aria-pressed", "false");
   await gallery.press(" ");
   await expect(gallery).toHaveAttribute("aria-pressed", "true");
+});
+
+test("gallery supports swipe navigation without changing its pause state", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const gallery = page.getByRole("button", { name: /galería del estudio/i });
+  const track = gallery.locator(".mat-studio-gallery__track");
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery).toHaveAttribute("data-studio-active-index", "0");
+  await expect(gallery).toHaveAttribute("aria-pressed", "true");
+
+  const box = await gallery.boundingBox();
+  expect(box).not.toBeNull();
+
+  await page.mouse.move(box!.x + box!.width * 0.75, box!.y + box!.height / 2);
+  await page.mouse.down();
+  try {
+    await page.mouse.move(box!.x + box!.width * 0.25, box!.y + box!.height / 2, { steps: 6 });
+    await expect
+      .poll(() =>
+        track.evaluate((element) => {
+          const transform = getComputedStyle(element).transform;
+          return transform === "none" ? 0 : new DOMMatrixReadOnly(transform).m41;
+        }),
+      )
+      .toBeLessThan(-8);
+  } finally {
+    await page.mouse.up();
+  }
+
+  await expect(gallery).toHaveAttribute("data-studio-active-index", "1");
+  await expect(gallery).toHaveAttribute("aria-pressed", "true");
+});
+
+test("gallery auto rotation keeps its leftward transform", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLanding(page);
+
+  const gallery = page.getByRole("button", { name: /galería del estudio/i });
+  const track = gallery.locator(".mat-studio-gallery__track");
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery).toHaveAttribute("aria-pressed", "false");
+  await expect(gallery).toHaveAttribute("data-studio-active-index", "1", { timeout: 7000 });
+  await expect(gallery).toHaveAttribute("data-studio-animating", "false");
+
+  const translateX = await track.evaluate((element) => {
+    const transform = getComputedStyle(element).transform;
+    return transform === "none" ? 0 : new DOMMatrixReadOnly(transform).m41;
+  });
+
+  expect(translateX).toBeLessThan(0);
 });
 
 test("focus outline follows the documented token", async ({ page }) => {

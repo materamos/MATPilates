@@ -1,3 +1,4 @@
+import { AnimatedDisclosure } from "@/components/animated-disclosure";
 import { ScheduleAccordion } from "@/components/schedule-accordion";
 import { ScheduleClassLink } from "@/components/schedule-class-link";
 import { ScheduleSelectionStatus } from "@/components/class-schedule-navigation";
@@ -63,11 +64,11 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
       <div aria-label="Horarios semanales por día" className="mat-schedule__mobile">
         <ScheduleAccordion timezone={schedule.timezone} />
         {schedule.days.map((day) => (
-          <details
+          <AnimatedDisclosure
             className="mat-disclosure mat-schedule-day"
             data-schedule-day={day.id}
+            group="mat-weekly-schedule"
             key={day.id}
-            name="mat-weekly-schedule"
           >
             <summary className="mat-disclosure__summary mat-schedule-day__summary">
               <span className="mat-h3">{day.label}</span>
@@ -95,7 +96,7 @@ export function ScheduleSection({ content, schedule }: ScheduleSectionProps) {
                 ))}
               </ol>
             </div>
-          </details>
+          </AnimatedDisclosure>
         ))}
       </div>
 
