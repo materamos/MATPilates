@@ -65,28 +65,47 @@ function moveToSchedule(classId: ClassId) {
 
     const dayDisclosure = target.closest<HTMLDetailsElement>(".mat-schedule-day");
 
-    if (dayDisclosure) {
-      openAnimatedDisclosure(dayDisclosure);
-    }
-
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ? "auto"
       : "smooth";
 
-    window.requestAnimationFrame(() => {
-      target.scrollIntoView({ behavior, block: "center" });
-      let remainingFrames = scheduleFocusFrameLimit;
-      const focusTarget = () => {
-        target.focus({ preventScroll: true });
+    const scrollAndFocusTarget = () => {
+      window.requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior, block: "center" });
+        let remainingFrames = scheduleFocusFrameLimit;
+        const focusTarget = () => {
+          target.focus({ preventScroll: true });
 
-        if (document.activeElement !== target && remainingFrames > 0) {
-          remainingFrames -= 1;
-          window.requestAnimationFrame(focusTarget);
+          if (document.activeElement !== target && remainingFrames > 0) {
+            remainingFrames -= 1;
+            window.requestAnimationFrame(focusTarget);
+          }
+        };
+
+        focusTarget();
+      });
+    };
+
+    if (dayDisclosure && !dayDisclosure.open) {
+      const focusAfterOpen = () => {
+        if (!dayDisclosure.open) {
+          return;
         }
+
+        dayDisclosure.removeEventListener("toggle", focusAfterOpen);
+        scrollAndFocusTarget();
       };
 
-      focusTarget();
-    });
+      dayDisclosure.addEventListener("toggle", focusAfterOpen);
+      openAnimatedDisclosure(dayDisclosure);
+      return;
+    }
+
+    if (dayDisclosure) {
+      openAnimatedDisclosure(dayDisclosure);
+    }
+
+    scrollAndFocusTarget();
   });
 }
 
