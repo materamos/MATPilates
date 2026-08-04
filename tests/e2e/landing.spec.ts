@@ -150,7 +150,7 @@ async function expectDisclosureTransition(
       new Promise<{ isClosing: boolean; isOpen: boolean } | null>((resolve) => {
         const readState = () => ({
           isClosing: element.dataset.closing === "true",
-          isOpen: element.open,
+          isOpen: (element as HTMLDetailsElement).open,
         });
         const finish = (state: { isClosing: boolean; isOpen: boolean } | null) => {
           window.clearTimeout(timeout);
@@ -556,7 +556,11 @@ test("class and schedule links remain usable during disclosure transitions", asy
 
   const classCard = page.locator("#clase-mat-pilates");
   await classCard.locator("summary").click();
-  await classCard.getByRole("link", { name: "Ver horarios de MAT PILATES" }).click();
+  const classScheduleLink = classCard.getByRole("link", {
+    name: "Ver horarios de MAT PILATES",
+  });
+  await classScheduleLink.focus();
+  await classScheduleLink.press("Enter");
 
   await expect(page).toHaveURL(/#horarios$/);
   const scheduleLink = page.locator(
