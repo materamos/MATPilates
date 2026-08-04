@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { openAnimatedDisclosure } from "@/components/animated-disclosure";
 
 interface ScheduleAccordionProps {
   timezone: string;
@@ -26,7 +27,9 @@ export function ScheduleAccordion({ timezone }: ScheduleAccordionProps) {
       `details[data-schedule-day="${getOpenDayId(timezone)}"]`,
     );
 
-    openDay?.setAttribute("open", "");
+    if (openDay) {
+      openAnimatedDisclosure(openDay);
+    }
   }, [timezone]);
 
   return null;

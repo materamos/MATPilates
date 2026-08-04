@@ -9,6 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { openAnimatedDisclosure } from "@/components/animated-disclosure";
 import type { ClassId } from "@/lib/site-content";
 
 interface SelectedScheduleClass {
@@ -57,7 +58,7 @@ function moveToSchedule(classId: ClassId) {
     const dayDisclosure = target.closest<HTMLDetailsElement>(".mat-schedule-day");
 
     if (dayDisclosure) {
-      dayDisclosure.open = true;
+      openAnimatedDisclosure(dayDisclosure);
     }
 
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches

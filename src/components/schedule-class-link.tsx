@@ -1,6 +1,7 @@
 "use client";
 
 import { type MouseEvent, type ReactNode } from "react";
+import { openAnimatedDisclosure } from "@/components/animated-disclosure";
 import { useClassScheduleNavigation } from "@/components/class-schedule-navigation";
 import type { ClassId, ClassOffering } from "@/lib/site-content";
 
@@ -37,14 +38,7 @@ export function ScheduleClassLink({
 
     event.preventDefault();
     clearSelection();
-    document
-      .querySelectorAll<HTMLDetailsElement>(".mat-class-card[open]")
-      .forEach((openCard) => {
-        if (openCard !== classCard) {
-          openCard.open = false;
-        }
-      });
-    classCard.open = true;
+    openAnimatedDisclosure(classCard);
     window.history.pushState(null, "", href);
 
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches

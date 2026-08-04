@@ -92,6 +92,7 @@ async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
 
           return {
             hasHeight: expansion.getBoundingClientRect().height > 1,
+            isClosing: element.getAttribute("data-closing") === "true",
             isOpen: element.hasAttribute("open"),
             opacity: bodyStyles.opacity,
             pointerEvents: expansionStyles.pointerEvents,
@@ -103,6 +104,7 @@ async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
     )
     .toEqual({
       hasHeight: open,
+      isClosing: false,
       isOpen: open,
       opacity: open ? "1" : "0",
       pointerEvents: open ? "auto" : "none",
@@ -135,6 +137,35 @@ function expectDisclosureDuration(
   expect(motion.expansionDuration.split(",")[0].trim()).toBe(duration);
   expect(motion.indicatorDuration).toBe(duration);
   expect(motion.summaryDuration).toBe(duration);
+}
+
+async function expectDisclosureTransition(
+  disclosure: Locator,
+  action: () => Promise<void>,
+) {
+  const transitionStarted = disclosure
+    .locator(":scope > .mat-disclosure__expansion")
+    .evaluate(
+      (expansion) =>
+        new Promise<boolean>((resolve) => {
+          const timeout = window.setTimeout(() => resolve(false), 1000);
+          const handleTransitionRun = (event: TransitionEvent) => {
+            if (
+              event.target === expansion &&
+              event.propertyName === "grid-template-rows"
+            ) {
+              window.clearTimeout(timeout);
+              expansion.removeEventListener("transitionrun", handleTransitionRun);
+              resolve(true);
+            }
+          };
+
+          expansion.addEventListener("transitionrun", handleTransitionRun);
+        }),
+    );
+
+  await action();
+  expect(await transitionStarted).toBe(true);
 }
 
 async function loadVisualContent(page: Page) {
@@ -373,10 +404,10 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     const scheduleSummary = scheduleDay.locator("summary");
 
     await expectDisclosureSettled(classCard, false);
-    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.16s");
-    await classSummary.press("Enter");
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.24s");
+    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"));
     await expectDisclosureSettled(classCard, true);
-    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.22s");
+    expectDisclosureDuration(await readDisclosureMotion(classCard), "0.32s");
 
     const classGeometry = await classCard.locator(".mat-disclosure__body").evaluate((body) => ({
       horizontalOverflow: body.scrollWidth - body.clientWidth,
@@ -385,12 +416,19 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     expect(classGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
     expect(classGeometry.verticalOverflow).toBeLessThanOrEqual(1);
 
-    await classSummary.press("Space");
+    await expectDisclosureTransition(classCard, () => classSummary.press("Space"));
+    await expect(classCard).toHaveAttribute("data-closing", "true");
+    await expect(classCard).toHaveAttribute("open", "");
     await expectDisclosureSettled(classCard, false);
 
-    await scheduleSummary.press("Enter");
+    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"));
+    await expectDisclosureSettled(classCard, true);
+    await expectDisclosureTransition(classCard, () => classSummary.press("Space"));
+    await expectDisclosureSettled(classCard, false);
+
+    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Enter"));
     await expectDisclosureSettled(scheduleDay, true);
-    expectDisclosureDuration(await readDisclosureMotion(scheduleDay), "0.22s");
+    expectDisclosureDuration(await readDisclosureMotion(scheduleDay), "0.32s");
 
     const scheduleGeometry = await scheduleDay
       .locator(".mat-disclosure__body")
@@ -401,7 +439,7 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     expect(scheduleGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
     expect(scheduleGeometry.verticalOverflow).toBeLessThanOrEqual(1);
 
-    await scheduleSummary.press("Space");
+    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Space"));
     await expectDisclosureSettled(scheduleDay, false);
     expect(
       await page.evaluate(
