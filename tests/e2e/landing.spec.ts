@@ -142,13 +142,18 @@ function expectDisclosureDuration(
 async function expectDisclosureTransition(
   disclosure: Locator,
   action: () => Promise<void>,
+  closing: boolean,
 ) {
   const transitionStarted = disclosure
     .locator(":scope > .mat-disclosure__expansion")
     .evaluate(
       (expansion) =>
-        new Promise<boolean>((resolve) => {
-          const timeout = window.setTimeout(() => resolve(false), 1000);
+        new Promise<{ isClosing: boolean; isOpen: boolean } | null>((resolve) => {
+          const finish = (state: { isClosing: boolean; isOpen: boolean } | null) => {
+            window.clearTimeout(timeout);
+            expansion.removeEventListener("transitionrun", handleTransitionRun);
+            resolve(state);
+          };
           const handleTransitionRun: EventListener = (event) => {
             const transitionEvent = event as TransitionEvent;
 
@@ -156,38 +161,62 @@ async function expectDisclosureTransition(
               transitionEvent.target === expansion &&
               transitionEvent.propertyName === "grid-template-rows"
             ) {
-              window.clearTimeout(timeout);
-              expansion.removeEventListener("transitionrun", handleTransitionRun);
-              resolve(true);
+              const details = expansion.parentElement as HTMLDetailsElement;
+
+              finish({
+                isClosing: details.dataset.closing === "true",
+                isOpen: details.open,
+              });
             }
           };
+          const timeout = window.setTimeout(() => finish(null), 1000);
 
           expansion.addEventListener("transitionrun", handleTransitionRun);
         }),
     );
 
   await action();
-  expect(await transitionStarted).toBe(true);
+  expect(await transitionStarted).toEqual({ isClosing: closing, isOpen: true });
 }
 
 async function loadVisualContent(page: Page) {
   const sections = page.locator("main section");
+  const images = page.locator("main img");
+
+  await images.evaluateAll((elements) => {
+    elements.forEach((element) => {
+      element.loading = "eager";
+    });
+  });
 
   for (let index = 0; index < (await sections.count()); index += 1) {
     await sections.nth(index).scrollIntoViewIfNeeded();
   }
 
-  await page.waitForFunction(() =>
-    Array.from(document.images)
-      .filter((image) => {
-        const styles = getComputedStyle(image);
-        return (
-          styles.display !== "none" &&
-          styles.visibility !== "hidden" &&
-          image.getClientRects().length > 0
-        );
-      })
-      .every((image) => image.complete && image.naturalWidth > 0),
+  await images.evaluateAll((elements) =>
+    Promise.all(
+      elements.map(
+        (element) =>
+          new Promise<void>((resolve, reject) => {
+            const assertLoaded = () => {
+              if (element.naturalWidth > 0) {
+                resolve();
+                return;
+              }
+
+              reject(new Error(`Image failed to load: ${element.currentSrc || element.src}`));
+            };
+
+            if (element.complete) {
+              assertLoaded();
+              return;
+            }
+
+            element.addEventListener("load", assertLoaded, { once: true });
+            element.addEventListener("error", assertLoaded, { once: true });
+          }),
+      ),
+    ),
   );
   await page.locator("#inicio").scrollIntoViewIfNeeded();
 }
@@ -430,7 +459,7 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
 
     await expect(classCard).not.toHaveAttribute("open", "");
     expectDisclosureDuration(await readDisclosureMotion(classCard), "0.24s");
-    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"));
+    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"), false);
     await expectDisclosureSettled(classCard, true);
     expectDisclosureDuration(await readDisclosureMotion(classCard), "0.32s");
 
@@ -441,17 +470,15 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     expect(classGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
     expect(classGeometry.verticalOverflow).toBeLessThanOrEqual(1);
 
-    await expectDisclosureTransition(classCard, () => classSummary.press("Space"));
-    await expect(classCard).toHaveAttribute("data-closing", "true");
-    await expect(classCard).toHaveAttribute("open", "");
+    await expectDisclosureTransition(classCard, () => classSummary.press("Space"), true);
     await expectDisclosureSettled(classCard, false);
 
-    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"));
+    await expectDisclosureTransition(classCard, () => classSummary.press("Enter"), false);
     await expectDisclosureSettled(classCard, true);
-    await expectDisclosureTransition(classCard, () => classSummary.press("Space"));
+    await expectDisclosureTransition(classCard, () => classSummary.press("Space"), true);
     await expectDisclosureSettled(classCard, false);
 
-    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Enter"));
+    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Enter"), false);
     await expectDisclosureSettled(scheduleDay, true);
     expectDisclosureDuration(await readDisclosureMotion(scheduleDay), "0.32s");
 
@@ -464,7 +491,7 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     expect(scheduleGeometry.horizontalOverflow).toBeLessThanOrEqual(1);
     expect(scheduleGeometry.verticalOverflow).toBeLessThanOrEqual(1);
 
-    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Space"));
+    await expectDisclosureTransition(scheduleDay, () => scheduleSummary.press("Space"), true);
     await expectDisclosureSettled(scheduleDay, false);
     expect(
       await page.evaluate(
@@ -549,7 +576,7 @@ test("rapid disclosure changes preserve exclusivity and hide closed content", as
 });
 
 test("class and schedule links remain usable during disclosure transitions", async ({ page }) => {
-  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
+  await page.clock.setFixedTime(new Date("2026-08-03T12:00:00-03:00"));
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
@@ -650,7 +677,7 @@ test("class cards derive their schedule summaries from the published week", asyn
 test("mobile class-to-schedule navigation opens, announces, and clears the selection", async ({
   page,
 }) => {
-  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
+  await page.clock.setFixedTime(new Date("2026-08-03T12:00:00-03:00"));
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
@@ -794,7 +821,7 @@ test("intense desktop schedule links retain their hover cue", async ({ page }) =
 test("schedule accordions are exclusive and class links reveal their catalog card", async ({
   page,
 }) => {
-  await page.clock.install({ time: new Date("2026-08-03T12:00:00-03:00") });
+  await page.clock.setFixedTime(new Date("2026-08-03T12:00:00-03:00"));
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
 
@@ -855,6 +882,7 @@ test("gallery supports swipe navigation without changing its pause state", async
   await openLanding(page);
 
   const gallery = page.getByRole("button", { name: /galería del estudio/i });
+  const track = gallery.locator(".mat-studio-gallery__track");
   await gallery.scrollIntoViewIfNeeded();
   await expect(gallery).toHaveAttribute("data-studio-active-index", "0");
   await expect(gallery).toHaveAttribute("aria-pressed", "true");
@@ -864,8 +892,19 @@ test("gallery supports swipe navigation without changing its pause state", async
 
   await page.mouse.move(box!.x + box!.width * 0.75, box!.y + box!.height / 2);
   await page.mouse.down();
-  await page.mouse.move(box!.x + box!.width * 0.25, box!.y + box!.height / 2, { steps: 6 });
-  await page.mouse.up();
+  try {
+    await page.mouse.move(box!.x + box!.width * 0.25, box!.y + box!.height / 2, { steps: 6 });
+    await expect
+      .poll(() =>
+        track.evaluate((element) => {
+          const transform = getComputedStyle(element).transform;
+          return transform === "none" ? 0 : new DOMMatrixReadOnly(transform).m41;
+        }),
+      )
+      .toBeLessThan(-8);
+  } finally {
+    await page.mouse.up();
+  }
 
   await expect(gallery).toHaveAttribute("data-studio-active-index", "1");
   await expect(gallery).toHaveAttribute("aria-pressed", "true");

@@ -31,6 +31,7 @@ interface ClassScheduleNavigationValue {
 }
 
 const ClassScheduleNavigationContext = createContext<ClassScheduleNavigationValue | null>(null);
+const scheduleFocusFrameLimit = 8;
 
 function findVisibleScheduleLink(classId: ClassId) {
   const schedule = document.getElementById("horarios");
@@ -74,15 +75,17 @@ function moveToSchedule(classId: ClassId) {
 
     window.requestAnimationFrame(() => {
       target.scrollIntoView({ behavior, block: "center" });
-      target.focus({ preventScroll: true });
-
-      window.requestAnimationFrame(() => {
+      let remainingFrames = scheduleFocusFrameLimit;
+      const focusTarget = () => {
         target.focus({ preventScroll: true });
 
-        window.setTimeout(() => {
-          target.focus({ preventScroll: true });
-        }, 0);
-      });
+        if (document.activeElement !== target && remainingFrames > 0) {
+          remainingFrames -= 1;
+          window.requestAnimationFrame(focusTarget);
+        }
+      };
+
+      focusTarget();
     });
   });
 }
