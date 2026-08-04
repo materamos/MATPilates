@@ -80,6 +80,15 @@ export function AnimatedDisclosure({
       return;
     }
 
+    if (!disclosure.open) {
+      // Chrome can skip the first transition when closed details content has never rendered.
+      disclosure.dataset.closing = "true";
+      disclosure.open = true;
+      expansion.getBoundingClientRect();
+      disclosure.open = false;
+      delete disclosure.dataset.closing;
+    }
+
     let clearTransition: (() => void) | null = null;
 
     const clearClosingResources = () => {

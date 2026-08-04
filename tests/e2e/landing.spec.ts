@@ -403,7 +403,7 @@ test("class and schedule disclosures use intrinsic motion without clipping", asy
     const classSummary = classCard.locator("summary");
     const scheduleSummary = scheduleDay.locator("summary");
 
-    await expectDisclosureSettled(classCard, false);
+    await expect(classCard).not.toHaveAttribute("open", "");
     expectDisclosureDuration(await readDisclosureMotion(classCard), "0.24s");
     await expectDisclosureTransition(classCard, () => classSummary.press("Enter"));
     await expectDisclosureSettled(classCard, true);
