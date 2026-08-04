@@ -38,7 +38,7 @@ The project's documentary library is the canonical source for approved business 
 
 ```bash
 npm install
-npx playwright install chromium
+npx playwright install chromium firefox webkit
 ```
 
 ## Commands
@@ -51,9 +51,10 @@ npx playwright install chromium
 | `npm run lint:css` | Runs Stylelint over CSS files under `src/`. |
 | `npm run build` | Creates the production build and validates TypeScript. |
 | `npm run start` | Starts the compiled application; requires `npm run build` first. |
-| `npm run test:e2e` | Builds the production application and runs the complete Playwright suite. |
-| `npm run test:e2e:functional` | Runs structural and interaction tests without visual snapshots. |
-| `npm run test:e2e:smoke` | Runs the minimum public navigation and schedule checks tagged with `@smoke`. |
+| `npm run test:e2e` | Runs the complete Chromium suite plus functional coverage in Firefox and WebKit. |
+| `npm run test:e2e:functional` | Runs structural and interaction tests in Chromium without visual snapshots. |
+| `npm run test:e2e:smoke` | Runs the minimum public checks tagged with `@smoke` in Chromium, Firefox, and WebKit. |
+| `npm run test:e2e:cross-browser` | Runs the full functional suite in Chromium, Firefox, and WebKit. |
 | `npm run test:e2e:report` | Opens the latest local Playwright HTML report. |
 | `npm run test:visual` | Compares the landing against the approved visual baselines. |
 | `npm run test:visual:update` | Replaces visual baselines after an intentional, reviewed visual change. |
@@ -77,11 +78,13 @@ npm run test:visual
 
 ## Visual regression
 
-Playwright starts an isolated production server on `127.0.0.1:3218`. The suite covers the documented responsive families, exact breakpoint boundaries, mobile navigation focus, class disclosure behavior, gallery reduced motion, keyboard focus, document overflow, and representative DPR 1 and DPR 2 renders.
+Playwright starts an isolated production server on `127.0.0.1:3218`. Chromium covers the documented responsive families, exact breakpoint boundaries, mobile navigation focus and exit locking, class disclosure behavior, gallery reduced motion and swipe navigation, keyboard focus, document overflow, and representative DPR 1 and DPR 2 renders. Firefox and WebKit run functional tests only; visual snapshots remain restricted to Chromium on Windows.
 
 Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`. Functional and structural tests remain separate from tests tagged with `@visual`; the minimum public navigation and schedule checks use `@smoke`. The Google Maps iframe is masked because its external rendering is nondeterministic; its eligibility and container geometry are tested separately. Playwright reports, traces, failure screenshots, and videos under `playwright-report/` and `test-results/` are transient, ignored by Git and excluded from linting.
 
-Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. A future CI integration must generate or approve baselines for its own operating system instead of silently replacing the Windows references.
+Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. CI compares the existing Windows baselines on a Windows runner and uploads failure artifacts without replacing them.
+
+GitHub Actions runs lint and build, the full Chromium functional suite, cross-browser smoke coverage, and the Windows visual suite for pull requests into `dev` or `main` and pushes to `dev`. Pull requests into `main` and manual workflow runs also execute the full functional suite in Chromium, Firefox, and WebKit. Reports and failure artifacts are retained for seven days.
 
 After a Playwright run, `npm run lint` must continue to pass even when local reports, traces, screenshots, or videos exist. The suite starts an isolated production server on port 3218; do not reuse a development server for acceptance runs.
 
