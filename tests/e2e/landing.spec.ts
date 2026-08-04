@@ -93,11 +93,12 @@ async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
           return {
             hasHeight: expansion.getBoundingClientRect().height > 1,
             isClosing: element.getAttribute("data-closing") === "true",
+            isContentVisible:
+              element.hasAttribute("open") && expansionStyles.visibility === "visible",
+            isOpaque: Number.parseFloat(bodyStyles.opacity) >= 0.999,
             isOpen: element.hasAttribute("open"),
-            opacity: bodyStyles.opacity,
             pointerEvents: expansionStyles.pointerEvents,
             translateY: Math.round(translateY),
-            visibility: expansionStyles.visibility,
           };
         }),
       { timeout: 2500 },
@@ -105,11 +106,11 @@ async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
     .toEqual({
       hasHeight: open,
       isClosing: false,
+      isContentVisible: open,
+      isOpaque: open,
       isOpen: open,
-      opacity: open ? "1" : "0",
       pointerEvents: open ? "auto" : "none",
       translateY: open ? 0 : -4,
-      visibility: open ? "visible" : "hidden",
     });
 }
 
@@ -144,36 +145,36 @@ async function expectDisclosureTransition(
   action: () => Promise<void>,
   closing: boolean,
 ) {
-  const transitionStarted = disclosure
-    .locator(":scope > .mat-disclosure__expansion")
-    .evaluate(
-      (expansion) =>
-        new Promise<{ isClosing: boolean; isOpen: boolean } | null>((resolve) => {
-          const finish = (state: { isClosing: boolean; isOpen: boolean } | null) => {
-            window.clearTimeout(timeout);
-            expansion.removeEventListener("transitionrun", handleTransitionRun);
-            resolve(state);
-          };
-          const handleTransitionRun: EventListener = (event) => {
-            const transitionEvent = event as TransitionEvent;
+  const transitionStarted = disclosure.evaluate(
+    (element, expectedClosing) =>
+      new Promise<{ isClosing: boolean; isOpen: boolean } | null>((resolve) => {
+        const readState = () => ({
+          isClosing: element.dataset.closing === "true",
+          isOpen: element.open,
+        });
+        const finish = (state: { isClosing: boolean; isOpen: boolean } | null) => {
+          window.clearTimeout(timeout);
+          observer.disconnect();
+          resolve(state);
+        };
+        const observeState = () => {
+          const state = readState();
 
-            if (
-              transitionEvent.target === expansion &&
-              transitionEvent.propertyName === "grid-template-rows"
-            ) {
-              const details = expansion.parentElement as HTMLDetailsElement;
+          if (state.isOpen && state.isClosing === expectedClosing) {
+            finish(state);
+          }
+        };
+        const observer = new MutationObserver(observeState);
+        const timeout = window.setTimeout(() => finish(null), 1000);
 
-              finish({
-                isClosing: details.dataset.closing === "true",
-                isOpen: details.open,
-              });
-            }
-          };
-          const timeout = window.setTimeout(() => finish(null), 1000);
-
-          expansion.addEventListener("transitionrun", handleTransitionRun);
-        }),
-    );
+        observer.observe(element, {
+          attributeFilter: ["data-closing", "open"],
+          attributes: true,
+        });
+        observeState();
+      }),
+    closing,
+  );
 
   await action();
   expect(await transitionStarted).toEqual({ isClosing: closing, isOpen: true });

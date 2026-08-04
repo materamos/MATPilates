@@ -154,6 +154,21 @@ export function AnimatedDisclosure({
       event.preventDefault();
       disclosure.dataset.closing === "true" ? cancelClose() : startClose();
     };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target;
+      const summary = target instanceof Element ? target.closest("summary") : null;
+
+      if (
+        summary?.parentElement !== disclosure ||
+        !disclosure.open ||
+        (event.key !== "Enter" && event.key !== " ")
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      disclosure.dataset.closing === "true" ? cancelClose() : startClose();
+    };
     const handleToggle = () => {
       if (disclosure.open && disclosure.dataset.closing !== "true") {
         requestGroupClose(disclosure);
@@ -167,6 +182,7 @@ export function AnimatedDisclosure({
     };
 
     disclosure.addEventListener("click", handleClick);
+    disclosure.addEventListener("keydown", handleKeyDown);
     disclosure.addEventListener("toggle", handleToggle);
     disclosure.addEventListener(closeDisclosureEvent, startClose);
     disclosure.addEventListener(openDisclosureEvent, handleOpenRequest);
@@ -174,6 +190,7 @@ export function AnimatedDisclosure({
     return () => {
       clearClosingResources();
       disclosure.removeEventListener("click", handleClick);
+      disclosure.removeEventListener("keydown", handleKeyDown);
       disclosure.removeEventListener("toggle", handleToggle);
       disclosure.removeEventListener(closeDisclosureEvent, startClose);
       disclosure.removeEventListener(openDisclosureEvent, handleOpenRequest);
