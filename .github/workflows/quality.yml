@@ -53,7 +53,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps --only-shell chromium
       - name: Run functional suite
         run: npm run test:e2e:functional
       - name: Upload failure artifacts
