@@ -1011,14 +1011,14 @@ a {
 
 .mat-schedule-day__slots {
   margin: 0;
-  padding: 0 16px 12px;
+  padding: 0 16px 6px;
   list-style: none;
 }
 
 .mat-schedule-day__slots::before {
   display: block;
   height: 1px;
-  margin-bottom: 11.5px;
+  margin-bottom: 5.5px;
   background: var(--mat-color-desaturated-beige);
   content: "";
 }
