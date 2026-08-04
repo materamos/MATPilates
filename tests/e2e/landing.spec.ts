@@ -182,44 +182,16 @@ async function expectDisclosureTransition(
 
 async function loadVisualContent(page: Page) {
   const sections = page.locator("main section");
-  const images = page.locator("main img");
-
-  await images.evaluateAll((elements) => {
-    elements.forEach((element) => {
-      element.loading = "eager";
-    });
-  });
 
   for (let index = 0; index < (await sections.count()); index += 1) {
     await sections.nth(index).scrollIntoViewIfNeeded();
   }
 
-  await images.evaluateAll((elements) =>
-    Promise.all(
-      elements.map(
-        (element) =>
-          new Promise<void>((resolve, reject) => {
-            const assertLoaded = () => {
-              if (element.naturalWidth > 0) {
-                resolve();
-                return;
-              }
-
-              reject(new Error(`Image failed to load: ${element.currentSrc || element.src}`));
-            };
-
-            if (element.complete) {
-              assertLoaded();
-              return;
-            }
-
-            element.addEventListener("load", assertLoaded, { once: true });
-            element.addEventListener("error", assertLoaded, { once: true });
-          }),
-      ),
-    ),
-  );
   await page.locator("#inicio").scrollIntoViewIfNeeded();
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  });
 }
 
 test.describe("responsive contract", () => {
