@@ -147,12 +147,23 @@ export function AnimatedDisclosure({
       const target = event.target;
       const summary = target instanceof Element ? target.closest("summary") : null;
 
-      if (summary?.parentElement !== disclosure || !disclosure.open) {
+      if (summary?.parentElement !== disclosure) {
         return;
       }
 
       event.preventDefault();
-      disclosure.dataset.closing === "true" ? cancelClose() : startClose();
+      if (!disclosure.open) {
+        disclosure.open = true;
+        requestGroupClose(disclosure);
+        return;
+      }
+
+      if (disclosure.dataset.closing === "true") {
+        cancelClose();
+        requestGroupClose(disclosure);
+      } else {
+        startClose();
+      }
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target;
@@ -160,14 +171,24 @@ export function AnimatedDisclosure({
 
       if (
         summary?.parentElement !== disclosure ||
-        !disclosure.open ||
         (event.key !== "Enter" && event.key !== " ")
       ) {
         return;
       }
 
       event.preventDefault();
-      disclosure.dataset.closing === "true" ? cancelClose() : startClose();
+      if (!disclosure.open) {
+        disclosure.open = true;
+        requestGroupClose(disclosure);
+        return;
+      }
+
+      if (disclosure.dataset.closing === "true") {
+        cancelClose();
+        requestGroupClose(disclosure);
+      } else {
+        startClose();
+      }
     };
     const handleToggle = () => {
       if (disclosure.open && disclosure.dataset.closing !== "true") {
@@ -186,9 +207,11 @@ export function AnimatedDisclosure({
     disclosure.addEventListener("toggle", handleToggle);
     disclosure.addEventListener(closeDisclosureEvent, startClose);
     disclosure.addEventListener(openDisclosureEvent, handleOpenRequest);
+    disclosure.dataset.disclosureReady = "true";
 
     return () => {
       clearClosingResources();
+      delete disclosure.dataset.disclosureReady;
       disclosure.removeEventListener("click", handleClick);
       disclosure.removeEventListener("keydown", handleKeyDown);
       disclosure.removeEventListener("toggle", handleToggle);

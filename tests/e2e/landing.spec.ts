@@ -75,6 +75,13 @@ async function openLanding(page: Page) {
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
+  await expectDisclosuresReady(page.locator("details[data-disclosure-group]"));
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+      }),
+  );
 
   return runtimeErrors;
 }
@@ -120,6 +127,24 @@ async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
       pointerEvents: open ? "auto" : "none",
       translateY: open ? 0 : -4,
     });
+}
+
+async function expectDisclosuresReady(disclosures: Locator) {
+  await expect
+    .poll(() =>
+      disclosures.evaluateAll((elements) =>
+        elements.every(
+          (element) => (element as HTMLElement).dataset.disclosureReady === "true",
+        ),
+      ),
+    )
+    .toBe(true);
+}
+
+async function activateDisclosureSummary(disclosure: Locator) {
+  await disclosure.locator("summary").evaluate((summary) => {
+    (summary as HTMLElement).click();
+  });
 }
 
 async function readDisclosureMotion(disclosure: Locator) {
@@ -568,13 +593,14 @@ test("reduced motion makes class and schedule disclosure changes instant", async
 });
 
 test("rapid disclosure changes preserve exclusivity and hide closed content", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-08-09T12:00:00-03:00"));
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
 
   const cards = page.locator(".mat-class-card");
-  await cards.nth(0).locator("summary").click();
-  await cards.nth(1).locator("summary").click();
+  await activateDisclosureSummary(cards.nth(0));
+  await activateDisclosureSummary(cards.nth(1));
   await expect(cards.nth(0)).not.toHaveAttribute("open", "");
   await expect(cards.nth(1)).toHaveAttribute("open", "");
   await expectDisclosureSettled(cards.nth(0), false);
@@ -592,10 +618,16 @@ test("rapid disclosure changes preserve exclusivity and hide closed content", as
   expect(closedCardFocusResults.every((isFocused) => !isFocused)).toBe(true);
 
   const days = page.locator(".mat-schedule__mobile .mat-schedule-day");
-  await days.nth(1).locator("summary").click();
-  await days.nth(2).locator("summary").click();
+  await activateDisclosureSummary(days.nth(1));
+  await activateDisclosureSummary(days.nth(2));
   await expect(days.nth(1)).not.toHaveAttribute("open", "");
   await expect(days.nth(2)).toHaveAttribute("open", "");
+  await expectDisclosureSettled(days.nth(1), false);
+  await expectDisclosureSettled(days.nth(2), true);
+
+  await activateDisclosureSummary(days.nth(1));
+  await expect(days.nth(2)).toHaveAttribute("data-closing", "true");
+  await activateDisclosureSummary(days.nth(2));
   await expectDisclosureSettled(days.nth(1), false);
   await expectDisclosureSettled(days.nth(2), true);
 
@@ -629,7 +661,8 @@ test("class and schedule links remain usable during disclosure transitions", asy
   const scheduleLink = page.locator(
     '.mat-schedule__mobile [data-schedule-class="mat-pilates"]',
   ).first();
-  await scheduleLink.click();
+  await expect(scheduleLink).toBeFocused();
+  await scheduleLink.press("Enter");
 
   await expect(page).toHaveURL(/#clase-mat-pilates$/);
   await expect(classCard).toHaveAttribute("open", "");
