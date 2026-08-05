@@ -52,6 +52,14 @@ const viewportCases: readonly ViewportCase[] = [
   { id: "desktop", width: 1440, height: 1000, navigation: "desktop", mapVisible: true },
 ] as const;
 
+const mobileMenuDestinations = [
+  { name: "Hot Mat", href: "#hotmat" },
+  { name: "Clases", href: "#clases" },
+  { name: "Horarios", href: "#horarios" },
+  { name: "El Estudio", href: "#estudio" },
+  { name: "Conocé cómo sumarte", href: "#contacto" },
+] as const;
+
 async function openLanding(page: Page) {
   const runtimeErrors: string[] = [];
 
@@ -331,7 +339,7 @@ test.describe("responsive contract", () => {
   }
 });
 
-test("mobile menu restores and transfers focus correctly", async ({ page }) => {
+test("mobile menu restores focus when dismissed", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openLanding(page);
 
@@ -340,14 +348,46 @@ test("mobile menu restores and transfers focus correctly", async ({ page }) => {
   await expect(page.locator("main")).toHaveAttribute("inert", "");
   await page.keyboard.press("Escape");
   await expect(menuButton).toBeFocused();
-
-  await menuButton.click();
-  await page.getByRole("navigation", { name: "Navegación móvil" }).getByRole("link", {
-    name: /Hot Mat/,
-  }).click();
-  await expect(page).toHaveURL(/#hotmat$/);
-  await expect(page.locator("#hotmat h2")).toBeFocused();
 });
+
+for (const reducedMotion of ["reduce", "no-preference"] as const) {
+  test(`mobile menu scrolls every internal destination with ${reducedMotion} motion`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openLanding(page);
+
+    for (const destination of mobileMenuDestinations) {
+      await page.getByRole("button", { name: "Abrir menú" }).click();
+      await page
+        .locator("#mobile-navigation")
+        .getByRole("link", { name: destination.name, exact: true })
+        .click();
+
+      const section = page.locator(destination.href);
+      await expect(page).toHaveURL(new RegExp(`${destination.href}$`));
+      await expect(page.locator("#mobile-navigation")).toHaveCount(0);
+      await expect(page.locator("main")).not.toHaveAttribute("inert", "");
+      await expect(section.locator("h2")).toBeFocused();
+      await expect
+        .poll(() =>
+          section.evaluate((element) => {
+            const header = document.querySelector<HTMLElement>(".site-header");
+            const sectionTop = element.getBoundingClientRect().top;
+            const headerBottom = header?.getBoundingClientRect().bottom ?? 0;
+
+            return {
+              isBelowHeader: sectionTop >= headerBottom - 1,
+              isVisible: sectionTop < window.innerHeight,
+              moved: window.scrollY > 0,
+            };
+          }),
+        )
+        .toEqual({ isBelowHeader: true, isVisible: true, moved: true });
+    }
+  });
+}
 
 test("mobile menu keeps the background inert through its Motion exit", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -361,12 +401,35 @@ test("mobile menu keeps the background inert through its Motion exit", async ({ 
   await menuButton.click();
   await expect(menu).toHaveCSS("opacity", "1");
   await expect(main).toHaveAttribute("inert", "");
+  await page.evaluate(() => {
+    const mainElement = document.querySelector<HTMLElement>("main")!;
+    const testWindow = window as typeof window & {
+      __menuPresentWhenInertReleased?: boolean;
+    };
+    const observer = new MutationObserver(() => {
+      if (!mainElement.hasAttribute("inert")) {
+        testWindow.__menuPresentWhenInertReleased = Boolean(
+          document.querySelector("#mobile-navigation"),
+        );
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(mainElement, { attributeFilter: ["inert"], attributes: true });
+  });
 
   await page.keyboard.press("Escape");
-  await expect(menu).toHaveCount(1);
-  await expect(main).toHaveAttribute("inert", "");
   await expect(menu).toHaveCount(0);
   await expect(main).not.toHaveAttribute("inert", "");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as typeof window & { __menuPresentWhenInertReleased?: boolean })
+            .__menuPresentWhenInertReleased,
+      ),
+    )
+    .toBe(false);
   await expect(menuButton).toBeFocused();
 });
 
