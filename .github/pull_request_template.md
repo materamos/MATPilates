@@ -12,6 +12,8 @@ Refs #
 - Excluded:
 - Source of truth:
 - Base branch:
+- Head commit at final verification:
+- Base commit at final verification:
 - Integration or publication dependencies:
 
 ## Delivery impact
@@ -27,7 +29,7 @@ Refs #
 
 - [ ] For `dev`: every included change is authorized to participate in the next promotion to `main`.
 - [ ] For `integration/*`: this branch is used only for pre-`dev` validation and will not target `main`.
-- [ ] For `main`: the complete `main...dev` difference and every included Issue are authorized.
+- [ ] For `main`: the complete `main...dev` difference and every included Issue are authorized; the recorded head and base commits still match the remote branch tips.
 
 ## Validation
 
