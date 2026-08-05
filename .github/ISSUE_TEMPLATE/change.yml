@@ -1,0 +1,76 @@
+name: Cambio o mejora
+description: Proponer una mejora funcional, técnica, documental o de proceso.
+title: "[Cambio]: "
+assignees:
+  - materamos
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Qué resultado se busca y por qué es necesario.
+      placeholder: Describe el problema u oportunidad y el resultado esperado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Alcance
+      description: Incluye lo que debe cambiar y lo que queda explícitamente afuera.
+      placeholder: |
+        Incluye:
+        - ...
+
+        Fuera de alcance:
+        - ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: source_of_truth
+    attributes:
+      label: Fuente de verdad
+      description: Enlaces, archivos, decisiones aprobadas o evidencia que gobiernan el cambio.
+      placeholder: Indica la fuente aplicable o explica por qué no corresponde.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Etapa
+      options:
+        - Etapa 1
+        - Etapa 2
+        - Sin definir
+    validations:
+      required: true
+
+  - type: dropdown
+    id: delivery
+    attributes:
+      label: Clasificación de entrega
+      options:
+        - Solo repositorio
+        - Preview
+        - Production
+        - Pendiente de decisión
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validación esperada
+      placeholder: Lista los checks automáticos y las verificaciones manuales necesarias.
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Riesgos e incógnitas
+      placeholder: Indica riesgos, dependencias o decisiones pendientes. Escribe "Ninguno conocido" si no aplica.
+    validations:
+      required: true
