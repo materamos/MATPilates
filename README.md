@@ -95,9 +95,13 @@ Remove-Item Env:CI
 Every versioned change starts from an Issue and declares one delivery classification:
 
 - **Repository-only:** documentation, tests, GitHub configuration, or other changes that do not alter the application runtime. They may reach `main` without publishing a new Production deployment.
-- **Preview-only:** work integrated into `dev` for validation but not yet authorized for `main`.
-- **Production-eligible:** runtime or public-content changes that may reach `main` only when publication is authorized.
-- **Pending decision:** work whose delivery impact is not yet known; keep it out of `main` until it is classified.
+- **Preview-only:** work validated through a Vercel Preview that remains on `feature/*` or `integration/*` and stays out of `dev`.
+- **Production-eligible:** runtime or public-content work that stays out of `dev` until it is selected for an authorized publication.
+- **Pending decision:** work whose delivery impact is not yet known; keep it on a pre-`dev` branch until it is classified.
+
+`dev` is continuously promotable: every change merged into it must be authorized to participate in the next complete promotion to `main`. A completed change can remain on its feature branch with a validated Preview and its Project card in `Ready`; technical completion does not authorize integration or publication.
+
+Use `integration/<short-description>` when multiple feature branches must be validated together before they are eligible for `dev`. Feature Pull Requests may target that integration branch, but integration branches never target `main`. After the complete set is authorized, merge it into `dev` through a Pull Request and delete the integration branch only after confirming that its commit is reachable from `dev`.
 
 Vercel always builds Preview deployments. In Production, `vercel.json` skips the build only when the commit is limited to `.github/**`, `docs/**`, `tests/**`, `AGENTS.md`, or `README.md`; any other change or an inconclusive comparison builds normally.
 
@@ -115,11 +119,11 @@ Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`.
 
 Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. CI compares the existing Windows baselines on a Windows runner and uploads failure artifacts without replacing them.
 
-GitHub Actions runs lint and build, the full Chromium functional suite, cross-browser smoke coverage, and the Windows visual suite for pull requests into `dev` or `main`. Pull requests into `main` and manual workflow runs also execute the full functional suite in Chromium, Firefox, and WebKit. The full cross-browser job is expected to be skipped on pull requests into `dev`; a skipped job is not evidence that the suite passed. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
+GitHub Actions runs lint and build, the full Chromium functional suite, cross-browser smoke coverage, and the Windows visual suite for pull requests into `integration/**`, `dev`, or `main`. Pull requests into `main` and manual workflow runs also execute the full functional suite in Chromium, Firefox, and WebKit. The full cross-browser job is expected to be skipped on pull requests into `integration/**` or `dev`; a skipped job is not evidence that the suite passed. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
 
 The Linux Chromium functional job intentionally installs Chromium with Playwright's `--only-shell` option. Smoke and full cross-browser jobs install Chromium, Firefox, and WebKit with their system dependencies, while Windows visual regression keeps the Chromium installation that produces the approved baselines. Keep these browser boundaries unchanged unless a separate, measured CI change explicitly revises them.
 
-A repository-only promotion is complete after the exact `main` commit and required checks are verified. A Production-eligible promotion is complete only after the deployment status for the exact `main` merge commit succeeds and the canonical URL responds with the expected public content.
+A `Repository-only` promotion is complete after the exact `main` commit and required checks are verified. A `Production-eligible` promotion is complete only after the deployment status for the exact `main` merge commit succeeds and the canonical URL responds with the expected public content.
 
 After a Playwright run, `npm run lint` must continue to pass even when local reports, traces, screenshots, or videos exist. The suite starts an isolated production server on port 3218; do not reuse a development server for acceptance runs.
 
