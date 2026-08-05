@@ -38,15 +38,18 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 
 - Every versioned change, including code, documentation, and configuration, must be linked to an open GitHub Issue.
 - Use your own authenticated GitHub account and confirm that it has the repository and Project permissions required for the requested external actions.
-- Classify each Issue and Pull Request as repository-only, Preview-only, Production-eligible, or pending a delivery decision.
-- Move the related GitHub Project item to `Doing` when implementation starts. Move it to `Ready` when implementation is integrated and validated but publication or acceptance remains pending.
+- Classify each Issue and Pull Request as exactly one of `Repository-only`, `Preview-only`, `Production-eligible`, or `Pending decision`.
+- Keep `dev` continuously promotable: everything merged into it must be authorized to participate in the next complete promotion to `main`.
+- Keep `Preview-only` and `Pending decision` work on `feature/*` or `integration/*`. Keep `Production-eligible` work there until it is selected for an authorized publication.
+- Move the related GitHub Project item to `Doing` when implementation starts. Move it to `Ready` when implementation and its Preview are validated but integration, publication, dependencies, or acceptance remain pending; `Ready` does not require a merge into `dev`.
 - Before branching, inspect the worktree, fetch and prune the remote, and fast-forward the local `dev` branch. Create feature branches from that updated `dev` branch using `feature/<short-description>`.
-- Do not commit or push directly to `dev` or `main`.
-- Open Pull Requests from `feature/*` into `dev`, reference the related Issue, and run the relevant validation before requesting review.
+- Do not commit or push directly to `integration/*`, `dev`, or `main`.
+- Open Pull Requests from `feature/*` into `dev` only when the complete change is authorized for the next promotion to `main`. Reference the related Issue and run the relevant validation before requesting review.
+- When interdependent work must be validated together before it is eligible for `dev`, create `integration/<short-description>` from the updated `dev`, merge its `feature/*` branches through Pull Requests, and keep the integration branch out of `main`.
 - Verify required checks against the Pull Request's current head commit before merging. Do not bypass protection after a deterministic failure; diagnose it and deliver the correction through an Issue-linked feature branch before continuing the promotion.
-- After merging into `dev`, delete the merged feature branch locally and remotely only after confirming that its commit is reachable from `dev`.
-- Promote changes from `dev` to `main` through a separate Pull Request only when their delivery classification allows it. Include `Closes #<issue-number>` for each completed Issue so GitHub closes it when the default branch is updated.
-- Mark repository-only work as `Done` after its exact `main` commit and checks are verified. Mark Production-eligible work as `Done` only after the exact `main` deployment is verified. Then fast-forward the local `dev` and `main` branches from their remotes, compare the local and remote tips, and confirm that the worktree is clean.
+- After merging a feature branch, delete it locally and remotely only after confirming that its commit is reachable from its intended base branch. Delete an integration branch only after its complete authorized commit is reachable from `dev`.
+- Before promoting `dev`, inspect the complete `main...dev` difference and confirm that every included Issue is authorized. Promote through a separate Pull Request from `dev` to `main`, using the most restrictive included delivery classification and `Closes #<issue-number>` for every completed Issue.
+- Mark `Repository-only` work as `Done` after its exact `main` commit and checks are verified. Mark `Production-eligible` work as `Done` only after the exact `main` deployment is verified. Then fast-forward the local `dev` and `main` branches from their remotes, compare the local and remote tips, and confirm that the worktree is clean.
 
 ## Tooling and validation
 

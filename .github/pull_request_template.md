@@ -11,13 +11,23 @@ Refs #
 - Included:
 - Excluded:
 - Source of truth:
+- Base branch:
+- Integration or publication dependencies:
 
 ## Delivery impact
+
+<!-- Select exactly one. For a mixed promotion, select the most restrictive included classification. -->
 
 - [ ] Repository-only
 - [ ] Preview-only
 - [ ] Production-eligible
-- [ ] Pending a delivery decision
+- [ ] Pending decision
+
+## Branch gate
+
+- [ ] For `dev`: every included change is authorized to participate in the next promotion to `main`.
+- [ ] For `integration/*`: this branch is used only for pre-`dev` validation and will not target `main`.
+- [ ] For `main`: the complete `main...dev` difference and every included Issue are authorized.
 
 ## Validation
 
