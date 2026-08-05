@@ -17,7 +17,12 @@ export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuPresent, setIsMenuPresent] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const menuDestinationRef = useRef<{ element: HTMLElement; href: string } | null>(null);
+  const menuExitPendingRef = useRef(false);
+  const menuDestinationRef = useRef<{
+    heading: HTMLElement;
+    href: string;
+    section: HTMLElement;
+  } | null>(null);
 
   useEffect(() => {
     if (!isMenuPresent) {
@@ -49,6 +54,31 @@ export function SiteHeader() {
   }, [isMenuPresent]);
 
   useEffect(() => {
+    if (isMenuPresent || !menuExitPendingRef.current) {
+      return;
+    }
+
+    menuExitPendingRef.current = false;
+
+    const destination = menuDestinationRef.current;
+    menuDestinationRef.current = null;
+
+    if (destination) {
+      window.history.pushState(null, "", destination.href);
+      const frame = window.requestAnimationFrame(() => {
+        destination.section.scrollIntoView({ block: "start" });
+        destination.heading.focus({ preventScroll: true });
+      });
+
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    if (!window.matchMedia("(min-width: 1024px)").matches) {
+      menuButtonRef.current?.focus();
+    }
+  }, [isMenuPresent]);
+
+  useEffect(() => {
     const desktopQuery = window.matchMedia("(min-width: 1024px)");
     const closeAtDesktop = (event: MediaQueryListEvent) => {
       if (event.matches) {
@@ -75,34 +105,21 @@ export function SiteHeader() {
   };
 
   const completeMenuExit = () => {
+    menuExitPendingRef.current = true;
     setIsMenuPresent(false);
-
-    const destination = menuDestinationRef.current;
-    menuDestinationRef.current = null;
-
-    if (destination) {
-      window.history.pushState(null, "", destination.href);
-      window.requestAnimationFrame(() => {
-        destination.element.focus({ preventScroll: true });
-      });
-      return;
-    }
-
-    if (!window.matchMedia("(min-width: 1024px)").matches) {
-      menuButtonRef.current?.focus();
-    }
   };
 
   const navigateFromMenu = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
-    const destination = document.querySelector<HTMLElement>(`${href} h2`);
+    const section = document.querySelector<HTMLElement>(href);
+    const heading = section?.querySelector<HTMLElement>("h2");
 
-    if (!destination) {
+    if (!section || !heading) {
       closeMenu();
       return;
     }
 
     event.preventDefault();
-    menuDestinationRef.current = { element: destination, href };
+    menuDestinationRef.current = { heading, href, section };
     closeMenu();
   };
 
