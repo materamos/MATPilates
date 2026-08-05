@@ -90,6 +90,17 @@ npm run test:e2e:cross-browser -- --reporter=line
 Remove-Item Env:CI
 ```
 
+## Delivery workflow
+
+Every versioned change starts from an Issue and declares one delivery classification:
+
+- **Repository-only:** documentation, tests, GitHub configuration, or other changes that do not alter the application runtime. They may reach `main` without publishing a new Production deployment.
+- **Preview-only:** work integrated into `dev` for validation but not yet authorized for `main`.
+- **Production-eligible:** runtime or public-content changes that may reach `main` only when publication is authorized.
+- **Pending decision:** work whose delivery impact is not yet known; keep it out of `main` until it is classified.
+
+Vercel always builds Preview deployments. In Production, `vercel.json` skips the build only when the commit is limited to `.github/**`, `docs/**`, `tests/**`, `AGENTS.md`, or `README.md`; any other change or an inconclusive comparison builds normally.
+
 When investigating an intermittent browser failure, reproduce the affected test before rerunning the complete suite:
 
 ```bash
@@ -104,11 +115,11 @@ Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`.
 
 Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. CI compares the existing Windows baselines on a Windows runner and uploads failure artifacts without replacing them.
 
-GitHub Actions runs lint and build, the full Chromium functional suite, cross-browser smoke coverage, and the Windows visual suite for pull requests into `dev` or `main` and pushes to `dev`. Pull requests into `main` and manual workflow runs also execute the full functional suite in Chromium, Firefox, and WebKit. The full cross-browser job is expected to be skipped on pull requests into `dev`; a skipped job is not evidence that the suite passed. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
+GitHub Actions runs lint and build, the full Chromium functional suite, cross-browser smoke coverage, and the Windows visual suite for pull requests into `dev` or `main`. Pull requests into `main` and manual workflow runs also execute the full functional suite in Chromium, Firefox, and WebKit. The full cross-browser job is expected to be skipped on pull requests into `dev`; a skipped job is not evidence that the suite passed. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
 
 The Linux Chromium functional job intentionally installs Chromium with Playwright's `--only-shell` option. Smoke and full cross-browser jobs install Chromium, Firefox, and WebKit with their system dependencies, while Windows visual regression keeps the Chromium installation that produces the approved baselines. Keep these browser boundaries unchanged unless a separate, measured CI change explicitly revises them.
 
-A production promotion is complete only after the deployment status for the exact `main` merge commit succeeds and the canonical URL responds with the expected public content.
+A repository-only promotion is complete after the exact `main` commit and required checks are verified. A Production-eligible promotion is complete only after the deployment status for the exact `main` merge commit succeeds and the canonical URL responds with the expected public content.
 
 After a Playwright run, `npm run lint` must continue to pass even when local reports, traces, screenshots, or videos exist. The suite starts an isolated production server on port 3218; do not reuse a development server for acceptance runs.
 
