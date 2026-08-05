@@ -49,11 +49,21 @@ body:
     id: delivery
     attributes:
       label: Clasificación de entrega
+      description: Usa uno de los cuatro valores canónicos sin traducirlo ni abreviarlo.
       options:
-        - Solo repositorio
-        - Preview
-        - Production
-        - Pendiente de decisión
+        - Repository-only
+        - Preview-only
+        - Production-eligible
+        - Pending decision
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_dependencies
+    attributes:
+      label: Dependencias de integración y publicación
+      description: Indica Issues, ramas, migraciones, configuración, contenido o aprobaciones requeridas.
+      placeholder: Escribe "Ninguna" si no aplica.
     validations:
       required: true
 
