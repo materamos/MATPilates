@@ -38,14 +38,15 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 
 - Every versioned change, including code, documentation, and configuration, must be linked to an open GitHub Issue.
 - Use your own authenticated GitHub account and confirm that it has the repository and Project permissions required for the requested external actions.
-- Move the related GitHub Project item to `Doing` when implementation starts and keep it there until the change is verified in production.
+- Classify each Issue and Pull Request as repository-only, Preview-only, Production-eligible, or pending a delivery decision.
+- Move the related GitHub Project item to `Doing` when implementation starts. Move it to `Ready` when implementation is integrated and validated but publication or acceptance remains pending.
 - Before branching, inspect the worktree, fetch and prune the remote, and fast-forward the local `dev` branch. Create feature branches from that updated `dev` branch using `feature/<short-description>`.
 - Do not commit or push directly to `dev` or `main`.
 - Open Pull Requests from `feature/*` into `dev`, reference the related Issue, and run the relevant validation before requesting review.
 - Verify required checks against the Pull Request's current head commit before merging. Do not bypass protection after a deterministic failure; diagnose it and deliver the correction through an Issue-linked feature branch before continuing the promotion.
 - After merging into `dev`, delete the merged feature branch locally and remotely only after confirming that its commit is reachable from `dev`.
-- Promote changes from `dev` to `main` through a separate Pull Request. Include `Closes #<issue-number>` for each completed Issue so GitHub closes it when the default branch is updated.
-- Mark the Project item as `Done` only after the `main` deployment is verified. Then fast-forward the local `dev` and `main` branches from their remotes, compare the local and remote tips, and confirm that the worktree is clean.
+- Promote changes from `dev` to `main` through a separate Pull Request only when their delivery classification allows it. Include `Closes #<issue-number>` for each completed Issue so GitHub closes it when the default branch is updated.
+- Mark repository-only work as `Done` after its exact `main` commit and checks are verified. Mark Production-eligible work as `Done` only after the exact `main` deployment is verified. Then fast-forward the local `dev` and `main` branches from their remotes, compare the local and remote tips, and confirm that the worktree is clean.
 
 ## Tooling and validation
 
