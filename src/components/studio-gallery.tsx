@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { m, type PanInfo, useAnimationControls } from "motion/react";
+import { AnimatePresence, m, type PanInfo } from "motion/react";
 import {
   type KeyboardEvent,
   type MouseEvent as ReactMouseEvent,
@@ -22,6 +22,12 @@ import { useMatReducedMotion } from "@/components/ui/use-mat-reduced-motion";
 const AUTO_ROTATION_MS = 5000;
 const POINTER_CLICK_TOLERANCE = 8;
 
+const gallerySlideVariants = {
+  enter: (direction: -1 | 1) => ({ x: `${direction * 100}%` }),
+  center: { x: "0%" },
+  exit: (direction: -1 | 1) => ({ x: `${direction * -100}%` }),
+};
+
 type StudioGalleryImage = {
   alt: string;
   src: string;
@@ -31,22 +37,19 @@ type StudioGalleryProps = {
   images: readonly StudioGalleryImage[];
 };
 
-function getGalleryX(index: number) {
-  return `${index * -100}%`;
-}
-
 export function StudioGallery({ images }: StudioGalleryProps) {
-  const controls = useAnimationControls();
   const prefersReducedMotion = useMatReducedMotion();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState<-1 | 1>(1);
   const [manualPaused, setManualPaused] = useState<boolean | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPointerActive, setIsPointerActive] = useState(false);
   const currentIndexRef = useRef(0);
   const isAnimatingRef = useRef(false);
   const isMountedRef = useRef(true);
+  const isPointerActiveRef = useRef(false);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
 
-  const renderedImages = images.length > 1 ? [...images, images[0]] : images;
   const canRotate = images.length > 1;
   const isPaused = manualPaused ?? prefersReducedMotion;
   const currentImage = images[currentIndex % images.length];
@@ -56,101 +59,52 @@ export function StudioGallery({ images }: StudioGalleryProps) {
     setCurrentIndex(index);
   }, []);
 
-  const animateToIndex = useCallback(
-    async (targetIndex: number) => {
-      if (!canRotate || isAnimatingRef.current) {
-        return;
-      }
-
-      isAnimatingRef.current = true;
-      setIsAnimating(true);
-      setActiveIndex(targetIndex);
-
-      if (prefersReducedMotion) {
-        const normalizedIndex = targetIndex % images.length;
-        controls.set({ x: getGalleryX(normalizedIndex) });
-        setActiveIndex(normalizedIndex);
-        isAnimatingRef.current = false;
-        setIsAnimating(false);
-        return;
-      }
-
-      await controls.start({
-        x: getGalleryX(targetIndex),
-        transition: getMatMotionTransition(
-          MAT_MOTION_DURATION.gallery,
-          false,
-          MAT_MOTION_EASE.slide,
-        ),
-      });
-
-      if (!isMountedRef.current) {
-        return;
-      }
-
-      if (targetIndex === images.length) {
-        controls.set({ x: getGalleryX(0) });
-        setActiveIndex(0);
-      }
-
-      isAnimatingRef.current = false;
-      setIsAnimating(false);
-    }, [canRotate, controls, images.length, prefersReducedMotion, setActiveIndex],
-  );
-
   const navigateBy = useCallback(
     (direction: -1 | 1) => {
       if (!canRotate || isAnimatingRef.current) {
         return;
       }
 
-      let sourceIndex = currentIndexRef.current;
+      const targetIndex =
+        (currentIndexRef.current + direction + images.length) % images.length;
 
-      if (direction === -1 && sourceIndex === 0) {
-        sourceIndex = images.length;
-        controls.set({ x: getGalleryX(sourceIndex) });
-        setActiveIndex(sourceIndex);
-      }
-
-      void animateToIndex(sourceIndex + direction);
-    }, [animateToIndex, canRotate, controls, images.length, setActiveIndex],
+      isAnimatingRef.current = true;
+      setIsAnimating(true);
+      setDirection(direction);
+      setActiveIndex(targetIndex);
+    }, [canRotate, images.length, setActiveIndex],
   );
+
+  const finishAnimation = useCallback(() => {
+    if (!isMountedRef.current) {
+      return;
+    }
+
+    isAnimatingRef.current = false;
+    setIsAnimating(false);
+  }, []);
 
   useEffect(() => {
     isMountedRef.current = true;
 
     return () => {
       isMountedRef.current = false;
-      controls.stop();
     };
-  }, [controls]);
+  }, []);
 
   useEffect(() => {
-    if (!prefersReducedMotion || images.length === 0) {
+    if (!canRotate || isPaused || isAnimating || isPointerActive) {
       return;
     }
 
-    controls.stop();
-    const normalizedIndex = currentIndexRef.current % images.length;
-    controls.set({ x: getGalleryX(normalizedIndex) });
-    setActiveIndex(normalizedIndex);
-    isAnimatingRef.current = false;
-    setIsAnimating(false);
-  }, [controls, images.length, prefersReducedMotion, setActiveIndex]);
-
-  useEffect(() => {
-    if (!canRotate || isPaused) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      if (!document.hidden && !isAnimatingRef.current) {
+    const timeoutId = window.setTimeout(() => {
+      if (!document.hidden && !isPointerActiveRef.current) {
         navigateBy(1);
       }
     }, AUTO_ROTATION_MS);
 
-    return () => window.clearInterval(intervalId);
-  }, [canRotate, isPaused, navigateBy]);
+    return () => window.clearTimeout(timeoutId);
+  }, [canRotate, currentIndex, isAnimating, isPaused, isPointerActive, navigateBy]);
 
   if (images.length === 0) {
     return null;
@@ -179,6 +133,13 @@ export function StudioGallery({ images }: StudioGalleryProps) {
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     pointerStartRef.current = { x: event.clientX, y: event.clientY };
+    isPointerActiveRef.current = true;
+    setIsPointerActive(true);
+  };
+
+  const handlePointerEnd = () => {
+    isPointerActiveRef.current = false;
+    setIsPointerActive(false);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -205,16 +166,7 @@ export function StudioGallery({ images }: StudioGalleryProps) {
 
     if (movedToPrevious) {
       navigateBy(-1);
-      return;
     }
-
-    void controls.start({
-      x: getGalleryX(currentIndexRef.current),
-      transition: getMatMotionTransition(
-        MAT_MOTION_DURATION.standard,
-        prefersReducedMotion,
-      ),
-    });
   };
 
   return (
@@ -230,40 +182,51 @@ export function StudioGallery({ images }: StudioGalleryProps) {
       data-studio-animating={isAnimating ? "true" : "false"}
       onClick={handleClick}
       onKeyDown={canRotate ? handleKeyDown : undefined}
+      onPointerCancel={canRotate ? handlePointerEnd : undefined}
       onPointerDown={canRotate ? handlePointerDown : undefined}
+      onPointerUp={canRotate ? handlePointerEnd : undefined}
       role={canRotate ? "button" : undefined}
       tabIndex={canRotate ? 0 : undefined}
     >
-      <m.div
-        animate={controls}
-        aria-live="off"
-        className="mat-studio-gallery__track"
-        drag={canRotate && !isAnimating ? "x" : false}
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.18}
-        dragMomentum={false}
-        initial={false}
-        onDragEnd={handleDragEnd}
-        style={{ touchAction: "pan-y", x: getGalleryX(0) }}
-      >
-        {renderedImages.map((image, index) => (
-          <div
-            aria-hidden={index !== currentIndex}
+      <div aria-live="off" className="mat-studio-gallery__track">
+        <AnimatePresence
+          custom={direction}
+          initial={false}
+          onExitComplete={finishAnimation}
+        >
+          <m.div
+            animate="center"
+            aria-hidden={canRotate ? true : undefined}
             className="mat-studio-gallery__slide"
-            data-studio-image-index={index % images.length}
-            key={`${image.src}-${index}`}
+            custom={direction}
+            data-studio-image-index={currentIndex}
+            drag={canRotate && !isAnimating ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.18}
+            dragMomentum={false}
+            exit="exit"
+            initial="enter"
+            key={currentImage.src}
+            onDragEnd={handleDragEnd}
+            style={{ touchAction: "pan-y" }}
+            transition={getMatMotionTransition(
+              MAT_MOTION_DURATION.gallery,
+              prefersReducedMotion,
+              MAT_MOTION_EASE.slide,
+            )}
+            variants={gallerySlideVariants}
           >
             <Image
-              alt={index === currentIndex ? image.alt : ""}
+              alt={canRotate ? "" : currentImage.alt}
               className="mat-cropped-image mat-studio__photo"
               fill
               quality={90}
               sizes="(min-width: 1440px) 622px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
-              src={image.src}
+              src={currentImage.src}
             />
-          </div>
-        ))}
-      </m.div>
+          </m.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

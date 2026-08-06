@@ -35,7 +35,24 @@ async function prepareVisualPage(page: Page) {
       })
       .every((image) => image.complete && image.naturalWidth > 0),
   );
-  await page.locator("#inicio").scrollIntoViewIfNeeded();
+  // Full-page screenshots preserve sticky positions from the current scroll offset.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 768) {
+    await expect
+      .poll(() =>
+        page
+          .locator(".site-header")
+          .evaluate((header) => Math.round(header.getBoundingClientRect().top)),
+      )
+      .toBe(0);
+  }
 }
 
 test.describe("@visual landing snapshots", () => {
