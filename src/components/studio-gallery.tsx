@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, m, type PanInfo } from "motion/react";
+import { m, type PanInfo } from "motion/react";
 import {
   type KeyboardEvent,
   type MouseEvent as ReactMouseEvent,
@@ -22,12 +22,6 @@ import { useMatReducedMotion } from "@/components/ui/use-mat-reduced-motion";
 const AUTO_ROTATION_MS = 5000;
 const POINTER_CLICK_TOLERANCE = 8;
 
-const gallerySlideVariants = {
-  enter: (direction: -1 | 1) => ({ x: `${direction * 100}%` }),
-  center: { x: "0%" },
-  exit: (direction: -1 | 1) => ({ x: `${direction * -100}%` }),
-};
-
 type StudioGalleryImage = {
   alt: string;
   src: string;
@@ -40,7 +34,10 @@ type StudioGalleryProps = {
 export function StudioGallery({ images }: StudioGalleryProps) {
   const prefersReducedMotion = useMatReducedMotion();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null);
+  const [incomingIndex, setIncomingIndex] = useState<number | null>(null);
   const [direction, setDirection] = useState<-1 | 1>(1);
+  const [isTransitionReady, setIsTransitionReady] = useState(false);
   const [manualPaused, setManualPaused] = useState<boolean | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPointerActive, setIsPointerActive] = useState(false);
@@ -71,18 +68,23 @@ export function StudioGallery({ images }: StudioGalleryProps) {
       isAnimatingRef.current = true;
       setIsAnimating(true);
       setDirection(direction);
-      setActiveIndex(targetIndex);
-    }, [canRotate, images.length, setActiveIndex],
+      setOutgoingIndex(currentIndexRef.current);
+      setIncomingIndex(targetIndex);
+      setIsTransitionReady(false);
+    }, [canRotate, images.length],
   );
 
   const finishAnimation = useCallback(() => {
-    if (!isMountedRef.current) {
+    if (!isMountedRef.current || !isAnimatingRef.current || !isTransitionReady) {
       return;
     }
 
     isAnimatingRef.current = false;
     setIsAnimating(false);
-  }, []);
+    setOutgoingIndex(null);
+    setIncomingIndex(null);
+    setIsTransitionReady(false);
+  }, [isTransitionReady]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -91,6 +93,28 @@ export function StudioGallery({ images }: StudioGalleryProps) {
       isMountedRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (incomingIndex === null || isTransitionReady) {
+      return;
+    }
+
+    let secondFrameId: number | undefined;
+    const frameId = window.requestAnimationFrame(() => {
+      secondFrameId = window.requestAnimationFrame(() => {
+        setActiveIndex(incomingIndex);
+        setIsTransitionReady(true);
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+
+      if (secondFrameId !== undefined) {
+        window.cancelAnimationFrame(secondFrameId);
+      }
+    };
+  }, [incomingIndex, isTransitionReady, setActiveIndex]);
 
   useEffect(() => {
     if (!canRotate || isPaused || isAnimating || isPointerActive) {
@@ -179,7 +203,7 @@ export function StudioGallery({ images }: StudioGalleryProps) {
       aria-pressed={canRotate ? isPaused : undefined}
       className="mat-studio__image mat-studio-gallery"
       data-studio-active-index={currentIndex % images.length}
-      data-studio-animating={isAnimating ? "true" : "false"}
+      data-studio-animating={isAnimating && isTransitionReady ? "true" : "false"}
       onClick={handleClick}
       onKeyDown={canRotate ? handleKeyDown : undefined}
       onPointerCancel={canRotate ? handlePointerEnd : undefined}
@@ -189,43 +213,60 @@ export function StudioGallery({ images }: StudioGalleryProps) {
       tabIndex={canRotate ? 0 : undefined}
     >
       <div aria-live="off" className="mat-studio-gallery__track">
-        <AnimatePresence
-          custom={direction}
-          initial={false}
-          onExitComplete={finishAnimation}
-        >
-          <m.div
-            animate="center"
-            aria-hidden={canRotate ? true : undefined}
-            className="mat-studio-gallery__slide"
-            custom={direction}
-            data-studio-image-index={currentIndex}
-            drag={canRotate && !isAnimating ? "x" : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.18}
-            dragMomentum={false}
-            exit="exit"
-            initial="enter"
-            key={currentImage.src}
-            onDragEnd={handleDragEnd}
-            style={{ touchAction: "pan-y" }}
-            transition={getMatMotionTransition(
-              MAT_MOTION_DURATION.gallery,
-              prefersReducedMotion,
-              MAT_MOTION_EASE.slide,
-            )}
-            variants={gallerySlideVariants}
-          >
-            <Image
-              alt={canRotate ? "" : currentImage.alt}
-              className="mat-cropped-image mat-studio__photo"
-              fill
-              quality={90}
-              sizes="(min-width: 1440px) 622px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
-              src={currentImage.src}
-            />
-          </m.div>
-        </AnimatePresence>
+        {images.map((image, imageIndex) => {
+          const isCurrentImage = imageIndex === currentIndex;
+          const isOutgoingImage = imageIndex === outgoingIndex;
+          const isIncomingImage = imageIndex === incomingIndex;
+          const targetX =
+            isIncomingImage && !isTransitionReady
+              ? `${direction * 100}%`
+              : isCurrentImage
+                ? "0%"
+                : `${(isOutgoingImage ? -direction : direction) * 100}%`;
+
+          return (
+            <m.div
+              animate={{ x: targetX }}
+              aria-hidden={canRotate && !isCurrentImage ? true : undefined}
+              className="mat-studio-gallery__slide"
+              data-studio-image-index={imageIndex}
+              drag={canRotate && isCurrentImage && !isAnimating ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.18}
+              dragMomentum={false}
+              initial={false}
+              key={image.src}
+              onAnimationComplete={
+                isCurrentImage && isTransitionReady ? finishAnimation : undefined
+              }
+              onDragEnd={isCurrentImage ? handleDragEnd : undefined}
+              style={{
+                pointerEvents: isCurrentImage && !isAnimating ? "auto" : "none",
+                touchAction: "pan-y",
+                zIndex: isCurrentImage ? 2 : isOutgoingImage ? 1 : 0,
+              }}
+              transition={
+                isIncomingImage && !isTransitionReady
+                  ? { duration: 0 }
+                  : getMatMotionTransition(
+                      MAT_MOTION_DURATION.gallery,
+                      prefersReducedMotion,
+                      MAT_MOTION_EASE.slide,
+                    )
+              }
+            >
+              <Image
+                alt={canRotate ? "" : image.alt}
+                className="mat-cropped-image mat-studio__photo"
+                fill
+                loading="eager"
+                quality={90}
+                sizes="(min-width: 1440px) 622px, (min-width: 1024px) calc(48vw - 67px), (min-width: 768px) 720px, calc(100vw - 48px)"
+                src={image.src}
+              />
+            </m.div>
+          );
+        })}
       </div>
     </div>
   );
