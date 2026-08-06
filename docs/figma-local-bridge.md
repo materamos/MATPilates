@@ -92,7 +92,7 @@ The Figma plugin main sandbox:
 | `mat_figma_list_text_styles` | Reads local text styles and fingerprints. |
 | `mat_figma_audit_typography` | Audits a selection, the current page, or an exact node subtree on any page without changing the visible page. |
 | `mat_figma_export_preview` | Returns a bounded PNG for an exact `nodeId`, or for the current selection when it contains exactly one node. |
-| `mat_figma_propose_typography_patch` | Submits an authorized batch with an exact post-apply preview target and starts application automatically. The target page and nodes need not be active or selected. |
+| `mat_figma_propose_typography_patch` | Effectful: after explicit task-level user authorization, submits an exact batch with a required post-apply preview target and starts application automatically. No manual `Aplicar` confirmation is requested in Figma. The target page and nodes need not be active or selected. |
 | `mat_figma_get_patch_status` | Reads or briefly waits for the patch result; an applied result automatically includes the PNG as MCP image content while structured JSON carries metadata without base64 bytes. |
 | `mat_figma_cancel_patch` | Cancels a pending patch; it never undoes an applied patch. |
 
