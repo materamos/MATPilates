@@ -1,9 +1,9 @@
 ## Traceability
 
-- Issue: #
+- Issue(s): #
 - Base branch:
-- [ ] For a PR targeting `dev` or `integration/*`, I manually linked the Issue and PR in GitHub's `Development` section, even if the source branch is already connected to the Issue.
-- [ ] I confirmed that the Project card shows this PR in `Linked pull requests`.
+- [ ] Every related Project card is backed by its GitHub Issue, not a draft item.
+- [ ] For a PR targeting `dev` or `integration/*`, I included `Refs #<issue>` for every related Issue; no manual `Development` link is required.
 - [ ] For a PR targeting `main`, I included `Closes #<issue>` for each completed Issue.
 
 ## Summary
