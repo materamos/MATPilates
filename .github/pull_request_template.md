@@ -2,7 +2,7 @@
 
 - Issue: #
 - Base branch:
-- [ ] For a PR targeting `dev` or `integration/*`, I manually linked the Issue and PR in GitHub's `Development` section.
+- [ ] For a PR targeting `dev` or `integration/*`, I manually linked the Issue and PR in GitHub's `Development` section, even if the source branch is already connected to the Issue.
 - [ ] I confirmed that the Project card shows this PR in `Linked pull requests`.
 - [ ] For a PR targeting `main`, I included `Closes #<issue>` for each completed Issue.
 
