@@ -103,6 +103,10 @@ Every versioned change starts from an Issue and declares one delivery classifica
 
 Use `integration/<short-description>` when multiple feature branches must be validated together before they are eligible for `dev`. Feature Pull Requests may target that integration branch, but integration branches never target `main`. After the complete set is authorized, merge it into `dev` through a Pull Request and delete the integration branch only after confirming that its commit is reachable from `dev`.
 
+### GitHub Project cards
+
+Each Project card tracks an Issue and inherits its labels. Every tracked Issue has exactly one roadmap label (`etapa-1` or `etapa-2`); `maintenance` is an optional additive label only for technical maintenance, and scope labels such as `bug` or `documentation` are used only when applicable. The Project `Status` and `Delivery classification` fields remain the canonical workflow and delivery values, so they are not duplicated as labels. Reference the Issue from each Pull Request so the card's `Linked pull requests` field records the actual relationship.
+
 Vercel always builds Preview deployments. In Production, `vercel.json` skips the build only when the commit is limited to `.github/**`, `docs/**`, `tests/**`, `AGENTS.md`, or `README.md`; any other change or an inconclusive comparison builds normally.
 
 When investigating an intermittent browser failure, reproduce the affected test before rerunning the complete suite:
