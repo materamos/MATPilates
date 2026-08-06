@@ -62,17 +62,23 @@ npx playwright install chromium firefox webkit
 | `npm run figma:bridge:check` | Type-checks, tests, and builds the local bridge. |
 | `npm run figma:bridge:start` | Starts the built bridge over MCP STDIO. |
 
-Before delivering any change:
+For documentation-only changes, run:
+
+```bash
+git diff --check
+```
+
+For application-code changes without visual impact, run:
 
 ```bash
 npm run lint
 npm run build
-npm run test:e2e:functional
 ```
 
-For changes to UI, CSS, typography, content, or geometry, also run:
+Then run the focused functional coverage that exercises the change. For changes to UI, CSS, typography, content, or geometry, also run:
 
 ```bash
+npm run test:e2e:functional
 npm run test:visual
 ```
 
@@ -105,7 +111,9 @@ Use `integration/<short-description>` when multiple feature branches must be val
 
 ### GitHub Project cards
 
-Each Project card tracks an Issue and inherits its labels. Every tracked Issue has exactly one roadmap label (`etapa-1` or `etapa-2`); `maintenance` is an optional additive label only for technical maintenance, and scope labels such as `bug` or `documentation` are used only when applicable. The Project `Status` and `Delivery classification` fields remain the canonical workflow and delivery values, so they are not duplicated as labels. Reference the Issue from each Pull Request so the card's `Linked pull requests` field records the actual relationship.
+Each Project card tracks an Issue and inherits its labels. Every Issue that enters implementation has exactly one roadmap label (`etapa-1` or `etapa-2`); `maintenance` is an optional additive label only for technical maintenance, and scope labels such as `bug` or `documentation` are used only when applicable. The Project `Status` and `Delivery classification` fields remain the canonical workflow and delivery values, so they are not duplicated as labels. For a Pull Request targeting `dev` or `integration/*`, manually link it to the Issue in GitHub's `Development` section and confirm that the card shows it in `Linked pull requests`, even when its source branch is already connected to the Issue; `Refs #<issue>` alone is only a readable cross-reference. For a Pull Request targeting `main`, use `Closes #<issue>` for each completed Issue.
+
+`Sin definir` is allowed only during intake. Keep the card in `Ideas` or `To Do`, then choose `Etapa 1` or `Etapa 2` and apply its matching label before implementation begins.
 
 Vercel always builds Preview deployments. In Production, `vercel.json` skips the build only when the commit is limited to `.github/**`, `docs/**`, `tests/**`, `AGENTS.md`, or `README.md`; any other change or an inconclusive comparison builds normally.
 

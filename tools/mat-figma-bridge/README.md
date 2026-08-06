@@ -3,6 +3,9 @@
 Local MCP server and Figma Desktop development plugin for font-safe MAT
 typography work.
 
+`../../docs/figma-local-bridge.md` is the canonical architecture and safety
+contract. This guide covers local setup and operation of that same contract.
+
 ## Requirements
 
 - Windows with Figma Desktop;
@@ -119,8 +122,9 @@ at most five minutes. Once available, any subsequent document event disables
 it; loss of plugin focus, hiding the UI, a newer batch, expiry, or failed
 verification also disable it. Changing the active page alone does not.
 
-Direct writes anywhere inside `COMPONENT`, `COMPONENT_SET`, or `INSTANCE` are
-rejected in v0.1 because the bridge cannot enumerate their propagation safely.
+Except for exact local `bind_text_style` operations, direct writes anywhere
+inside `COMPONENT`, `COMPONENT_SET`, or `INSTANCE` are rejected in v0.1 because
+the bridge cannot enumerate their propagation safely.
 Creating a text node directly inside a Grid container is also rejected.
 When a range or new node links a text style and also supplies `fontRole`, that
 role must match the style's projected final role, including a style updated
