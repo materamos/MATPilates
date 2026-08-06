@@ -3,8 +3,6 @@ description: Reportar un comportamiento incorrecto o una regresión verificable.
 title: "[Bug]: "
 labels:
   - bug
-assignees:
-  - materamos
 body:
   - type: textarea
     id: current_behavior
