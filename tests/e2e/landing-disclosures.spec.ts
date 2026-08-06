@@ -16,13 +16,20 @@ async function expectDisclosureSettled(disclosure: Locator, open: boolean) {
 
           const bodyStyles = getComputedStyle(body);
           const expansionStyles = getComputedStyle(expansion);
+          const disclosureRect = element.getBoundingClientRect();
+          const expansionRect = expansion.getBoundingClientRect();
+          const visibleExpansionHeight = Math.max(
+            0,
+            Math.min(expansionRect.bottom, disclosureRect.bottom) -
+              Math.max(expansionRect.top, disclosureRect.top),
+          );
           const translateY =
             bodyStyles.transform === "none"
               ? 0
               : new DOMMatrixReadOnly(bodyStyles.transform).m42;
 
           return {
-            hasHeight: expansion.getBoundingClientRect().height > 1,
+            hasHeight: visibleExpansionHeight > 1,
             isClosing: element.getAttribute("data-closing") === "true",
             isContentVisible:
               element.hasAttribute("open") && expansionStyles.visibility === "visible",
