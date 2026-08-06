@@ -1173,11 +1173,10 @@ a {
 }
 
 .mat-studio-gallery__track {
-  display: flex;
+  position: relative;
   width: 100%;
   height: 100%;
   cursor: grab;
-  will-change: transform;
 }
 
 .mat-studio-gallery__track:active {
@@ -1189,10 +1188,11 @@ a {
 }
 
 .mat-studio-gallery__slide {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  flex: 0 0 100%;
+  will-change: transform;
 }
 
 .mat-studio__copy {

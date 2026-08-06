@@ -51,12 +51,12 @@ npx playwright install chromium firefox webkit
 | `npm run lint:css` | Runs Stylelint over CSS files under `src/`. |
 | `npm run build` | Creates the production build and validates TypeScript. |
 | `npm run start` | Starts the compiled application; requires `npm run build` first. |
-| `npm run test:e2e` | Runs the daily matrix: 34 Chromium functional cases, 20 browser-critical cases in Firefox/WebKit, and 9 visual cases. |
-| `npm run test:e2e:functional` | Runs the 34 structural and interaction cases in Chromium without visual snapshots. |
-| `npm run test:e2e:browser-critical` | Runs the 10 critical scenarios in Firefox and WebKit (20 executions). |
+| `npm run test:e2e` | Runs the daily matrix: 35 Chromium functional cases, 22 browser-critical cases in Firefox/WebKit, and 9 visual cases. |
+| `npm run test:e2e:functional` | Runs the 35 structural and interaction cases in Chromium without visual snapshots. |
+| `npm run test:e2e:browser-critical` | Runs the 11 critical scenarios in Firefox and WebKit (22 executions). |
 | `npm run test:e2e:smoke` | Runs the 2 public smoke scenarios in Chromium, Firefox, and WebKit (6 executions). |
-| `npm run test:e2e:cross-browser` | Runs all 34 functional scenarios in Chromium, Firefox, and WebKit (102 executions). |
-| `npm run test:e2e:full` | Runs the complete 111-execution matrix, including visual coverage. |
+| `npm run test:e2e:cross-browser` | Runs all 35 functional scenarios in Chromium, Firefox, and WebKit (105 executions). |
+| `npm run test:e2e:full` | Runs the complete 114-execution matrix, including visual coverage. |
 | `npm run test:e2e:report` | Opens the latest local Playwright HTML report. |
 | `npm run test:visual` | Compares the landing against the approved visual baselines. |
 | `npm run test:visual:update` | Replaces visual baselines after an intentional, reviewed visual change. |
@@ -129,13 +129,13 @@ npx playwright test path/to/spec.ts --project=webkit --grep "test title" --worke
 
 ## Visual regression
 
-Playwright starts an isolated production server on `127.0.0.1:3218`. Chromium runs all 34 functional scenarios and the approved visual coverage. Firefox and WebKit run the 10 scenarios tagged `@cross-browser` in the daily matrix; all 34 functional scenarios remain available in both engines through `test:e2e:cross-browser` and `test:e2e:full`. Visual snapshots remain restricted to Chromium on Windows.
+Playwright starts an isolated production server on `127.0.0.1:3218`. Chromium runs all 35 functional scenarios and the approved visual coverage. Firefox and WebKit run the 11 scenarios tagged `@cross-browser` in the daily matrix; all 35 functional scenarios remain available in both engines through `test:e2e:cross-browser` and `test:e2e:full`. Visual snapshots remain restricted to Chromium on Windows.
 
 Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`. Functional and structural tests remain separate from tests tagged with `@visual`; the public navigation and schedule smokes carry both `@smoke` and `@cross-browser`. The Google Maps iframe is masked because its external rendering is nondeterministic; its eligibility and container geometry are tested separately. Playwright reports, traces, failure screenshots, and videos under `playwright-report/` and `test-results/` are transient, ignored by Git and excluded from linting.
 
 Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. CI compares the existing Windows baselines on a Windows runner and uploads failure artifacts without replacing them.
 
-GitHub Actions runs lint and build, the 34 Chromium functional cases, the 20 Firefox/WebKit browser-critical executions, and the 9 Windows visual cases for pull requests into `integration/**`, `dev`, or `main`. Manual workflow runs execute all 102 functional cross-browser cases and the 9 visual cases. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
+GitHub Actions runs lint and build, the 35 Chromium functional cases, the 22 Firefox/WebKit browser-critical executions, and the 9 Windows visual cases for pull requests into `integration/**`, `dev`, or `main`. Manual workflow runs execute all 105 functional cross-browser cases and the 9 visual cases. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
 
 Promotions to `main` do not require `dev` to contain merge-only history from the current `main` tip. Do not create synchronization Pull Requests whose only effect is ancestry. Immediately before merging, fetch the remote and confirm that the Pull Request's recorded head and base commits still match `origin/dev` and `origin/main`; if either commit changed, stop and revalidate the promotion against the new pair.
 
