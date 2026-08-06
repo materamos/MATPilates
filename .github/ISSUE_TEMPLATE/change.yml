@@ -1,8 +1,6 @@
 name: Cambio o mejora
 description: Proponer una mejora funcional, técnica, documental o de proceso.
 title: "[Cambio]: "
-assignees:
-  - materamos
 body:
   - type: textarea
     id: objective
