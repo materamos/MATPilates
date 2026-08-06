@@ -42,6 +42,9 @@
 - [ ] `git diff --check`
 - [ ] Relevant lint, build, or tests
 - [ ] Manual verification, if applicable
+- [ ] For `dev` or `integration/*`: `CI dev gate` and Vercel are green on the current Pull Request head.
+- [ ] For `main`: `CI release gate`, Vercel, and the required review are green on the current Pull Request head.
+- [ ] Any manual workflow run is recorded only as supporting evidence, not as a replacement for a protected gate.
 
 ## Risks
 

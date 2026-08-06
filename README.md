@@ -54,9 +54,12 @@ npx playwright install chromium firefox webkit
 | `npm run test:e2e` | Runs the daily matrix: 35 Chromium functional cases, 22 browser-critical cases in Firefox/WebKit, and 9 visual cases. |
 | `npm run test:e2e:functional` | Runs the 35 structural and interaction cases in Chromium without visual snapshots. |
 | `npm run test:e2e:browser-critical` | Runs the 11 critical scenarios in Firefox and WebKit (22 executions). |
+| `npm run test:gallery` | Runs the focused studio-gallery functional scenarios in Chromium. |
 | `npm run test:e2e:smoke` | Runs the 2 public smoke scenarios in Chromium, Firefox, and WebKit (6 executions). |
 | `npm run test:e2e:cross-browser` | Runs all 35 functional scenarios in Chromium, Firefox, and WebKit (105 executions). |
 | `npm run test:e2e:full` | Runs the complete 114-execution matrix, including visual coverage. |
+| `npm run test:gate:dev` | Runs the local sequential equivalent of the required `dev` gate. |
+| `npm run test:gate:release` | Runs the local sequential equivalent of the exhaustive `main` release gate. |
 | `npm run test:e2e:report` | Opens the latest local Playwright HTML report. |
 | `npm run test:visual` | Compares the landing against the approved visual baselines. |
 | `npm run test:visual:update` | Replaces visual baselines after an intentional, reviewed visual change. |
@@ -84,7 +87,7 @@ npm run test:e2e:functional
 npm run test:visual
 ```
 
-Use `npm run test:e2e` for routine repository work. UI, CSS, typography, content, or geometry changes must also run `npm run test:visual`; high-risk audits, browser/framework upgrades, and cross-browser investigations use `npm run test:e2e:full`.
+Use a focused command such as `npm run test:gallery` while iterating. Before publishing application code to `dev`, run `npm run test:gate:dev`; UI, CSS, typography, content, or geometry changes must also run `npm run test:visual`. Use `npm run test:gate:release` for a local release-equivalent pass and `npm run test:e2e:full` for high-risk audits or explicit full-matrix investigations.
 
 To mirror the manual full cross-browser functional job with a single worker, set `CI` for the command in a POSIX shell:
 
@@ -135,11 +138,13 @@ Approved Windows baselines live beside the tests under `tests/e2e/*-snapshots/`.
 
 Run `npm run test:visual:update` only when a visual change is intentional and approved. Inspect each failure diff first, update the snapshots, inspect the resulting Git diff, and then rerun `npm run test:visual` without the update flag. Never run the update command automatically in CI. CI compares the existing Windows baselines on a Windows runner and uploads failure artifacts without replacing them.
 
-GitHub Actions runs lint and build, the 35 Chromium functional cases, the 22 Firefox/WebKit browser-critical executions, and the 9 Windows visual cases for pull requests into `integration/**`, `dev`, or `main`. Manual workflow runs execute all 105 functional cross-browser cases and the 9 visual cases. Always verify check results against the pull request's current head commit. Reports and failure artifacts are retained for seven days.
+GitHub Actions uses separate validation lanes. Pull requests into `integration/**` or `dev` run lint/build and the 35 Chromium functional cases in parallel, then report the single required `CI dev gate`. Pull requests into `main` run lint/build, all 105 functional cross-browser executions, and the 9 Windows visual cases in parallel, then report the single required `CI release gate`. Vercel remains a separate required provider check. Manual runs use distinct check names and cannot replace either protected gate. Always verify results against the Pull Request's current head commit. Reports and failure artifacts are retained for seven days.
+
+The expected target is under 10 minutes for the `dev` gate under normal runner capacity. The local gate commands use one Playwright worker to mirror CI and avoid resource-contention failures that do not occur on the protected runner. The exhaustive release gate may take 20 to 40 minutes because it runs at promotion time rather than for every small change. The scheduled `CI metrics` workflow reports weekly median and p95 duration, rerun rate, cancellations, and failures by job. See `docs/delivery-runbook.md` for check-state diagnosis, incident handling, and reliability thresholds.
 
 Promotions to `main` do not require `dev` to contain merge-only history from the current `main` tip. Do not create synchronization Pull Requests whose only effect is ancestry. Immediately before merging, fetch the remote and confirm that the Pull Request's recorded head and base commits still match `origin/dev` and `origin/main`; if either commit changed, stop and revalidate the promotion against the new pair.
 
-The Linux Chromium functional job intentionally installs Chromium with Playwright's `--only-shell` option. The browser-critical job installs only Firefox and WebKit; the manual full cross-browser job installs all three engines. Windows visual regression keeps the Chromium installation that produces the approved baselines. Keep these browser boundaries unchanged unless a separate, measured CI change explicitly revises them.
+The Linux `dev` functional job intentionally installs Chromium with Playwright's `--only-shell` option. Release and manual functional jobs install Chromium, Firefox, and WebKit. Windows visual regression keeps the Chromium installation that produces the approved baselines. Keep these browser boundaries unchanged unless a separate, measured CI change explicitly revises them.
 
 A `Repository-only` promotion is complete after the exact `main` commit and required checks are verified. A `Production-eligible` promotion is complete only after the deployment status for the exact `main` merge commit succeeds and the canonical URL responds with the expected public content.
 
