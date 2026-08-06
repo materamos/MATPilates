@@ -105,7 +105,7 @@ Use `integration/<short-description>` when multiple feature branches must be val
 
 ### GitHub Project cards
 
-Each Project card tracks an Issue and inherits its labels. Every tracked Issue has exactly one roadmap label (`etapa-1` or `etapa-2`); `maintenance` is an optional additive label only for technical maintenance, and scope labels such as `bug` or `documentation` are used only when applicable. The Project `Status` and `Delivery classification` fields remain the canonical workflow and delivery values, so they are not duplicated as labels. Reference the Issue from each Pull Request so the card's `Linked pull requests` field records the actual relationship.
+Each Project card tracks an Issue and inherits its labels. Every tracked Issue has exactly one roadmap label (`etapa-1` or `etapa-2`); `maintenance` is an optional additive label only for technical maintenance, and scope labels such as `bug` or `documentation` are used only when applicable. The Project `Status` and `Delivery classification` fields remain the canonical workflow and delivery values, so they are not duplicated as labels. For a Pull Request targeting `dev` or `integration/*`, manually link it to the Issue in GitHub's `Development` section and confirm that the card shows it in `Linked pull requests`; `Refs #<issue>` alone is only a readable cross-reference. For a Pull Request targeting `main`, use `Closes #<issue>` for each completed Issue.
 
 Vercel always builds Preview deployments. In Production, `vercel.json` skips the build only when the commit is limited to `.github/**`, `docs/**`, `tests/**`, `AGENTS.md`, or `README.md`; any other change or an inconclusive comparison builds normally.
 
