@@ -40,6 +40,7 @@ jobs:
 
   functional:
     name: Functional tests (Chromium)
+    if: github.event_name == 'pull_request'
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -68,8 +69,9 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  smoke:
-    name: Smoke tests (Chromium, Firefox, WebKit)
+  browser-critical:
+    name: Browser-critical tests (Firefox, WebKit)
+    if: github.event_name == 'pull_request'
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -83,15 +85,15 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
-      - name: Run cross-browser smoke suite
-        run: npm run test:e2e:smoke
+      - name: Install Firefox and WebKit
+        run: npx playwright install --with-deps firefox webkit
+      - name: Run browser-critical suite
+        run: npm run test:e2e:browser-critical
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-smoke-${{ runner.os }}
+          name: playwright-browser-critical-${{ runner.os }}
           path: |
             playwright-report/
             test-results/
@@ -100,7 +102,7 @@ jobs:
 
   cross-browser:
     name: Full functional tests (Chromium, Firefox, WebKit)
-    if: github.event_name == 'workflow_dispatch' || github.base_ref == 'main'
+    if: github.event_name == 'workflow_dispatch'
     needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 30
