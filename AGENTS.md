@@ -51,6 +51,15 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 - Before promoting `dev`, inspect the complete `main...dev` difference and confirm that every included Issue is authorized. Promote through a separate Pull Request from `dev` to `main`, using the most restrictive included delivery classification and `Closes #<issue-number>` for every completed Issue.
 - Mark `Repository-only` work as `Done` after its exact `main` commit and checks are verified. Mark `Production-eligible` work as `Done` only after the exact `main` deployment is verified. Then fast-forward the local `dev` and `main` branches from their remotes, compare the local and remote tips, and confirm that the worktree is clean.
 
+### GitHub Project card taxonomy
+
+- A Project card tracks its Issue. Apply and change labels on the Issue, then verify that the card's `Labels` field reflects them; do not use the title or a manual card note as a label substitute.
+- Every tracked Issue carries exactly one roadmap-stage label: `etapa-1` or `etapa-2`. Assign it before implementation and before moving its card to `Doing`.
+- `maintenance` is additive and only identifies technical maintenance: dependencies, CI, tooling, repository hygiene, or the GitHub delivery workflow. It does not replace the stage label or delivery classification.
+- Use an additional scope label such as `bug` or `documentation` only when it describes the primary work. Labels may coexist, but no label may contradict the Issue's actual scope.
+- Project `Status` (`Ideas`, `To Do`, `Doing`, `Ready`, `Done`) is the workflow field, not a label. `Delivery classification` is its dedicated Project field and must also match the canonical declaration in the Issue and Pull Request; neither value is represented by a GitHub label.
+- Link Pull Requests by referencing the Issue in the PR (`Refs #<issue>` or `Closes #<issue>` when closure is intended). The Project's `Linked pull requests` field is the evidence of that relationship; do not encode PR numbers as labels.
+
 ## Tooling and validation
 
 - The application uses Next.js with the App Router, TypeScript, Tailwind CSS, and ESLint.
