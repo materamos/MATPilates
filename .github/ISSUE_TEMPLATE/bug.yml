@@ -36,6 +36,7 @@ body:
     id: stage
     attributes:
       label: Etapa
+      description: `Sin definir` solo se permite durante intake. Antes de iniciar implementación, seleccionar Etapa 1 o Etapa 2 y aplicar la etiqueta de roadmap correspondiente.
       options:
         - Etapa 1
         - Etapa 2
