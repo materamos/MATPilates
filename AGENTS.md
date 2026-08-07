@@ -68,7 +68,9 @@ This file contains repository-specific guidance. Follow global Codex guidance fo
 - For documentation-only changes, run `git diff --check`.
 - For application-code changes without visual impact, run `npm run lint`, `npm run build`, and the focused functional coverage that exercises the change.
 - For UI, CSS, typography, content, or geometry changes, also run `npm run test:e2e:functional` and `npm run test:visual`.
-- For browser or CI failures, reproduce the affected test and browser first, then run the complete CI-equivalent suite documented in `README.md` before publishing the correction.
+- While iterating, prefer the smallest focused command that demonstrates the affected behavior. Before publishing application code to `dev`, run `npm run test:gate:dev`; before an exhaustive release validation, run `npm run test:gate:release` when local Windows visual baselines are available.
+- For browser or CI failures, reproduce the affected test and browser first, then run the complete gate for the affected delivery lane documented in `README.md` before publishing the correction. Do not use a manual workflow run as a substitute for a protected Pull Request gate.
+- Treat `Expected - Waiting for status to be reported` as a missing exact-name/provider status for the current Pull Request commit, not as a queued or successful job. During a confirmed provider outage, preserve the existing Pull Request and branch; do not create replacement state solely to retrigger checks.
 - If a change combines documentation with UI or application code, run all applicable checks.
 - Do not assume environment variables or generated configuration exist before they are introduced.
 - When adding application tooling, document its supported commands and required local configuration in `README.md`.
